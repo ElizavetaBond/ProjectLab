@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Идеи";
+    @model IEnumerable<IdeaViewModel>
+}
+
+
+<div class="content">
+    <div class="row">
+        <div class="col">
+            <h1>Каталог идей</h1>
+        </div>
+        <div class="col">
+            @using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
+            {
+                <button type="submit" class="btn btn-primary">Новая идея</button>
+            }
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var x in Model)
+        {
+            <div class="col-sm-4 idea">
+                <a href="#">
+                    <div class="idea-img">
+                        <img src="~/imgs/idea_image.jpg" alt="">
+                    </div>
+                    <p class="idea-title">@x.Name</p>
+                    <p class="idea-direct">@x.Direction</p>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+
+<style>
+    body {
+        background: #ececec;
+    }
+
+    img {
+        height: auto;
+        max-width: 100%;
+    }
+
+    .content {
+        margin-top: 50px;
+    }
+
+    .idea {
+        background: #fff none repeat scroll 0 0;
+        border: 1px solid #c0c0c0;
+        height: 390px;
+        overflow: hidden;
+        padding: 25px 15px;
+        position: relative;
+        text-align: center;
+        transition: all 0.5s ease 0s;
+        margin-bottom: 20px;
+        width: 90%;
+    }
+
+        .idea:hover {
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+        }
+
+    .idea-img {
+        height: 200px;
+    }
+
+    .idea-direct a {
+        color: #000;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .idea-title {
+        bottom: 15px;
+        left: 0;
+        position: absolute;
+        width: 100%;
+        color: #d51e08;
+        font-size: 18px;
+        font-weight: 500;
+    }
+</style>
+

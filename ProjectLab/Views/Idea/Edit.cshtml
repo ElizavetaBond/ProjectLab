@@ -1,0 +1,282 @@
+﻿@{
+    ViewData["Title"] = "Конструктор идеи";
+    @model IdeaViewModel
+}
+
+@using (Html.BeginForm("Edit", "Idea", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-sm-10">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#generalinform">Общая информация</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#studyinform">Информация об исследовании</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#projecttemplate">Шаблон проекта</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="generalinform">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputName">Название идеи:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputName" name="Name" placeholder="Введите название" value="@Model.Name"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputDescription">Краткое описание:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputDescription" name="Description" type="text" value="@Model.Description"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputPhoto">Фото:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputPhoto" name="Photo" type="text"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputVideo">Видео:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputVideo" name="Video" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="studyinform">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="selectListDirections">Выберите направленность идеи:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="selectListDirections" name="Direction"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputTarget">Цель:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputTarget" name="Target" type="text" value="@Model.Target" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputPurpose">Назначение:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputPurpose" name="Purpose" type="text" value="@Model.Purpose" /> 
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputEquipment">Перечень оборудования и материалов:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputEquipment" name="Equipment" type="text" value="@Model.Equipment" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="inputSafety">Техника безопасности:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="inputSafety" name="Safety" type="text" value="@Model.Safety" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="projecttemplate">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <ul class="nav nav-tabs flex-column" id="navSections"></ul>
+                            <div class="dropdown open">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Добавить раздел
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a id="dropdownSection1" class="dropdown-item" href="#">Раздел опроса</a>
+                                    <a id="dropdownSection2" class="dropdown-item" href="#">Раздел данных</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="selectListComponents">Выберите тип компоненты:</label>
+                                </div>
+                                <div class="col-sm-7">
+                                    <select class="form-control" id="selectListComponents"></select>
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="button" class="btn btn-primary" id="btnAddComponent">Добавить</button>
+                                </div>
+                            </div>
+                            <div class="tab-content" id="areaSections"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </div>
+}
+
+<style>
+    .component{
+        border:  1px solid lightgrey;
+        margin-top: 10px;
+    }
+</style>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        var indComp = 0;        // счетчик для компонент
+        var sectionRes = 0;     // номер раздела итоговых результатов
+        var sectionSurvey = 1;  // номера раздела опроса
+        var sectionData = 2;    // номер раздела данных
+        var currentSection = sectionRes; // текущий открытый раздел
+        var ListDirections = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListDirections"]));
+        var ListComponents = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListComponents"]));
+
+        function selectSection(num) { // функция вызывается при выборе раздела из навигационного меню
+            currentSection = num;
+        }
+
+        function loadListDirections(val) { // инициализирует список направленностей
+            var str = '';
+            ListDirections.forEach(function (item) {
+                if (item==val)
+                    str += '<option selected value="' + item.Name + '">' + item.Name + '</option > ';
+                else
+                    str += '<option value="' + item.Name + '">' + item.Name + '</option > ';
+            });
+            return str;
+        }
+
+        function loadListComponents() { // инициализирует список типов компонент
+            var str = '';
+            ListComponents.forEach(function (item) {
+                str += '<option value="' + item + '">' + item + '</option > ';
+            });
+            return str;
+        }
+
+        function addComponent() { // добавляет компоненту на форму
+            var typeComp = $('#selectListComponents').val(); // тип компоненты
+            var idComp = 'component' + indComp;         // идентификатор компоненты
+            var idBtnDel = 'btnDeleteComp' + indComp;   // идентификатор кнопки удаления
+            var str = '<div class="row component align-items-center justify-content-between" id="' + idComp + '">' +
+                '<div class="col-sm-4">' +
+                    '<input type="hidden" id="' + idComp + 'IsDelete" name="Components[' + indComp + '].IsDelete" value="false" />' +
+                    '<input type="hidden" name="Components[' + indComp + '].Section" value="' + currentSection + '" />' +
+                    '<input class="form-control" type="text" name="Components[' + indComp + '].Type" readonly value="' + typeComp + '"/>' +
+                    '<input class="form-control" type="text" name="Components[' + indComp + '].Name" placeholder="Название компоненты" />' +
+                '</div>' +
+                '<div class="col-sm-4">' +
+                    '<textarea class="form-control" type="text" name="Components[' + indComp + '].Description" placeholder="Назначение" />' +
+                '</div>' +
+                '<div class="col-sm-3">' +
+                    '<input class="form-check-input" type="checkbox" id="' + idComp + 'IsNecessary" name="Components[' + indComp + '].IsNecessary" value="false"/>' +
+                    '<label class="form-check-label" for="checkboxIsNecessary">Обязательно к заполнению</label>' +
+                '</div>' +
+                '<div class="col-sm-1">' +
+                '<button class="btn btn-sm btn-danger" id="' + idBtnDel + '" type="button" title="Удалить">' +
+                    '<i class="fas fa-trash"></i>' +
+                '</button></div></div >';
+            $('#areaSection' + currentSection).append(str); // добавляем компоненту на форму
+            $('#' + idComp + 'IsNecessary').on('click', function () { setCheckboxIsNecessary(idComp); });
+            $('#' + idBtnDel).on('click', function () { deleteComponent(idComp); });
+            indComp++;
+        }
+
+        function deleteComponent(componentId) { // удалить компоненту
+            $('#' + componentId + 'IsDelete').val('true');
+            $('#' + componentId).hide();
+        }
+
+        function setCheckboxIsNecessary(idComp) { // установить значение в чекбокс
+            if ($('#' + idComp + 'IsNecessary').val() == 'false')
+                $('#' + idComp + 'IsNecessary').val('true');
+            else
+                $('#' + idComp + 'IsNecessary').val('false');
+        }
+
+        function loadSection(numSection, title) { // загрузка разделов на форму
+            var navSectionId = 'navSection' + numSection;
+            var areaSectionId = 'areaSection' + numSection;
+            var btnDelId = 'btnDelete' + areaSectionId;
+            var str = '<li class="nav-item form-inline" id="' + navSectionId + '">' +
+                '<input type="hidden" id="' + navSectionId + 'IsDelete" name="Sections[' + numSection + '].IsDelete" value="false"/>' +
+                '<input type="hidden"  name="Sections[' + numSection + '].Name" value="' + title + '"/>' +
+                '<a class="nav-link" data-toggle="tab" href="#' + areaSectionId + '">' + title + '</a>';
+            if (numSection != sectionRes) // нельзя удалить раздел итоговых результатов
+            {
+                str += '<button class="btn btn-sm btn-outline-secondary" id="' + btnDelId + '" type="button" title="Удалить">' +
+                    '<i class="fas fa-times"></i>' +
+                    '</button ></li>';
+                $('#navSections').append(str); // загрузить раздел в меню
+                $('#' + btnDelId).on('click', function () { deleteSection(numSection); });
+            } else { // если это раздел итоговых результатов, то кнопки "удалить" не будет
+                str += '</li>';
+                $('#navSections').append(str); // загрузить раздел в меню
+            }
+            $('#' + navSectionId).on('click', function () { selectSection(numSection); });
+
+            var str2 = '';
+            if (numSection == sectionRes) str2 = '<div class="tab-pane fade active show" id="' + areaSectionId + '"></div>';
+            else str2 = '<div class="tab-pane fade" id="' + areaSectionId + '"></div>';
+            $('#areaSections').append(str2); // загрузить раздел на форму
+        }
+
+        function addSection(numSection) {
+            $('#navSection' + numSection).show();
+            $('#areaSection' + numSection).show();
+            $('#dropdownSection' + numSection).hide();
+            $('#navSection' + numSection + 'IsDelete').val(false);
+        }
+
+        function deleteSection(numSection) {
+            $('#navSection' + numSection).hide();
+            $('#areaSection' + numSection).hide();
+            $('#dropdownSection' + numSection).show();
+            $('#navSection' + numSection + 'IsDelete').val(true);
+        }
+
+        (function () {
+            $('#selectListDirections').append(loadListDirections(@Model.Direction));
+            $('#selectListComponents').append(loadListComponents());
+            // загружаем все разделы на страницу
+            loadSection(sectionRes, 'Раздел итоговых результатов');
+            loadSection(sectionSurvey, 'Раздел опроса');
+            loadSection(sectionData, 'Раздел данных');
+            // скрываем разделы, которые не были еще добавлены пользователем
+            deleteSection(sectionSurvey);
+            deleteSection(sectionData);
+            $('#dropdownSection' + sectionSurvey).on('click', function () { addSection(sectionSurvey); return false; });
+            $('#dropdownSection' + sectionData).on('click', function () { addSection(sectionData); return false; });
+            $('#btnAddComponent').on('click', function () { addComponent(); });
+        })();
+    </script>
+}
