@@ -3,24 +3,25 @@
     @model IEnumerable<IdeaViewModel>
 }
 
+@using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
+{
+    <button class="btn btn-primary" type="submit">
+        <i class="fas fa-plus"></i>
+        Новая идея
+    </button>
+}
 
-    <ul class="products clearfix">
-        @for (int i = 0; i < 100; i++)
-        {
+<ul class="products clearfix">
+    @foreach (var x in Model)
+    {
         <li class="product-wrapper">
             <a href="" class="product">
                 <div class="product-photo">
                     <img src="~/imgs/idea_image.jpg" alt="">
                 </div>
-                <h2>Название</h2>
-                <h3>Направленность</h3>
-                <p>
-                    Здесь будет находиться описание идеи.
-                    Бла бла бла бла бла  бла бла бла бла
-                    бла бла бла бла  бла бла бла бла бла
-                    бла бла бла бла бла бла бла бла бла
-                    бла бла бла бла бла бла бла бла бла бла
-                </p>
+                <h2>@x.Name</h2>
+                <h3>@x.Direction</h3>
+                <p>@x.Description</p>
             </a>
             <!--<div class="product-preview">Просмотр</div>
             <div class=".product-buttons-wrap">
@@ -28,8 +29,8 @@
                 <div class="buttons"> Корзина</div>
             </div>-->
         </li>
-        }
-    </ul>
+    }
+</ul>
 
 
 <style>
