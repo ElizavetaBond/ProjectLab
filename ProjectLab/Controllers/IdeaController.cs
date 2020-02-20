@@ -31,7 +31,7 @@ namespace ProjectLab.Controllers
                 {
                     Name = i.Name,
                     Direction = (i.Direction == null) ? "" : i.Direction.Name,
-                    Description = i.Description,
+                    Author = (i.Author==null)?"":i.Author.Name
                 });
             }
 

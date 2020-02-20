@@ -10,6 +10,7 @@ namespace ProjectLab.ViewModels
         public string Id { get; set; } 
         public string Name { get; set; }
         public string Direction { get; set; }
+        public string Author { get; set; }
         public string Target { get; set; }
         public string Purpose { get; set; }
         public string Description { get; set; }
