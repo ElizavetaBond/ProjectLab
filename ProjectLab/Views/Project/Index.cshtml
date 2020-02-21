@@ -1,38 +1,26 @@
 ﻿@{
-    ViewData["Title"] = "Идеи";
-    @model IEnumerable<IdeaViewModel>
+    ViewData["Title"] = "Каталог проектов";
+    @model IEnumerable<ProjectViewModel>
 }
 
-@using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
-{
-    <button class="btn btn-primary" type="submit">
-        <i class="fas fa-plus"></i>
-        Новая идея
-    </button>
-}
-
-<ul class="ideas clearfix">
+<ul class="projects clearfix">
     @foreach (var x in Model)
     {
-        <li class="idea-wrapper">
-            <div class="idea">
+        <li class="project-wrapper">
+            <div class="project">
                 <h2>Название - @x.Name</h2>
-                <div class="idea-photo">
-                    <img src="~/imgs/idea_image.jpg" alt="">
-                    <button class="btn btn-primary idea-btn-preview">
-                        Просмотр идеи
+                <div class="project-photo">
+                    <img src="~/imgs/project.jpg" alt="">
+                    <button class="btn btn-primary project-btn-preview">
+                        Просмотр проекта
                     </button>
                 </div>
-                <h3>Направленность - @x.Direction</h3>
-                <h3>Автор - @x.Author</h3>
+                <h3>Направленность</h3>
+                <h3>Руководитель - @x.Manager</h3>
                 <h3>Учебное заведение</h3>
-                @using (Html.BeginForm("Edit", "Project", FormMethod.Get))
-                {
-                    <input type="hidden" name="IdIdea" value="@x.Id" />
-                    <button class="btn btn-primary idea-btn-public" type="submit">
-                        Опубликовать проект
-                    </button>
-                }
+                <button class="btn btn-primary project-btn-public">
+                    Принять участие
+                </button>
             </div>
         </li>
     }
@@ -40,7 +28,7 @@
 
 
 <style>
-    .idea-wrapper {
+    .project-wrapper {
         display: block;
         width: 100%;
         float: left;
@@ -48,24 +36,24 @@
     }
 
     @@media only screen and (min-width: 450px) {
-        .idea-wrapper {
+        .project-wrapper {
             width: 50%;
         }
     }
 
     @@media only screen and (min-width: 768px) {
-        .idea-wrapper {
+        .project-wrapper {
             width: 33.333%;
         }
     }
 
     @@media only screen and (min-width: 1000px) {
-        .idea-wrapper {
+        .project-wrapper {
             width: 25%;
         }
     }
 
-    .idea {
+    .project {
         display: block;
         border: 1px solid royalblue;
         border-radius: 3px;
@@ -76,19 +64,19 @@
         z-index: 0;
     }
 
-    .ideas {
+    .projects {
         list-style: none;
         margin: 0 -20px 0 0;
         padding: 0;
     }
 
-    .idea-photo {
+    .project-photo {
         position: relative;
         padding-bottom: 100%;
         overflow: hidden;
     }
 
-        .idea-photo img {
+        .project-photo img {
             position: absolute;
             top: 0;
             bottom: 0;
@@ -100,11 +88,11 @@
             transition: transform .4s ease-out;
         }
 
-    .idea:hover .idea-photo img {
+    .project:hover .project-photo img {
         transform: scale(1.05);
     }
 
-    .idea h2 {
+    .project h2 {
         font-size: 18px;
         text-align: center;
         color: royalblue;
@@ -112,25 +100,24 @@
         margin-top: 10px;
     }
 
-    .idea h3 {
+    .project h3 {
         text-align: center;
         font-size: 16px;
         color: darkblue;
     }
 
-    .idea-btn-preview {
-	    transform: translate(45%, 500%);
-	    opacity: 0;
+    .project-btn-preview {
+        transform: translate(45%, 500%);
+        opacity: 0;
     }
 
-    .idea:hover .idea-btn-preview {
+    .project:hover .project-btn-preview {
         opacity: 1;
     }
-    
-    .idea-btn-public{
+
+    .project-btn-public {
         transform: translate(25%, 0);
         margin-bottom: 10px;
     }
-
 </style>
 

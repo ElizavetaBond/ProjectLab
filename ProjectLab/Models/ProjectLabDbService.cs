@@ -19,6 +19,7 @@ namespace ProjectLab.Models
         public IMongoCollection<IdeaType> IdeaTypes { get; set; }
         public IMongoCollection<User> Users { get; set; } 
         public IMongoCollection<UserStatus> UserStatuses { get; set; }
+        public IMongoCollection<Project> Projects { get; set; }
 
         public ProjectLabDbService()
         {
@@ -33,6 +34,8 @@ namespace ProjectLab.Models
             Directions = database.GetCollection<Direction>("Directions");
             Users = database.GetCollection<User>("Users");
             UserStatuses = database.GetCollection<UserStatus>("UserStatuses");
+            Projects = database.GetCollection<Project>("Projects");
+
         }
 
         /*public void Init()
