@@ -1,25 +1,30 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using ProjectLab.Models;
+using ProjectLab.Models.References;
 
 namespace ProjectLab.Models
 {
     public class ProjectLabDbService
     {
         public IGridFSBucket gridFS;   // файловое хранилище
-        public IMongoCollection<Idea> Ideas { get; set; } 
-        public IMongoCollection<IdeaStatus> IdeaStatuses { get; set; } 
-        public IMongoCollection<Direction> Directions { get; set; } 
-        public IMongoCollection<IdeaType> IdeaTypes { get; set; }
-        public IMongoCollection<User> Users { get; set; } 
+        
+        // справочники
+        public IMongoCollection<Area> Areas { get; set; }
+        public IMongoCollection<City> Cities { get; set; }
+        public IMongoCollection<Direction> Directions { get; set; }
+        public IMongoCollection<Education> Educations { get; set; }
+        public IMongoCollection<EducationalInstitution> EducationalInstitutions { get; set; }
+        public IMongoCollection<IdeaStatus> IdeaStatuses { get; set; }
+        public IMongoCollection<ProjectStatus> ProjectsStatuses { get; set; }
+        public IMongoCollection<Region> Regions { get; set; }
+        public IMongoCollection<RewardType> RewardTypes { get; set; }
+        public IMongoCollection<UserCategory> UserCategories { get; set; }
         public IMongoCollection<UserStatus> UserStatuses { get; set; }
+
+        // коллекции
+        public IMongoCollection<Idea> Ideas { get; set; }
         public IMongoCollection<Project> Projects { get; set; }
+        public IMongoCollection<User> Users { get; set; } 
 
         public ProjectLabDbService()
         {
@@ -28,14 +33,24 @@ namespace ProjectLab.Models
             IMongoDatabase database = client.GetDatabase("projectlab");
             
             gridFS = new GridFSBucket(database);
-            Ideas = database.GetCollection<Idea>("Ideas");
-            IdeaStatuses = database.GetCollection<IdeaStatus>("IdeaStatuses");
-            IdeaTypes = database.GetCollection<IdeaType>("IdeaTypes");
-            Directions = database.GetCollection<Direction>("Directions");
-            Users = database.GetCollection<User>("Users");
-            UserStatuses = database.GetCollection<UserStatus>("UserStatuses");
-            Projects = database.GetCollection<Project>("Projects");
 
+            // справочники
+            Areas = database.GetCollection<Area>("Areas");
+            Cities = database.GetCollection<City>("Cities");
+            Directions = database.GetCollection<Direction>("Directions");
+            Educations = database.GetCollection<Education>("Educations");
+            EducationalInstitutions = database.GetCollection<EducationalInstitution>("EducationalInstitutions");
+            IdeaStatuses = database.GetCollection<IdeaStatus>("IdeaStatuses");
+            ProjectsStatuses = database.GetCollection<ProjectStatus>("ProjectStatuses");
+            Regions = database.GetCollection<Region>("Regions");
+            RewardTypes = database.GetCollection<RewardType>("RewardTypes");
+            UserCategories = database.GetCollection<UserCategory>("UserCategories");
+            UserStatuses = database.GetCollection<UserStatus>("UserStatuses");
+
+            // коллекции
+            Ideas = database.GetCollection<Idea>("Ideas");
+            Projects = database.GetCollection<Project>("Projects");
+            Users = database.GetCollection<User>("Users");
         }
 
         /*public void Init()

@@ -7,6 +7,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectLab.Models;
 using ProjectLab.ViewModels;
+using ProjectLab.ViewModels.Idea;
 
 namespace ProjectLab.Controllers
 {
@@ -17,24 +18,25 @@ namespace ProjectLab.Controllers
         public IdeaController(ProjectLabDbService context)
         {
             db = context;
+            Session.User = db.Users.Find(x => x.Login=="liza").FirstOrDefault();
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var filter = new BsonDocument();
-            var ideas = db.Ideas.Find(filter).ToList();
-            var vm = new List<IdeaViewModel>();
-            foreach (var i in ideas)
+            var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == "Утверждена" && x.IdeaType == "Открытая").ToList();
+            var vm = new List<IdeaCatalogViewModel>();
+            foreach (var x in ideas)
             {
-                vm.Add(new IdeaViewModel
+                vm.Add(new IdeaCatalogViewModel
                 {
-                    Name = i.Name,
-                    Direction = (i.Direction == null) ? "" : i.Direction.Name,
-                    Author = (i.Author==null)?"":i.Author.Name
+                    Id = x.Id,
+                    Name = x.Name,
+                    Direction = x.Direction.Name,
+                    //Author = x.Author.Login,
+                    //EducationalInstitution = x.Author.EducationalInstitution.Name
                 });
             }
-
             return View(vm);
         }
 
@@ -45,27 +47,51 @@ namespace ProjectLab.Controllers
             ViewData["ListDirections"] = db.Directions.Find(filter).ToList();
             ViewData["ListComponents"] = new List<string> { "Текст", "Сообщение", "Дата/Время",  "Число", "Флаг",
                                                             "Файл", "Фото", "Место", "Выбор", "Гиперссылка"};
-            var vm = new IdeaViewModel();
+            ViewData["ListIdeaTypes"] = new List<string> { "Открытая", "Приватная" };
+            ViewData["ListSectionTypes"] = new List<string> { "Раздел итоговых результатов", 
+                                                              "Раздел опроса", "Раздел данных" };
+            var vm = new IdeaEditViewModel();
             return View(vm);
         }
 
         [HttpPost]
-        public IActionResult Edit(IdeaViewModel vm)
+        public IActionResult Edit(IdeaEditViewModel vm)
         {
             var idea = new Idea
             {
                 Name = vm.Name,
-                Direction = new Direction { Name = vm.Direction },
+                IdeaType = vm.IdeaType, 
                 Target = vm.Target,
                 Purpose = vm.Purpose,
                 Description = vm.Description,
                 Equipment = vm.Equipment,
-                Safety = vm.Safety
+                Safety = vm.Safety,
+                Author = Session.User,
+                IdeaStatus = db.IdeaStatuses.Find(x=>x.Name=="Утверждена").FirstOrDefault(),
+                Direction = db.Directions.Find(x => x.Id == vm.IdDirection).FirstOrDefault(),
+                ProjectTemplate = new ProjectTemplate { Sections=new List<Section>()}
             };
-            if (vm.Id == null) 
-                db.Ideas.InsertOne(idea);
-            else
-                db.Ideas.ReplaceOne(new BsonDocument("Id", vm.Id), idea);
+            for (var i=0; i<vm.Sections.Count; i++) // перебираем все разделы
+            {
+                if (!vm.Sections[i].IsDelete) // если раздел не удален
+                {
+                    var section = new Section
+                    {
+                        Name = vm.Sections[i].Name,
+                        SectionType = vm.Sections[i].SectionType,
+                        Components = vm.Components.FindAll(x => x.Section == i && !x.IsDelete)
+                                              .Select(x => new Component
+                                              {
+                                                  Name = x.Name,
+                                                  ComponentType = x.Type,
+                                                  Description = x.Description,
+                                                  IsNecessary = x.IsNecessary
+                                              }).ToList()
+                    };
+                    idea.ProjectTemplate.Sections.Add(section);
+                }
+            }
+            db.Ideas.InsertOne(idea);
             return RedirectToAction("Index");
         }
     }

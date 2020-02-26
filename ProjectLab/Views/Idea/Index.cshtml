@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Идеи";
-    @model IEnumerable<IdeaViewModel>
+    @model IEnumerable<IdeaCatalogViewModel>
 }
 
 @using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
@@ -25,7 +25,7 @@
                 </div>
                 <h3>Направленность - @x.Direction</h3>
                 <h3>Автор - @x.Author</h3>
-                <h3>Учебное заведение</h3>
+                <h3>УЗ - @x.EducationalInstitution</h3>
                 @using (Html.BeginForm("Edit", "Project", FormMethod.Get))
                 {
                     <input type="hidden" name="IdIdea" value="@x.Id" />

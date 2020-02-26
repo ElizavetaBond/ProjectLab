@@ -2,31 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjectLab.Models;
+using ProjectLab.Models.References;
 
-namespace ProjectLab.ViewModels
+namespace ProjectLab.ViewModels.Idea
 {
-    public class IdeaViewModel
+    public class IdeaEditViewModel
     {
-        public string Id { get; set; } 
+        public string Id { get; set; }
         public string Name { get; set; }
-        public string Direction { get; set; }
-        public string Author { get; set; }
+        public string IdeaType { get; set; }
         public string Target { get; set; }
         public string Purpose { get; set; }
         public string Description { get; set; }
         public string Equipment { get; set; }
         public string Safety { get; set; }
-        public List<Section> Sections { get; set; } // список разделов шаблона проекта
-        public List<Component> Components { get; set; } // список компонент
+        public string IdDirection { get; set; }
+        public List<SectionViewModel> Sections { get; set; } // список разделов шаблона проекта
+        public List<ComponentViewModel> Components { get; set; } // список компонент
     }
 
-    public class Section
+    public class SectionViewModel
     {
         public string Name { get; set; } // название раздела
+        public string SectionType { get; set; }
         public bool IsDelete { get; set; } // признак удаления
     }
 
-    public class Component
+    public class ComponentViewModel
     {
         public string Name { get; set; } // название компоненты
         public string Type { get; set; } // тип компоненты
