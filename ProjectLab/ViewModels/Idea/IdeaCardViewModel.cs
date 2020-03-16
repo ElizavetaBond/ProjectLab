@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectLab.ViewModels
 {
-    public class IdeaCatalogViewModel // представление идеи в каталоге идей
+    public class IdeaCardViewModel // представление идеи в каталоге идей
     {
         public string Id { get; set; }                      // идентификатор
         public string Name { get; set; }                    // название идеи

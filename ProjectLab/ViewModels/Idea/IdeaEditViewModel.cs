@@ -18,18 +18,18 @@ namespace ProjectLab.ViewModels.Idea
         public string Equipment { get; set; }
         public string Safety { get; set; }
         public string IdDirection { get; set; }
-        public List<SectionViewModel> Sections { get; set; } // список разделов шаблона проекта
-        public List<ComponentViewModel> Components { get; set; } // список компонент
+        public List<SectionEditViewModel> Sections { get; set; } // список разделов шаблона проекта
+        public List<ComponentEditViewModel> Components { get; set; } // список компонент
     }
 
-    public class SectionViewModel
+    public class SectionEditViewModel
     {
         public string Name { get; set; } // название раздела
         public string SectionType { get; set; }
         public bool IsDelete { get; set; } // признак удаления
     }
 
-    public class ComponentViewModel
+    public class ComponentEditViewModel
     {
         public string Name { get; set; } // название компоненты
         public string Type { get; set; } // тип компоненты

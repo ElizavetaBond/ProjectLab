@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewData["Title"] = "IdeaMenu";
+    @model IdeasOwnViewModel
+}
+
+<h1>Мои идеи</h1>
+
+<form>
+    <div class=" row">
+        <div class="col-2">
+            <ul class="nav nav-tabs flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="#draft">Черновики </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="#">Утвержденные</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="#">На модерации</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="#">Отклоненные</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-10">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="draft">
+                    <ul class="ideas clearfix">
+                        @foreach (var x in Model.Drafts)
+                        {
+                            <li class="idea-wrapper">
+                                <div class="idea">
+                                    @await Component.InvokeAsync("IdeaCard", new { vm = x })
+
+                                    @using (Html.BeginForm("Edit", "Project", FormMethod.Get))
+                                    {
+                                        <input type="hidden" name="IdIdea" value="@x.Id" />
+                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                            Опубликовать проект
+                                        </button>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    form {
+        background-color: rgba(194, 223, 255, 0.81);
+    }
+</style>
+

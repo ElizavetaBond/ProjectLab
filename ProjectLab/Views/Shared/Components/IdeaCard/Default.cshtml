@@ -1,43 +1,25 @@
-﻿@{
-    ViewData["Title"] = "Идеи";
-    @model IEnumerable<IdeaCatalogViewModel>
+﻿
+@{
+    ViewData["Title"] = "Default";
+    @model IdeaCardViewModel
 }
 
-@using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
-{
-    <button class="btn btn-primary" type="submit">
-        <i class="fas fa-plus"></i>
-        Новая идея
-    </button>
-}
-
-<ul class="ideas clearfix">
-    @foreach (var x in Model)
-    {
-        <li class="idea-wrapper">
-            <div class="idea">
-                <h2>Название - @x.Name</h2>
-                <div class="idea-photo">
-                    <img src="~/imgs/idea_image.jpg" alt="">
-                    <button class="btn btn-primary idea-btn-preview">
-                        Просмотр идеи
-                    </button>
-                </div>
-                <h3>Направленность - @x.Direction</h3>
-                <h3>Автор - @x.Author</h3>
-                <h3>УЗ - @x.EducationalInstitution</h3>
-                @using (Html.BeginForm("Edit", "Project", FormMethod.Get))
-                {
-                    <input type="hidden" name="IdIdea" value="@x.Id" />
-                    <button class="btn btn-primary idea-btn-public" type="submit">
-                        Опубликовать проект
-                    </button>
-                }
-            </div>
-        </li>
-    }
-</ul>
-
+<div >
+    <h2>Название - @Model.Name</h2>
+    <div class="idea-photo">
+        <img src="~/imgs/idea_image.jpg" alt="">
+        @using (Html.BeginForm("Browse", "Idea", FormMethod.Get))
+        {
+            <input type="hidden" name="IdIdea" value="@Model.Id" />
+            <button class="btn btn-primary idea-btn-preview" type="submit">
+                Просмотр идеи
+            </button>
+        }
+    </div>
+    <h3>Направленность - @Model.Direction</h3>
+    <h3>Автор - @Model.Author</h3>
+    <h3>УЗ - @Model.EducationalInstitution</h3>
+</div>
 
 <style>
     .idea-wrapper {
@@ -119,18 +101,16 @@
     }
 
     .idea-btn-preview {
-	    transform: translate(45%, 500%);
-	    opacity: 0;
+        transform: translate(45%, 500%);
+        opacity: 0;
     }
 
     .idea:hover .idea-btn-preview {
         opacity: 1;
     }
-    
-    .idea-btn-public{
+
+    .idea-btn-public {
         transform: translate(25%, 0);
         margin-bottom: 10px;
     }
-
 </style>
-

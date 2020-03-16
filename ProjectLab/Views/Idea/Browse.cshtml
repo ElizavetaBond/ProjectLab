@@ -1,0 +1,123 @@
+﻿
+@{
+    ViewData["Title"] = "Browse";
+    @model IdeaBrowseViewModel
+}
+
+    <form>
+        <div class="row">
+            <div class="col-4">
+                <ul class="nav nav-tabs flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#description">Описание</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#template">Шаблон проекта</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#comments">Комментарии</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-8">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="description">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textName">Название идеи:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly id="textName">@Model.Name</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textDirection">Направленность:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly id="textDirection">@Model.Direction</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textAuthor">Автор:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly id="textAuthor">@Model.Author</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textTarget">Цель:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly id="textTarget">@Model.Target</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textPurpose">Назначение:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly id="textPurpose">@Model.Purpose</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textDescription">Описание:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly id="textDescription">@Model.Description</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textEquipment">Перечень оборудования и материалов:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly id="textEquipment">@Model.Equipment</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="textSafety">Техника безопасности:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" readonly>@Model.Safety</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="template">
+                        @foreach (var s in Model.Sections)
+                        {
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label>@s.Name</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    @foreach (var c in s.Components)
+                                    {
+                                        <textarea class="form-control" readonly>@c.Name  ( @c.Type )</textarea>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="tab-pane fade" id="comments">
+
+                    </div>
+                </div>
+            </div>
+        </div>      
+    </form>
+
+<style>
+    form {
+        background-color: rgba(194, 223, 255, 0.81);
+    }
+</style>

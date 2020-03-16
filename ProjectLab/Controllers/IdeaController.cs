@@ -18,17 +18,16 @@ namespace ProjectLab.Controllers
         public IdeaController(ProjectLabDbService context)
         {
             db = context;
-            Session.User = db.Users.Find(x => x.Login=="liza").FirstOrDefault();
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Catalog()
         {
             var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == "Утверждена" && x.IdeaType == "Открытая").ToList();
-            var vm = new List<IdeaCatalogViewModel>();
+            var vm = new List<IdeaCardViewModel>();
             foreach (var x in ideas)
             {
-                vm.Add(new IdeaCatalogViewModel
+                vm.Add(new IdeaCardViewModel
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -92,7 +91,35 @@ namespace ProjectLab.Controllers
                 }
             }
             db.Ideas.InsertOne(idea);
-            return RedirectToAction("Index");
+            return RedirectToAction("Catalog");
+        }
+
+        [HttpGet]
+        public IActionResult Browse(string IdIdea)
+        {
+            var idea = db.Ideas.Find(x => x.Id == IdIdea).FirstOrDefault();
+            return View (new IdeaBrowseViewModel {
+                Name = idea.Name,
+                IdeaType = idea.IdeaType,
+                Target = idea.Target,
+                Purpose = idea.Purpose,
+                Safety = idea.Safety,
+                Equipment = idea.Equipment,
+                Description = idea.Description,
+                Direction = idea.Direction.Name,
+                //Author = idea.Author.Login,
+                Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
+                {
+                    Name = i.Name,
+                    SectionType = i.SectionType,
+                    Components = i.Components.Select(c => new ComponentBrowseViewModel
+                    {
+                        Name = c.Name,
+                        Type = c.ComponentType,
+                        Description = c.Description
+                    }).ToList()
+                }).ToList()
+            });
         }
     }
 }
