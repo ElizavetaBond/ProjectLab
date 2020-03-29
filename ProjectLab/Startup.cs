@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using ProjectLab.Models;
+using Microsoft.Owin.Security;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace ProjectLab
 {
@@ -27,6 +29,12 @@ namespace ProjectLab
         {
             services.AddTransient<ProjectLabDbService>();
             services.AddControllersWithViews();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+               .AddCookie(options => //CookieAuthenticationOptions
+                {
+                   options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+               });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +55,7 @@ namespace ProjectLab
 
             app.UseRouting();
 
+            app.UseAuthentication();    // аутентификация
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

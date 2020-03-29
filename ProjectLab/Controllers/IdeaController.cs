@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -32,14 +33,15 @@ namespace ProjectLab.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Direction = x.Direction.Name,
-                    //Author = x.Author.Login,
-                    //EducationalInstitution = x.Author.EducationalInstitution.Name
-                });
+                    Author = x.Author,
+                    EducationalInstitution = db.Users.Find(u => u.Email == x.Author).FirstOrDefault().EducationalInstitution.Name
+                }) ;
             }
             return View(vm);
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Edit()
         {
             var filter = new BsonDocument();
@@ -65,9 +67,9 @@ namespace ProjectLab.Controllers
                 Description = vm.Description,
                 Equipment = vm.Equipment,
                 Safety = vm.Safety,
-                Author = Session.User,
+                Author = User.Identity.Name,
                 IdeaStatus = db.IdeaStatuses.Find(x=>x.Name=="Утверждена").FirstOrDefault(),
-                Direction = db.Directions.Find(x => x.Id == vm.IdDirection).FirstOrDefault(),
+                Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
                 ProjectTemplate = new ProjectTemplate { Sections=new List<Section>()}
             };
             for (var i=0; i<vm.Sections.Count; i++) // перебираем все разделы

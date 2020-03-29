@@ -17,7 +17,7 @@ namespace ProjectLab.ViewModels.Idea
         public string Description { get; set; }
         public string Equipment { get; set; }
         public string Safety { get; set; }
-        public string IdDirection { get; set; }
+        public string DirectionId { get; set; }
         public List<SectionEditViewModel> Sections { get; set; } // список разделов шаблона проекта
         public List<ComponentEditViewModel> Components { get; set; } // список компонент
     }

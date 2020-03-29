@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model RegisterViewModel
+}
+
+<h1>Регистрация нового пользователя</h1>
+
+<form method="post" asp-controller="Account" asp-action="Register">
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+                <label class="form-control" asp-for="Email">Email</label><br />
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for="Email" />
+            </div>
+            <div class="col-4">
+                <span asp-validation-for="Email" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label class="form-control" asp-for="Password">Пароль</label><br />
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for="Password" />
+            </div>
+            <div class="col-4">
+                <span asp-validation-for="Password" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label class="form-control" asp-for="ConfirmPassword">Повторите пароль</label><br />
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for="ConfirmPassword" />
+            </div>
+            <div class="col-4">
+                <span asp-validation-for="ConfirmPassword" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label class="form-control" asp-for="Surname">Фамилия</label><br />
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for="Surname" />
+            </div>
+            <div class="col-4">
+                <span asp-validation-for="Surname" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label class="form-control" asp-for="Name">Фамилия</label><br />
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for="Name" />
+            </div>
+            <div class="col-4">
+                <span asp-validation-for="Name" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label class="form-control" asp-for="Patronymic">Фамилия</label><br />
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for="Patronymic" />
+            </div>
+            <div class="col-4">
+                <span asp-validation-for="Patronymic" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label class="form-control" asp-for="BirthDate">Фамилия</label><br />
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for="BirthDate" />
+            </div>
+            <div class="col-4">
+                <span asp-validation-for="BirthDate" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <input class="form-control" type="submit" value="Регистрация" />
+            </div>
+        </div>
+    </div>
+</form>
+

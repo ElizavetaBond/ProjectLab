@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProjectLab.Models.References
 {
-    public class RewardType
+    public class Reward
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }

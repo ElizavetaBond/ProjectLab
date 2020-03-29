@@ -19,7 +19,7 @@ namespace ProjectLab.Models
         public string Equipment { get; set; }       // тех оснащение
         public string Safety { get; set; }          // техника безопасности
 
-        public User Author { get; set; }            // ссылка на автора
+        public string Author { get; set; }            // ссылка на автора
         public IdeaStatus IdeaStatus { get; set; }  // ссылка на статус идеи
         public Direction Direction { get; set; }    // ссылка на направленность идеи
 
