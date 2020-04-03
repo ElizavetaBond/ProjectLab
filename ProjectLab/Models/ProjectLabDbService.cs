@@ -99,8 +99,7 @@ namespace ProjectLab.Models
                                        new Direction { Name ="Международные отношения" },
                                        new Direction { Name ="Черчение" },
                                        new Direction { Name ="Музыка" },
-                                       new Direction { Name ="Другое" },
-                                       new Direction { Name ="" } };
+                                       new Direction { Name ="Другое" }};
             Directions.InsertMany(t3);
 
             var t4 = new UserStatus[] { new UserStatus { Name = "Участник сообщества"},

@@ -30,10 +30,15 @@ namespace ProjectLab.ViewModels.Account
         [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
 
-        public string UserStatusId { get; set; }
+        [Required(ErrorMessage = "Это обязательное поле!")]
         public string UserCategoryId { get; set; }
+
+        [Required(ErrorMessage = "Это обязательное поле!")]
         public string EducationalInstitutionId { get; set; }
+
+        [Required(ErrorMessage = "Это обязательное поле!")]
         public string EducationId { get; set; }
+
         public List<string> DirectionsId { get; set; }
 
         public string Contacts { get; set; }

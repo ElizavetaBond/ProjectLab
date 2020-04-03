@@ -33,8 +33,8 @@ namespace ProjectLab.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Direction = x.Direction.Name,
-                    Author = x.Author,
-                    EducationalInstitution = db.Users.Find(u => u.Email == x.Author).FirstOrDefault().EducationalInstitution.Name
+                    Author = x.Author.Surname + " " + x.Author.Name,
+                    EducationalInstitution = x.Author.EducationalInstitution.Name
                 }) ;
             }
             return View(vm);
@@ -67,7 +67,7 @@ namespace ProjectLab.Controllers
                 Description = vm.Description,
                 Equipment = vm.Equipment,
                 Safety = vm.Safety,
-                Author = User.Identity.Name,
+                Author = db.Users.Find(x=>x.Email==User.Identity.Name).FirstOrDefault(),
                 IdeaStatus = db.IdeaStatuses.Find(x=>x.Name=="Утверждена").FirstOrDefault(),
                 Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
                 ProjectTemplate = new ProjectTemplate { Sections=new List<Section>()}
@@ -109,7 +109,7 @@ namespace ProjectLab.Controllers
                 Equipment = idea.Equipment,
                 Description = idea.Description,
                 Direction = idea.Direction.Name,
-                //Author = idea.Author.Login,
+                Author = idea.Author.Surname + " " + idea.Author.Name,
                 Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
                 {
                     Name = i.Name,

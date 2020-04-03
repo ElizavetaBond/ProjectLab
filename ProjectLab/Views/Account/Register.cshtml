@@ -10,87 +10,189 @@
 <form method="post" asp-controller="Account" asp-action="Register">
     <div class="container">
         <div class="row">
-            <div class="col-2">
+            <div class="col-4">
                 <label class="form-control" asp-for="Email">Email</label><br />
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <input class="form-control" asp-for="Email" />
             </div>
-            <div class="col-4">
-                <span asp-validation-for="Email" />
+            <div class="col-3">
+                <span asp-validation-for="Email"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
+            <div class="col-4">
                 <label class="form-control" asp-for="Password">Пароль</label><br />
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <input class="form-control" asp-for="Password" />
             </div>
-            <div class="col-4">
-                <span asp-validation-for="Password" />
+            <div class="col-3">
+                <span asp-validation-for="Password"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
+            <div class="col-4">
                 <label class="form-control" asp-for="ConfirmPassword">Повторите пароль</label><br />
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <input class="form-control" asp-for="ConfirmPassword" />
             </div>
-            <div class="col-4">
-                <span asp-validation-for="ConfirmPassword" />
+            <div class="col-3">
+                <span asp-validation-for="ConfirmPassword"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
+            <div class="col-4">
                 <label class="form-control" asp-for="Surname">Фамилия</label><br />
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <input class="form-control" asp-for="Surname" />
             </div>
-            <div class="col-4">
-                <span asp-validation-for="Surname" />
+            <div class="col-3">
+                <span asp-validation-for="Surname"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
-                <label class="form-control" asp-for="Name">Фамилия</label><br />
+            <div class="col-4">
+                <label class="form-control" asp-for="Name">Имя</label><br />
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <input class="form-control" asp-for="Name" />
             </div>
-            <div class="col-4">
-                <span asp-validation-for="Name" />
+            <div class="col-3">
+                <span asp-validation-for="Name"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
-                <label class="form-control" asp-for="Patronymic">Фамилия</label><br />
+            <div class="col-4">
+                <label class="form-control" asp-for="Patronymic">Отчество</label><br />
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <input class="form-control" asp-for="Patronymic" />
             </div>
-            <div class="col-4">
-                <span asp-validation-for="Patronymic" />
+            <div class="col-3">
+                <span asp-validation-for="Patronymic"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
-                <label class="form-control" asp-for="BirthDate">Фамилия</label><br />
+            <div class="col-4">
+                <label class="form-control" asp-for="BirthDate">Дата рождения</label><br />
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <input class="form-control" asp-for="BirthDate" />
             </div>
+            <div class="col-3">
+                <span asp-validation-for="BirthDate"></span>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-4">
-                <span asp-validation-for="BirthDate" />
+                <label class="form-control" asp-for="UserCategoryId">Категория</label><br />
+            </div>
+            <div class="col-5">
+                <select id="selectListUserCategories" class="form-control" asp-for="UserCategoryId"></select>
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="UserCategoryId"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label class="form-control" asp-for="EducationalInstitutionId">Образовательное учреждение</label><br />
+            </div>
+            <div class="col-5">
+                <select id="selectListEducationalInstitutions" class="form-control" asp-for="EducationalInstitutionId"></select>
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="EducationalInstitutionId"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label class="form-control" asp-for="EducationId">Уровень образования</label><br />
+            </div>
+            <div class="col-5">
+                <select id="selectListEducations" class="form-control" asp-for="EducationId"></select>
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="EducationId"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label class="form-control" asp-for="DirectionsId">Области специализации</label><br />
+            </div>
+            <div class="col-5">
+                <select multiple="multiple" id="selectListDirections" asp-for="DirectionsId"></select>
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="DirectionsId"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label class="form-control" asp-for="Contacts">Контакты</label><br />
+            </div>
+            <div class="col-5">
+                <input class="form-control" asp-for="Contacts" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label class="form-control" asp-for="AddInform">Дополнительная информация</label><br />
+            </div>
+            <div class="col-5">
+                <input class="form-control" asp-for="AddInform" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label class="form-control" asp-for="Photo">Фото</label><br />
+            </div>
+            <div class="col-5">
+                <input class="form-control" asp-for="Photo" />
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <input class="form-control" type="submit" value="Регистрация" />
+                <button class="btn btn-primary" type="submit">Регистрация</button>
             </div>
         </div>
     </div>
 </form>
+
+<style>
+    form {
+        background-color: rgba(194, 223, 255, 0.81);
+    }
+    span {
+        color: red;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        var ListUserCategories = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListUserCategories"]));
+        var ListEducationalInstitutions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListEducationalInstitutions"]));
+        var ListEducations = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListEducations"]));
+        var ListDirections = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListDirections"]));
+
+        function loadListToSelect(list) { // инициализирует список типов компонент
+            var str = '';
+            list.forEach(function (item) {
+                str += '<option value="' + item.Id + '">' + item.Name + '</option > ';
+            });
+            return str;
+        }
+        (function () {
+            $('#selectListUserCategories').append(loadListToSelect(ListUserCategories));
+            $('#selectListEducationalInstitutions').append(loadListToSelect(ListEducationalInstitutions));
+            $('#selectListEducations').append(loadListToSelect(ListEducations));
+            $('#selectListDirections').append(loadListToSelect(ListDirections));
+        })();
+    </script>
+}
 

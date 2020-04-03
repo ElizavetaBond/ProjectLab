@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectLab.Models;
+using ProjectLab.Models.References;
 using ProjectLab.ViewModels;
 using ProjectLab.ViewModels.Account;
 using System;
@@ -45,12 +47,18 @@ namespace ProjectLab.Controllers
                 }
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
+            else Console.WriteLine("===========================" + ModelState.Values);
             return View(model);
         }
 
         [HttpGet]
         public IActionResult Register()
         {
+            var filter = new BsonDocument();
+            ViewData["ListUserCategories"] = db.UserCategories.Find(filter).ToList();
+            ViewData["ListEducationalInstitutions"] = db.EducationalInstitutions.Find(filter).ToList();
+            ViewData["ListEducations"] = db.Educations.Find(filter).ToList();
+            ViewData["ListDirections"] = db.Directions.Find(filter).ToList();
             return View();
         }
 
@@ -58,6 +66,7 @@ namespace ProjectLab.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            var filter = new BsonDocument();
             if (ModelState.IsValid)
             {
                 User user = await db.Users.Find(u => u.Email == model.Email).FirstOrDefaultAsync();
@@ -67,7 +76,20 @@ namespace ProjectLab.Controllers
                     { 
                         Email = model.Email, 
                         Password = model.Password, 
-                        UserStatus = db.UserStatuses.Find(x => x.Name == "Участник сообщества").FirstOrDefault() 
+                        Surname = model.Surname,
+                        Name = model.Name,
+                        Patronymic = model.Patronymic,
+                        BirthDate = model.BirthDate,
+                        UserStatus = db.UserStatuses.Find(x => x.Name == "Участник сообщества").FirstOrDefault(),
+                        UserCategory = db.UserCategories.Find(x => x.Id == model.UserCategoryId).FirstOrDefault(),
+                        EducationalInstitution = db.EducationalInstitutions.Find(x => x.Id == model.EducationalInstitutionId).FirstOrDefault(),
+                        Education = db.Educations.Find(x => x.Id == model.EducationId).FirstOrDefault(),
+                        AddInform = model.AddInform,
+                        Contacts = model.Contacts,
+                        Photo = "",
+                        Rewards = new List<Reward>()
+                        //Directions = from direction in db.Directions.Find(filter).ToList()
+                                     //where direction.Id 
                     };
                     db.Users.InsertOne(newUser);
 
@@ -76,7 +98,7 @@ namespace ProjectLab.Controllers
                     return RedirectToAction("Index", "Home");
                 }
                 else
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    ModelState.AddModelError("Email", "Некорректные логин и(или) пароль");
             }
             return View(model);
         }
@@ -97,14 +119,15 @@ namespace ProjectLab.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            Response.Cookies.Delete("ApplicationCookie");
             return RedirectToAction("Login", "Account");
-        }
+        }        
 
         [HttpGet]
         [Authorize(Roles = "Участник сообщества, Эксперт")]
         public IActionResult IdeaMenu()
         {
-            var ownideas = db.Ideas.Find(x => x.Author == User.Identity.Name).ToList();
+            var ownideas = db.Ideas.Find(x => x.Author.Email == User.Identity.Name).ToList();
             return View(new IdeasOwnViewModel
             {
                 Drafts = ownideas.FindAll(x => x.IdeaStatus.Name == "Черновик").ToList()
@@ -113,8 +136,8 @@ namespace ProjectLab.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Direction = x.Direction.Name,
-                    Author = x.Author,
-                    EducationalInstitution = db.Users.Find(u => u.Email == x.Author).FirstOrDefault().EducationalInstitution.Name
+                    Author = x.Author.Surname + " " + x.Author.Name,
+                    EducationalInstitution = x.Author.EducationalInstitution.Name
                 }).ToList(),
                 Reviews = ownideas.FindAll(x=>x.IdeaStatus.Name == "На модерации").ToList()
                 .Select(x => new IdeaCardViewModel
@@ -122,8 +145,8 @@ namespace ProjectLab.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Direction = x.Direction.Name,
-                    Author = x.Author,
-                    EducationalInstitution = db.Users.Find(u => u.Email == x.Author).FirstOrDefault().EducationalInstitution.Name
+                    Author = x.Author.Surname + " " + x.Author.Name,
+                    EducationalInstitution = x.Author.EducationalInstitution.Name
                 }).ToList(),
                 Approves = ownideas.FindAll(x => x.IdeaStatus.Name == "Утверждена").ToList()
                 .Select(x => new IdeaCardViewModel
@@ -131,8 +154,8 @@ namespace ProjectLab.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Direction = x.Direction.Name,
-                    Author = x.Author,
-                    EducationalInstitution = db.Users.Find(u => u.Email == x.Author).FirstOrDefault().EducationalInstitution.Name
+                    Author = x.Author.Surname + " " + x.Author.Name,
+                    EducationalInstitution = x.Author.EducationalInstitution.Name
                 }).ToList(),
                 Rejects= ownideas.FindAll(x => x.IdeaStatus.Name == "Отклонена").ToList()
                 .Select(x => new IdeaCardViewModel
@@ -140,8 +163,8 @@ namespace ProjectLab.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Direction = x.Direction.Name,
-                    Author = x.Author,
-                    EducationalInstitution = db.Users.Find(u => u.Email == x.Author).FirstOrDefault().EducationalInstitution.Name
+                    Author = x.Author.Surname + " " + x.Author.Name,
+                    EducationalInstitution = x.Author.EducationalInstitution.Name
                 }).ToList()
             });
         }

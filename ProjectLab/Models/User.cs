@@ -11,6 +11,8 @@ namespace ProjectLab.Models
 {
     public class User
     {
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }              // идентификатор
         public string Email { get; set; }
         public string Password { get; set; }
 
