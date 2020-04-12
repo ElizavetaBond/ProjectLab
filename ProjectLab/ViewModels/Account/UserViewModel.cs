@@ -41,7 +41,7 @@ namespace ProjectLab.ViewModels.Account
         public string UserCategoryId { get; set; }
         public string EducationalInstitutionId { get; set; }
         public string EducationId { get; set; }
-        public List<string> DirectionsId { get; set; }
+        public string DirectionId { get; set; }
         public List<string> RewardsId { get; set; }
 
         public string Contacts { get; set; }

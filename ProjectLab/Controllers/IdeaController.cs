@@ -24,7 +24,7 @@ namespace ProjectLab.Controllers
         [HttpGet]
         public IActionResult Catalog()
         {
-            var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == "Утверждена" && x.IdeaType == "Открытая").ToList();
+            var ideas = db.Ideas.Find(x => x.IdeaType == "Открытая" && x.IdeaStatus.Name == "Утверждена").ToList();
             var vm = new List<IdeaCardViewModel>();
             foreach (var x in ideas)
             {
@@ -56,8 +56,10 @@ namespace ProjectLab.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Edit(IdeaEditViewModel vm)
         {
+            var author = db.Users.Find(x => x.Email == User.Identity.Name).FirstOrDefault();
             var idea = new Idea
             {
                 Name = vm.Name,
@@ -67,8 +69,8 @@ namespace ProjectLab.Controllers
                 Description = vm.Description,
                 Equipment = vm.Equipment,
                 Safety = vm.Safety,
-                Author = db.Users.Find(x=>x.Email==User.Identity.Name).FirstOrDefault(),
-                IdeaStatus = db.IdeaStatuses.Find(x=>x.Name=="Утверждена").FirstOrDefault(),
+                Author = author,
+                IdeaStatus = db.IdeaStatuses.Find(x=>x.Name=="Черновик").FirstOrDefault(),
                 Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
                 ProjectTemplate = new ProjectTemplate { Sections=new List<Section>()}
             };
@@ -93,13 +95,13 @@ namespace ProjectLab.Controllers
                 }
             }
             db.Ideas.InsertOne(idea);
-            return RedirectToAction("Catalog");
+            return RedirectToAction("IdeaMenu", "Account");
         }
 
         [HttpGet]
-        public IActionResult Browse(string IdIdea)
+        public IActionResult Browse(string IdeaId)
         {
-            var idea = db.Ideas.Find(x => x.Id == IdIdea).FirstOrDefault();
+            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
             return View (new IdeaBrowseViewModel {
                 Name = idea.Name,
                 IdeaType = idea.IdeaType,
@@ -122,6 +124,21 @@ namespace ProjectLab.Controllers
                     }).ToList()
                 }).ToList()
             });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Delete(string IdeaId)
+        {
+            db.Ideas.DeleteOne(x => x.Id == IdeaId);
+            return RedirectToAction("IdeaMenu", "Account");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult SendToReview(string IdeaId)
+        {
+            return RedirectToAction("IdeaMenu", "Account");
         }
     }
 }

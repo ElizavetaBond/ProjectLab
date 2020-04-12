@@ -10,7 +10,7 @@
         <img src="~/imgs/idea_image.jpg" alt="">
         @using (Html.BeginForm("Browse", "Idea", FormMethod.Get))
         {
-            <input type="hidden" name="IdIdea" value="@Model.Id" />
+            <input type="hidden" name="IdeaId" value="@Model.Id" />
             <button class="btn btn-primary idea-btn-preview" type="submit">
                 Просмотр идеи
             </button>

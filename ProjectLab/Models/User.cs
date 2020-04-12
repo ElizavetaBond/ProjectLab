@@ -25,7 +25,8 @@ namespace ProjectLab.Models
         public UserCategory UserCategory { get; set; }
         public EducationalInstitution EducationalInstitution { get; set; }
         public Education Education { get; set; }
-        public List<Direction> Directions { get; set; }
+        //public List<Direction> Directions { get; set; }
+        public Direction Direction { get; set; }
         public List<Reward> Rewards { get; set; }
 
         public string Contacts { get; set; }

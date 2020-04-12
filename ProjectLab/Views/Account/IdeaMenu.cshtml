@@ -11,16 +11,16 @@
         <div class="col-2">
             <ul class="nav nav-tabs flex-column">
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#Drafts">Черновики </a>
+                    <a class="nav-link active" data-toggle="tab" href="#Drafts">Черновики </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#Reviews">На модерации</a>
+                    <a class="nav-link" data-toggle="tab" href="#Reviews">На модерации</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#Approves">Утвержденные</a>
+                    <a class="nav-link" data-toggle="tab" href="#Approves">Утвержденные</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#Rejects">Отклоненные</a>
+                    <a class="nav-link" data-toggle="tab" href="#Rejects">Отклоненные</a>
                 </li>
             </ul>
         </div>
@@ -42,11 +42,19 @@
                                         </button>
                                     }
 
-                                    @using (Html.BeginForm("Delete", "Idea", FormMethod.Get))
+                                    @using (Html.BeginForm("Delete", "Idea", FormMethod.Post))
                                     {
-                                        <input type="hidden" name="IdIdea" value="@x.Id" />
+                                        <input type="hidden" name="IdeaId" value="@x.Id" />
                                         <button class="btn btn-primary idea-btn-public" type="submit">
                                             Удалить
+                                        </button>
+                                    }
+
+                                    @using (Html.BeginForm("SendToReview", "Idea", FormMethod.Post))
+                                    {
+                                        <input type="hidden" name="IdeaId" value="@x.Id" />
+                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                            Отправить на модерацию
                                         </button>
                                     }
                                 </div>
@@ -76,15 +84,15 @@
 
                                     @using (Html.BeginForm("Edit", "Project", FormMethod.Get))
                                     {
-                                        <input type="hidden" name="IdIdea" value="@x.Id" />
+                                        <input type="hidden" name="IdeaId" value="@x.Id" />
                                         <button class="btn btn-primary idea-btn-public" type="submit">
                                             Опубликовать проект
                                         </button>
                                     }
 
-                                    @using (Html.BeginForm("Delete", "Idea", FormMethod.Get))
+                                    @using (Html.BeginForm("Delete", "Idea", FormMethod.Post))
                                     {
-                                        <input type="hidden" name="IdIdea" value="@x.Id" />
+                                        <input type="hidden" name="IdeaId" value="@x.Id" />
                                         <button class="btn btn-primary idea-btn-public" type="submit">
                                             Удалить
                                         </button>
@@ -102,9 +110,9 @@
                                 <div class="idea">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
-                                    @using (Html.BeginForm("Delete", "Idea", FormMethod.Get))
+                                    @using (Html.BeginForm("Delete", "Idea", FormMethod.Post))
                                     {
-                                        <input type="hidden" name="IdIdea" value="@x.Id" />
+                                        <input type="hidden" name="IdeaId" value="@x.Id" />
                                         <button class="btn btn-primary idea-btn-public" type="submit">
                                             Удалить
                                         </button>

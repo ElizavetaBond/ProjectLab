@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectLab.Models;
@@ -37,7 +38,8 @@ namespace ProjectLab.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(string IdIdea)
+        [Authorize]
+        public IActionResult Edit(string IdeaId)
         {
             var vm = new ProjectViewModel();
             return View(vm);

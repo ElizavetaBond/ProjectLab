@@ -22,9 +22,10 @@ namespace ProjectLab.Models
         public IMongoCollection<UserStatus> UserStatuses { get; set; }
 
         // коллекции
-        public IMongoCollection<Idea> Ideas { get; set; }
+        public IMongoCollection<Idea> Ideas { get; set; } // идеи
         public IMongoCollection<Project> Projects { get; set; }
         public IMongoCollection<User> Users { get; set; } 
+        public IMongoCollection<Expert> Experts { get; set; }
 
         public ProjectLabDbService()
         {
@@ -51,6 +52,7 @@ namespace ProjectLab.Models
             Ideas = database.GetCollection<Idea>("Ideas");
             Projects = database.GetCollection<Project>("Projects");
             Users = database.GetCollection<User>("Users");
+            Experts = database.GetCollection<Expert>("Experts");
         }
 
         /*public void Init()

@@ -66,7 +66,6 @@ namespace ProjectLab.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            var filter = new BsonDocument();
             if (ModelState.IsValid)
             {
                 User user = await db.Users.Find(u => u.Email == model.Email).FirstOrDefaultAsync();
@@ -87,9 +86,8 @@ namespace ProjectLab.Controllers
                         AddInform = model.AddInform,
                         Contacts = model.Contacts,
                         Photo = "",
-                        Rewards = new List<Reward>()
-                        //Directions = from direction in db.Directions.Find(filter).ToList()
-                                     //where direction.Id 
+                        Rewards = new List<Reward>(),
+                        Direction = db.Directions.Find(x=>x.Id==model.DirectionId).FirstOrDefault()
                     };
                     db.Users.InsertOne(newUser);
 
@@ -124,9 +122,10 @@ namespace ProjectLab.Controllers
         }        
 
         [HttpGet]
-        [Authorize(Roles = "Участник сообщества, Эксперт")]
+        [Authorize]
         public IActionResult IdeaMenu()
         {
+            SetExpert("");
             var ownideas = db.Ideas.Find(x => x.Author.Email == User.Identity.Name).ToList();
             return View(new IdeasOwnViewModel
             {
@@ -167,6 +166,17 @@ namespace ProjectLab.Controllers
                     EducationalInstitution = x.Author.EducationalInstitution.Name
                 }).ToList()
             });
+        }
+
+        //[Authorize(Roles="Админ")]
+        public void SetExpert(string UserId)
+        { 
+            var filter = Builders<User>.Filter.Eq("Id", UserId);
+            var update = Builders<User>.Update.Set("UserStatus", db.UserStatuses.Find(x => x.Name == "Эксперт").FirstOrDefault());
+            db.Users.UpdateOne(filter, update);
+
+            var user = db.Users.Find(x => x.Id == UserId).FirstOrDefault();
+            db.Experts.InsertOne(new Expert { User=user, ReviewIdeas= new List<Idea>() });
         }
     }
 }

@@ -39,7 +39,7 @@ namespace ProjectLab.ViewModels.Account
         [Required(ErrorMessage = "Это обязательное поле!")]
         public string EducationId { get; set; }
 
-        public List<string> DirectionsId { get; set; }
+        public string DirectionId { get; set; }
 
         public string Contacts { get; set; }
         public string Photo { get; set; }
