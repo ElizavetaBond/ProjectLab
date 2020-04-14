@@ -136,9 +136,45 @@ namespace ProjectLab.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult SendToReview(string IdeaId)
+        public IActionResult SendToReview(string IdeaId) // отправить идею на проверку
+        {
+            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
+            if (idea.IdeaType == "Приватная") ; // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
+            else
+            {
+                var experts = db.Experts.Find(x => x.User.Direction.Id == idea.Direction.Id) // выбрали экспертов по направленности
+                                      .ToList()
+                                      .OrderBy(x => x.ReviewIdeas.Count)
+                                      .ToList(); // отсортировали по количеству работы
+                if (experts.Count < 3) ;  // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
+                else
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var upd = new UpdateDefinitionBuilder<Expert>().Push(exp => exp.ReviewIdeas, idea);
+                        db.Experts.FindOneAndUpdate(exp => exp.Id == experts[i].Id, upd);
+                    }
+                }
+            }
+
+            var update = new UpdateDefinitionBuilder<Idea>().Set(i => i.IdeaStatus, db.IdeaStatuses.Find(x => x.Name == "На модерации").FirstOrDefault());
+            db.Ideas.FindOneAndUpdate(i => i.Id == IdeaId, update);
+            return RedirectToAction("IdeaMenu", "Account");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Эксперт, Админ")]
+        public IActionResult Review(string IdeaId) // вид рецензии
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Эксперт, Админ")]
+        public IActionResult CancelReview(string IdeaId) // эксперт отказался от выдачи рецензии
         {
             return RedirectToAction("IdeaMenu", "Account");
         }
+
     }
 }

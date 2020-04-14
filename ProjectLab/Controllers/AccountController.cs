@@ -125,9 +125,9 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult IdeaMenu()
         {
-            SetExpert("");
+            //SetExpert(db.Users.Find(x => x.Email == "@exp3").FirstOrDefault().Id);
             var ownideas = db.Ideas.Find(x => x.Author.Email == User.Identity.Name).ToList();
-            return View(new IdeasOwnViewModel
+            var vm = new IdeasOwnViewModel
             {
                 Drafts = ownideas.FindAll(x => x.IdeaStatus.Name == "Черновик").ToList()
                 .Select(x => new IdeaCardViewModel
@@ -138,7 +138,7 @@ namespace ProjectLab.Controllers
                     Author = x.Author.Surname + " " + x.Author.Name,
                     EducationalInstitution = x.Author.EducationalInstitution.Name
                 }).ToList(),
-                Reviews = ownideas.FindAll(x=>x.IdeaStatus.Name == "На модерации").ToList()
+                OnReviews = ownideas.FindAll(x=>x.IdeaStatus.Name == "На модерации").ToList()
                 .Select(x => new IdeaCardViewModel
                 {
                     Id = x.Id,
@@ -164,19 +164,34 @@ namespace ProjectLab.Controllers
                     Direction = x.Direction.Name,
                     Author = x.Author.Surname + " " + x.Author.Name,
                     EducationalInstitution = x.Author.EducationalInstitution.Name
-                }).ToList()
-            });
+                }).ToList(),
+                MyReviews = new List<IdeaCardViewModel>()
+            };
+            if (User.IsInRole("Эксперт"))
+            {
+                vm.MyReviews = db.Experts.Find(x => x.User.Email == User.Identity.Name)
+                                        .FirstOrDefault()
+                                        .ReviewIdeas
+                                        .Select(x => new IdeaCardViewModel
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            Direction = x.Direction.Name,
+                                            Author = x.Author.Surname + " " + x.Author.Name,
+                                            EducationalInstitution = x.Author.EducationalInstitution.Name
+                                        }).ToList();
+            }
+            return View(vm);
         }
 
         //[Authorize(Roles="Админ")]
         public void SetExpert(string UserId)
-        { 
-            var filter = Builders<User>.Filter.Eq("Id", UserId);
-            var update = Builders<User>.Update.Set("UserStatus", db.UserStatuses.Find(x => x.Name == "Эксперт").FirstOrDefault());
-            db.Users.UpdateOne(filter, update);
+        {
+            var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Эксперт").FirstOrDefault());
+            db.Users.FindOneAndUpdate(us => us.Id == UserId, update);
 
             var user = db.Users.Find(x => x.Id == UserId).FirstOrDefault();
-            db.Experts.InsertOne(new Expert { User=user, ReviewIdeas= new List<Idea>() });
+            db.Experts.InsertOne(new Expert { User=user, ReviewIdeas = new List<Idea>() });
         }
     }
 }

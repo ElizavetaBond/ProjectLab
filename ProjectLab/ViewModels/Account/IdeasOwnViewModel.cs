@@ -10,10 +10,12 @@ namespace ProjectLab.ViewModels.Account
         // Черновики
         public List<IdeaCardViewModel> Drafts { get; set; }
         // На модерации
-        public List<IdeaCardViewModel> Reviews { get; set; }
+        public List<IdeaCardViewModel> OnReviews { get; set; }
         // Утвержденные
         public List<IdeaCardViewModel> Approves { get; set; }
         // ОТклоненные
         public List<IdeaCardViewModel> Rejects { get; set; }
+        // На проверке (для эксперта)
+        public List<IdeaCardViewModel> MyReviews { get; set; }
     }
 }
