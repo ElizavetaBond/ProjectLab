@@ -4,17 +4,16 @@
     @model IdeaCardViewModel
 }
 
-<div >
+<div>
     <h2>Название - @Model.Name</h2>
     <div class="idea-photo">
-        <img src="~/imgs/idea_image.jpg" alt="">
-        @using (Html.BeginForm("Browse", "Idea", FormMethod.Get))
-        {
+        <img src="~/imgs/idea_image.jpg" alt="" />
+        <form method="get" asp-action="Browse" asp-controller="Idea">
             <input type="hidden" name="IdeaId" value="@Model.Id" />
             <button class="btn btn-primary idea-btn-preview" type="submit">
                 Просмотр идеи
             </button>
-        }
+        </form>
     </div>
     <h3>Направленность - @Model.Direction</h3>
     <h3>Автор - @Model.Author</h3>

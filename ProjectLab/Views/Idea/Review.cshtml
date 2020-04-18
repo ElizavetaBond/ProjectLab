@@ -2,7 +2,45 @@
 @{
     ViewData["Title"] = "Review";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @model ResolutionViewModel
 }
 
-<h1>Оценка</h1>
+@Html.Partial("Browse", ViewData["idea"])
+
+    <form method="post" asp-action="Review" asp-controller="Idea">
+        <div class="container">
+            <div class="row">
+                <div class="col custom-control custom-radio">
+                    <input class="custom-control-input" type="radio" name="IsPositive" value="true" id="radioIsPositive" checked/>
+                    <label class="custom-control-label" for="radioIsPositive" >Утвердить</label>
+                </div>
+                <div class="col custom-control custom-radio">
+                    <input class="custom-control-input" type="radio" name="IsPositive" value="false" id="radioNotPositive" />
+                    <label class="custom-control-label" for="radioNotPositive">Отклонить</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label class="form-control">Комментарий:</label>
+                </div>
+                <div class="col-9">
+                    <textarea class="form-control" name="Remark"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label class="form-control">Степень ценности:</label>
+                </div>
+                <div class="col-9">
+                    <input class="form-control" name="ValueDegree" type="number" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-primary" type="submit">Отправить</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
 

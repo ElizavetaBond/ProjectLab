@@ -9,6 +9,7 @@ namespace ProjectLab.ViewModels.Idea
     {
         public string Name { get; set; }
         public string IdeaType { get; set; }
+        public string IdeaStatus { get; set; }
         public string Target { get; set; }
         public string Purpose { get; set; }
         public string Description { get; set; }

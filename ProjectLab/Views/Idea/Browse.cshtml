@@ -4,7 +4,7 @@
     @model IdeaBrowseViewModel
 }
 
-    <form>
+    <div class="background">
         <div class="row">
             <div class="col-4">
                 <ul class="nav nav-tabs flex-column">
@@ -14,9 +14,12 @@
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#template">Шаблон проекта</a>
                     </li>
+                    @if (Model.IdeaStatus == "Уверждена")
+                    {
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#comments">Комментарии</a>
                     </li>
+                    }
                 </ul>
             </div>
 
@@ -108,16 +111,19 @@
                         }
                     </div>
 
+                    @if (Model.IdeaStatus == "Уверждена")
+                    {
                     <div class="tab-pane fade" id="comments">
 
                     </div>
+                    }
                 </div>
             </div>
         </div>      
-    </form>
+    </div>
 
 <style>
-    form {
+    .background {
         background-color: rgba(194, 223, 255, 0.81);
     }
 </style>

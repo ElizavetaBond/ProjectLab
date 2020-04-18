@@ -99,31 +99,10 @@ namespace ProjectLab.Controllers
         }
 
         [HttpGet]
-        public IActionResult Browse(string IdeaId)
+        public IActionResult Browse(string IdeaId) // вывод информации об идее
         {
-            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
-            return View (new IdeaBrowseViewModel {
-                Name = idea.Name,
-                IdeaType = idea.IdeaType,
-                Target = idea.Target,
-                Purpose = idea.Purpose,
-                Safety = idea.Safety,
-                Equipment = idea.Equipment,
-                Description = idea.Description,
-                Direction = idea.Direction.Name,
-                Author = idea.Author.Surname + " " + idea.Author.Name,
-                Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
-                {
-                    Name = i.Name,
-                    SectionType = i.SectionType,
-                    Components = i.Components.Select(c => new ComponentBrowseViewModel
-                    {
-                        Name = c.Name,
-                        Type = c.ComponentType,
-                        Description = c.Description
-                    }).ToList()
-                }).ToList()
-            });
+            var vm = GetIdeaBrowseVM(IdeaId);
+            return View(vm);
         }
 
         [HttpPost]
@@ -164,9 +143,17 @@ namespace ProjectLab.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Эксперт, Админ")]
-        public IActionResult Review(string IdeaId) // вид рецензии
+        public IActionResult Review(string IdeaId) // получить вид резолюции
         {
-            return View();
+            ViewData["idea"] = GetIdeaBrowseVM(IdeaId); // отдаем вид идеи для ознакомления с ней
+            return View(new ResolutionViewModel());
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Review(ResolutionViewModel vm) // зафиксировть резолюцию эксперта
+        {
+            return RedirectToAction("IdeaMenu", "Account");
         }
 
         [HttpPost]
@@ -176,5 +163,33 @@ namespace ProjectLab.Controllers
             return RedirectToAction("IdeaMenu", "Account");
         }
 
+        public IdeaBrowseViewModel GetIdeaBrowseVM (string IdeaId)
+        {
+            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
+            return ( new IdeaBrowseViewModel
+            {
+                Name = idea.Name,
+                IdeaType = idea.IdeaType,
+                IdeaStatus = idea.IdeaStatus.Name,
+                Target = idea.Target,
+                Purpose = idea.Purpose,
+                Safety = idea.Safety,
+                Equipment = idea.Equipment,
+                Description = idea.Description,
+                Direction = idea.Direction.Name,
+                Author = idea.Author.Surname + " " + idea.Author.Name,
+                Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
+                {
+                    Name = i.Name,
+                    SectionType = i.SectionType,
+                    Components = i.Components.Select(c => new ComponentBrowseViewModel
+                    {
+                        Name = c.Name,
+                        Type = c.ComponentType,
+                        Description = c.Description
+                    }).ToList()
+                }).ToList()
+            });
+        }
     }
 }
