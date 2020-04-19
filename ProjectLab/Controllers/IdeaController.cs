@@ -146,14 +146,18 @@ namespace ProjectLab.Controllers
         public IActionResult Review(string IdeaId) // получить вид резолюции
         {
             ViewData["idea"] = GetIdeaBrowseVM(IdeaId); // отдаем вид идеи для ознакомления с ней
-            return View(new ResolutionViewModel());
+            return View(new ResolutionViewModel { IdeaId = IdeaId });
         }
 
         [HttpPost]
         [Authorize]
         public IActionResult Review(ResolutionViewModel vm) // зафиксировть резолюцию эксперта
         {
-            return RedirectToAction("IdeaMenu", "Account");
+            if (ModelState.IsValid)
+                return RedirectToAction("IdeaMenu", "Account");
+            else
+                ViewData["idea"] = GetIdeaBrowseVM(vm.IdeaId);
+                return View(vm);
         }
 
         [HttpPost]

@@ -7,32 +7,44 @@
 
 @Html.Partial("Browse", ViewData["idea"])
 
+<div class="background">
     <form method="post" asp-action="Review" asp-controller="Idea">
+        <input asp-for="IdeaId" />
         <div class="container">
             <div class="row">
-                <div class="col custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" name="IsPositive" value="true" id="radioIsPositive" checked/>
-                    <label class="custom-control-label" for="radioIsPositive" >Утвердить</label>
+                <div class="col-2 custom-control custom-radio">
+                    <input class="custom-control-input" type="radio" name="IsPositive" id="IsPositiveTrue" value="true" checked/>
+                    <label class="custom-control-label" for="IsPositiveTrue">Утвердить</label>
                 </div>
-                <div class="col custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" name="IsPositive" value="false" id="radioNotPositive" />
-                    <label class="custom-control-label" for="radioNotPositive">Отклонить</label>
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-3">
+                            <label asp-for="ValueDegree"></label>
+                        </div>
+                        <div class="col-4">
+                            <input class="form-control" asp-for="ValueDegree" />
+                        </div>
+                        <div class="col-5">
+                            <span asp-validation-for="ValueDegree"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <hr/>
             <div class="row">
-                <div class="col-3">
-                    <label class="form-control">Комментарий:</label>
+                <div class="col-2 custom-control custom-radio">
+                    <input class="custom-control-input" type="radio" name="IsPositive"  id="IsPositiveFalse" value="false" />
+                    <label class="custom-control-label" for="IsPositiveFalse">Отклонить</label>
                 </div>
-                <div class="col-9">
-                    <textarea class="form-control" name="Remark"></textarea>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <label class="form-control">Степень ценности:</label>
-                </div>
-                <div class="col-9">
-                    <input class="form-control" name="ValueDegree" type="number" />
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-3">
+                            <label asp-for="Remark"></label>
+                        </div>
+                        <div class="col-9">
+                            <textarea class="form-control" asp-for="Remark"></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -42,5 +54,12 @@
             </div>
         </div>
     </form>
+</div>
+
+    <style>
+        .background {
+            background-color: rgba(194, 223, 255, 0.81);
+        }
+    </style>
 
 

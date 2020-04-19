@@ -8,7 +8,9 @@ namespace ProjectLab.ViewModels.Account
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Это обязательное поле!")]
+        [Required]
+        [EmailAddress]
+        [Display(Name="Email")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Это обязательное поле!")]
