@@ -72,6 +72,8 @@ namespace ProjectLab.Controllers
                 Author = author,
                 IdeaStatus = db.IdeaStatuses.Find(x=>x.Name=="Черновик").FirstOrDefault(),
                 Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
+                Resolutions = new List<Resolution>(),
+                Comments = new List<Comment>(),
                 ProjectTemplate = new ProjectTemplate { Sections=new List<Section>()}
             };
             for (var i=0; i<vm.Sections.Count; i++) // перебираем все разделы
@@ -150,14 +152,49 @@ namespace ProjectLab.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Эксперт")]
         public IActionResult Review(ResolutionViewModel vm) // зафиксировть резолюцию эксперта
         {
             if (ModelState.IsValid)
+            {
+                var ExpertId = db.Experts.Find(x => x.User.Email == User.Identity.Name).FirstOrDefault().Id;
+                var resol = new Resolution // резолюция эксперта
+                {
+                    ExpertId = ExpertId,
+                    IsPositive = vm.IsPositive,
+                    ValueDegree = vm.ValueDegree,
+                    Remark = vm.Remark
+                };
+
+                var updateExp = new UpdateDefinitionBuilder<Expert>().PullFilter(exp => exp.ReviewIdeas, x => x.Id == vm.IdeaId); // удаляем идею у эксперта
+                db.Experts.FindOneAndUpdate(x => x.Id == ExpertId, updateExp);
+
+                var updateIdea = new UpdateDefinitionBuilder<Idea>().Push(idea => idea.Resolutions, resol); // добавляем резолюцию в список
+                db.Ideas.FindOneAndUpdate(idea => idea.Id == vm.IdeaId, updateIdea);
+
+                var resolutions = db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault().Resolutions;
+                if (resolutions.Count == 3) // если все эксперты оценили, то меняем статус
+                {
+                    int res = 0, degree = 0;
+                    foreach (var x in resolutions)
+                    {
+                        degree += x.ValueDegree;
+                        res += (x.IsPositive ? 1 : (-1));
+                    }
+                    var status = new IdeaStatus();
+                    if (res > 0) status = db.IdeaStatuses.Find(x => x.Name == "Утверждена").FirstOrDefault();
+                    else status = db.IdeaStatuses.Find(x => x.Name == "Отклонена").FirstOrDefault();
+                    var update = new UpdateDefinitionBuilder<Idea>().Set(idea => idea.ValueDegree, (int)(degree / 3))
+                                                                    .Set(idea => idea.IdeaStatus, status);
+                    db.Ideas.FindOneAndUpdate(idea => idea.Id == vm.IdeaId, update);
+                }
                 return RedirectToAction("IdeaMenu", "Account");
+            }
             else
+            {
                 ViewData["idea"] = GetIdeaBrowseVM(vm.IdeaId);
                 return View(vm);
+            }
         }
 
         [HttpPost]

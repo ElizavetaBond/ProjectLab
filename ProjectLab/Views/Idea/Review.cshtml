@@ -13,36 +13,39 @@
         <div class="container">
             <div class="row">
                 <div class="col-2 custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" name="IsPositive" id="IsPositiveTrue" value="true" checked/>
+                    <input class="custom-control-input" type="radio" name="IsPositive" id="IsPositiveTrue" value="true" checked />
                     <label class="custom-control-label" for="IsPositiveTrue">Утвердить</label>
                 </div>
                 <div class="col-10">
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label asp-for="ValueDegree"></label>
                         </div>
                         <div class="col-4">
-                            <input class="form-control" asp-for="ValueDegree" />
+                            <input class="form-control" asp-for="ValueDegree" value="1" />
                         </div>
-                        <div class="col-5">
+                        <div class="col-6">
                             <span asp-validation-for="ValueDegree"></span>
                         </div>
                     </div>
                 </div>
             </div>
-            <hr/>
+            <hr />
             <div class="row">
                 <div class="col-2 custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" name="IsPositive"  id="IsPositiveFalse" value="false" />
+                    <input class="custom-control-input" type="radio" name="IsPositive" id="IsPositiveFalse" value="false" />
                     <label class="custom-control-label" for="IsPositiveFalse">Отклонить</label>
                 </div>
                 <div class="col-10">
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label asp-for="Remark"></label>
                         </div>
-                        <div class="col-9">
+                        <div class="col-8">
                             <textarea class="form-control" asp-for="Remark"></textarea>
+                        </div>
+                        <div class="col-2">
+                            <span asp-validation-for="Remark"></span>
                         </div>
                     </div>
                 </div>
@@ -56,10 +59,38 @@
     </form>
 </div>
 
-    <style>
-        .background {
-            background-color: rgba(194, 223, 255, 0.81);
+<style>
+    .background {
+        background-color: rgba(194, 223, 255, 0.81);
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        function onClickTrue() {
+            $('#ValueDegree').attr('readonly', false);
+            var str = $('#Remark').val().replace(/\s+/g, '');
+            if (str.length == 0)
+                $('#Remark').val('Причина отказа');
+            $('#Remark').attr('readonly', true);
         }
-    </style>
+
+        function onClickFalse() {
+            $('#Remark').attr('readonly', false);
+            if ($('#ValueDegree').val().length == 0)
+                $('#ValueDegree').val('1');
+            $('#ValueDegree').attr('readonly', true);
+        }
+
+        (function () {
+            onClickTrue(); // так как изначально установлено утвердить
+            $('#IsPositiveTrue').on('change', function () { onClickTrue(); });
+            $('#IsPositiveFalse').on('change', function () { onClickFalse(); });
+        })();
+
+    </script>
+}
 
 
