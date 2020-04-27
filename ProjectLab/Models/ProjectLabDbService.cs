@@ -1,12 +1,14 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using ProjectLab.Models.References;
+using System.IO;
 
 namespace ProjectLab.Models
 {
     public class ProjectLabDbService
     {
-        public IGridFSBucket gridFS;   // файловое хранилище
+        private IGridFSBucket gridFS;   // файловое хранилище
         
         // справочники
         public IMongoCollection<Area> Areas { get; set; }
@@ -54,80 +56,15 @@ namespace ProjectLab.Models
             Users = database.GetCollection<User>("Users");
             Experts = database.GetCollection<Expert>("Experts");
         }
-
-        /*public void Init()
+        
+        public byte[] GetImage(string id) // получение изображения
         {
-            var t = new IdeaStatus[] {  new IdeaStatus { Name = "Черновик" },
-                                        new IdeaStatus { Name = "На модерации" },
-                                        new IdeaStatus { Name = "Утверждена" },
-                                        new IdeaStatus { Name = "Отклонена" } };
-            IdeaStatuses.InsertMany(t);
-
-            var t2 = new IdeaType[] {   new IdeaType { Name = "Открытая"},
-                                        new IdeaType { Name = "Приватная" } };
-            IdeaTypes.InsertMany(t2);
-
-            var t3 = new Direction[] { new Direction { Name ="Медиа" },
-                                       new Direction { Name ="Астрономия" },
-                                       new Direction { Name ="Обществознание" },
-                                       new Direction { Name ="Биология" },
-                                       new Direction { Name ="Основы безопасности жизнедеятелности" },
-                                       new Direction { Name ="Политология" },
-                                       new Direction { Name ="География" },
-                                       new Direction { Name ="Правоведение" },
-                                       new Direction { Name ="Дефектология, логопедия" },
-                                       new Direction { Name ="Психология" },
-                                       new Direction { Name ="Русский язык и литература" },
-                                       new Direction { Name ="Английских" },
-                                       new Direction { Name ="Казахский" },
-                                       new Direction { Name ="Украинский" },
-                                       new Direction { Name ="Белорусский" },
-                                       new Direction { Name ="Армянский" },
-                                       new Direction { Name ="Грузинский" },
-                                       new Direction { Name ="Социология" },
-                                       new Direction { Name ="Информатика" },
-                                       new Direction { Name ="Социальная работа'" },
-                                       new Direction { Name ="Искусствоведение, изобразительное искусство" },
-                                       new Direction { Name ="История и мировая история" },
-                                       new Direction { Name ="Технология" },
-                                       new Direction { Name ="Управление" },
-                                       new Direction { Name ="Культурология" },
-                                       new Direction { Name ="Физическая культура и здоровье" },
-                                       new Direction { Name ="Математика" },
-                                       new Direction { Name ="Физика" },
-                                       new Direction { Name ="Геометрия" },
-                                       new Direction { Name ="Медицинская деятельность" },
-                                       new Direction { Name ="Химия" },
-                                       new Direction { Name ="Международные отношения" },
-                                       new Direction { Name ="Черчение" },
-                                       new Direction { Name ="Музыка" },
-                                       new Direction { Name ="Другое" }};
-            Directions.InsertMany(t3);
-
-            var t4 = new UserStatus[] { new UserStatus { Name = "Участник сообщества"},
-                                        new UserStatus { Name = "Эксперт"},
-                                        new UserStatus { Name = "Администратор" } };
-            UserStatuses.InsertMany(t4);
-
-            var i1 = new Idea {
-                Name = "Участник сообщества",
-                Description = "Пример",
-                Target = "Пример",
-                Purpose = "Пример",
-                Equipment = "Пример",
-                Safety = "Пример" };
-            i1.Description = "Медиа2";
-
-            var i2 = new Idea
-            {
-                Name = "Участник сообщества",
-                Description = "Пример",
-                Target = "Пример",
-                Purpose = "Пример",
-                Equipment = "Пример",
-                Safety = "Пример"
-            };
-            Ideas.InsertMany(new Idea[] { i1, i2 });
-        }*/
+            return gridFS.DownloadAsBytes(new ObjectId(id));
+        }
+        
+        public string LoadImage(Stream imageStream, string imageName) // сохранение изображения
+        {
+            return gridFS.UploadFromStream(imageName, imageStream).ToString();
+        }
     }
 }

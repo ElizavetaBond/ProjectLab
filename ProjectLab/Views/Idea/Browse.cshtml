@@ -6,7 +6,7 @@
 
     <div class="background">
         <div class="row">
-            <div class="col-4">
+            <div class="col-2">
                 <ul class="nav nav-tabs flex-column">
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#description">Описание</a>
@@ -14,7 +14,7 @@
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#template">Шаблон проекта</a>
                     </li>
-                    @if (Model.IdeaStatus == "Уверждена")
+                    @if (Model.IdeaStatus == "Утверждена")
                     {
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#comments">Комментарии</a>
@@ -23,72 +23,88 @@
                 </ul>
             </div>
 
-            <div class="col-8">
+            <div class="col-10">
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="description">
                         <div class="container">
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <label for="textName">Название идеи:</label>
+                                    <label asp-for="Name"></label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <textarea class="form-control" readonly id="textName">@Model.Name</textarea>
+                                    <textarea class="form-control" asp-for="Name" readonly ></textarea>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <label for="textDirection">Направленность:</label>
-                                </div>
-                                <div class="col-sm-8">
-                                    <textarea class="form-control" readonly id="textDirection">@Model.Direction</textarea>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <label for="textAuthor">Автор:</label>
-                                </div>
-                                <div class="col-sm-8">
-                                    <textarea class="form-control" readonly id="textAuthor">@Model.Author</textarea>
+                                    @if (Model.ImageId != null)
+                                    {
+                                        <img src="@Url.Action("GetImage", new { id=@Model.ImageId})" style="width:150px;height:200px;" />
+                                    }
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <label for="textTarget">Цель:</label>
+                                    <label asp-for="Direction"></label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <textarea class="form-control" readonly id="textTarget">@Model.Target</textarea>
+                                    <textarea class="form-control" asp-for="Direction" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <label for="textPurpose">Назначение:</label>
+                                    <label asp-for="Author"></label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <textarea class="form-control" readonly id="textPurpose">@Model.Purpose</textarea>
+                                    <textarea class="form-control" asp-for="Author" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <label for="textDescription">Описание:</label>
+                                    <label asp-for="Target"></label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <textarea class="form-control" readonly id="textDescription">@Model.Description</textarea>
+                                    <textarea class="form-control" asp-for="Target" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <label for="textEquipment">Перечень оборудования и материалов:</label>
+                                    <label asp-for="Purpose"></label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <textarea class="form-control" readonly id="textEquipment">@Model.Equipment</textarea>
+                                    <textarea class="form-control" asp-for="Purpose" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
-                                    <label for="textSafety">Техника безопасности:</label>
+                                    <label asp-for="Description"></label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <textarea class="form-control" readonly>@Model.Safety</textarea>
+                                    <textarea class="form-control" asp-for="Description" readonly></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label asp-for="Video"></label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <a href="@Model.Video" target="_blank">@Model.Video</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label asp-for="Equipment"></label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" asp-for="Equipment" readonly></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label asp-for="Safety"></label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" asp-for="Safety" readonly></textarea>
                                 </div>
                             </div>
                         </div>
@@ -111,7 +127,7 @@
                         }
                     </div>
 
-                    @if (Model.IdeaStatus == "Уверждена")
+                    @if (Model.IdeaStatus == "Утверждена")
                     {
                     <div class="tab-pane fade" id="comments">
 

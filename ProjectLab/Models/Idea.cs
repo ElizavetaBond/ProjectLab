@@ -29,7 +29,14 @@ namespace ProjectLab.Models
         public List<Resolution> Resolutions { get; set; }       // резолюции 
         public List<Comment> Comments { get; set; }             // комментарии
 
-        // фото
-        // видео
+
+        public string Video { get; set; }
+        public string ImageId { get; set; } // ссылка на файл изображения
+
+        public bool HasImage()
+        {
+            return !(String.IsNullOrWhiteSpace(ImageId));
+        }
+
     }
 }

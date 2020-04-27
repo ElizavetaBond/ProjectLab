@@ -59,45 +59,52 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Edit(IdeaEditViewModel vm)
         {
-            var author = db.Users.Find(x => x.Email == User.Identity.Name).FirstOrDefault();
-            var idea = new Idea
+            if (ModelState.IsValid)
             {
-                Name = vm.Name,
-                IdeaType = vm.IdeaType, 
-                Target = vm.Target,
-                Purpose = vm.Purpose,
-                Description = vm.Description,
-                Equipment = vm.Equipment,
-                Safety = vm.Safety,
-                Author = author,
-                IdeaStatus = db.IdeaStatuses.Find(x=>x.Name=="Черновик").FirstOrDefault(),
-                Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
-                Resolutions = new List<Resolution>(),
-                Comments = new List<Comment>(),
-                ProjectTemplate = new ProjectTemplate { Sections=new List<Section>()}
-            };
-            for (var i=0; i<vm.Sections.Count; i++) // перебираем все разделы
-            {
-                if (!vm.Sections[i].IsDelete) // если раздел не удален
+                var author = db.Users.Find(x => x.Email == User.Identity.Name).FirstOrDefault();
+                var idea = new Idea
                 {
-                    var section = new Section
+                    Name = vm.Name,
+                    IdeaType = vm.IdeaType,
+                    Target = vm.Target,
+                    Purpose = vm.Purpose,
+                    Description = vm.Description,
+                    Equipment = vm.Equipment,
+                    Safety = vm.Safety,
+                    Author = author,
+                    IdeaStatus = db.IdeaStatuses.Find(x => x.Name == "Черновик").FirstOrDefault(),
+                    Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
+                    Video = vm.Video,
+                    ImageId = vm.FileImage == null ? null : db.LoadImage(vm.FileImage.OpenReadStream(), vm.FileImage.FileName),
+                    Resolutions = new List<Resolution>(),
+                    Comments = new List<Comment>(),
+                    ProjectTemplate = new ProjectTemplate { Sections = new List<Section>() }
+                };
+                for (var i = 0; i < vm.Sections.Count; i++) // перебираем все разделы
+                {
+                    if (!vm.Sections[i].IsDelete) // если раздел не удален
                     {
-                        Name = vm.Sections[i].Name,
-                        SectionType = vm.Sections[i].SectionType,
-                        Components = vm.Components.FindAll(x => x.Section == i && !x.IsDelete)
-                                              .Select(x => new Component
-                                              {
-                                                  Name = x.Name,
-                                                  ComponentType = x.Type,
-                                                  Description = x.Description,
-                                                  IsNecessary = x.IsNecessary
-                                              }).ToList()
-                    };
-                    idea.ProjectTemplate.Sections.Add(section);
+                        var section = new Section
+                        {
+                            Name = vm.Sections[i].Name,
+                            SectionType = vm.Sections[i].SectionType,
+                            Components = vm.Components.FindAll(x => x.Section == i && !x.IsDelete)
+                                                  .Select(x => new Component
+                                                  {
+                                                      Name = x.Name,
+                                                      ComponentType = x.Type,
+                                                      Description = x.Description,
+                                                      IsNecessary = x.IsNecessary
+                                                  }).ToList()
+                        };
+                        idea.ProjectTemplate.Sections.Add(section);
+                    }
                 }
+                db.Ideas.InsertOne(idea);
+                return RedirectToAction("IdeaMenu", "Account");
             }
-            db.Ideas.InsertOne(idea);
-            return RedirectToAction("IdeaMenu", "Account");
+            else
+                return View(vm);
         }
 
         [HttpGet]
@@ -162,7 +169,7 @@ namespace ProjectLab.Controllers
                 {
                     ExpertId = ExpertId,
                     IsPositive = vm.IsPositive,
-                    ValueDegree = vm.ValueDegree,
+                    ValueDegree = vm.IsPositive ? vm.ValueDegree : 0,
                     Remark = vm.Remark
                 };
 
@@ -204,10 +211,20 @@ namespace ProjectLab.Controllers
             return RedirectToAction("IdeaMenu", "Account");
         }
 
+        public async Task<ActionResult> GetImage(string id)
+        {
+            var image = db.GetImage(id);
+            if (image == null)
+            {
+                return NotFound();
+            }
+            return File(image, "image/jpg");
+        }
+
         public IdeaBrowseViewModel GetIdeaBrowseVM (string IdeaId)
         {
             var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
-            return ( new IdeaBrowseViewModel
+            return (new IdeaBrowseViewModel
             {
                 Name = idea.Name,
                 IdeaType = idea.IdeaType,
@@ -219,6 +236,8 @@ namespace ProjectLab.Controllers
                 Description = idea.Description,
                 Direction = idea.Direction.Name,
                 Author = idea.Author.Surname + " " + idea.Author.Name,
+                ImageId = idea.ImageId,
+                Video = idea.Video,
                 Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
                 {
                     Name = i.Name,
@@ -230,7 +249,7 @@ namespace ProjectLab.Controllers
                         Description = c.Description
                     }).ToList()
                 }).ToList()
-            });
+            }) ;
         }
     }
 }

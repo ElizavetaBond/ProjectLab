@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,16 +10,40 @@ namespace ProjectLab.ViewModels.Idea
 {
     public class IdeaBrowseViewModel
     {
+        [Display(Name = "Название идеи")]
         public string Name { get; set; }
+
+        [Display(Name = "Уровень доступа")]
         public string IdeaType { get; set; }
-        public string IdeaStatus { get; set; }
+
+        [Display(Name = "Цель")]
         public string Target { get; set; }
+
+        [Display(Name = "Назначение")]
         public string Purpose { get; set; }
+
+        [Display(Name = "Описание")]
         public string Description { get; set; }
+
+        [Display(Name = "Перечень оборудования и материалов")]
         public string Equipment { get; set; }
+
+        [Display(Name = "Техника безопасности")]
         public string Safety { get; set; }
+
+        [Display(Name = "Направленность")]
         public string Direction { get; set; }
+
+        [Display(Name = "Автор")]
         public string Author { get; set; }
+
+        [Display(Name="Ссылка на видео")]
+        public string Video { get; set; }
+
+        public string ImageId { get; set; }
+
+        public string IdeaStatus { get; set; }
+
         public List<SectionBrowseViewModel> Sections { get; set; } // список разделов шаблона проекта
     }
 

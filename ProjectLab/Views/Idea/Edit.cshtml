@@ -3,8 +3,8 @@
     @model IdeaEditViewModel
 }
 
-@using (Html.BeginForm("Edit", "Idea", FormMethod.Post))
-{
+<div class="background">
+<form asp-controller="Idea" asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="row form-style">
         <div class="col-sm-10">
             <ul class="nav nav-tabs">
@@ -20,49 +20,64 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="generalinform">
-                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input asp-for="Id"/>
                     <div class="container">
                         <div class="row">
-                            <div class="col-sm-4">
-                                <label for="selectType">Укажите тип идеи:</label>
+                            <div class="col-sm-3">
+                                <label asp-for="IdeaType"></label>
                             </div>
-                            <div class="col-sm-8">
-                                <select class="form-control" id="selectType" name="IdeaType">
-                                    <option>Открытая</option>
-                                    <option>Приватная</option>
+                            <div class="col-sm-6">
+                                <select class="form-control" asp-for="IdeaType">
+                                    <option class="form-control">Открытая</option>
+                                    <option class="form-control">Приватная</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputName">Название идеи:</label>
-                            </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputName" name="Name" placeholder="Введите название" value="@Model.Name" />
+                            <div class="col-sm-3">
+                                <span asp-validation-for="IdeaType"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputDescription">Краткое описание:</label>
+                            <div class="col-sm-3">
+                                <label asp-for="Name"></label>
                             </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputDescription" name="Description" type="text" value="@Model.Description" />
+                            <div class="col-sm-6">
+                                <input class="form-control" asp-for="Name" />
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputPhoto">Фото:</label>
-                            </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputPhoto" name="Photo" type="text" />
+                            <div class="col-sm-3">
+                                <span asp-validation-for="Name"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputVideo">Видео:</label>
+                            <div class="col-sm-3">
+                                <label asp-for="Description"></label>
                             </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputVideo" name="Video" type="text" />
+                            <div class="col-sm-6">
+                                <textarea class="form-control" asp-for="Description"></textarea>
+                            </div>
+                            <div class="col-sm-3">
+                                <span asp-validation-for="Description"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label>Изображение</label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="file" asp-for="FileImage" />
+                            </div>
+                            <div class="col-sm-3">
+                                <span asp-validation-for="FileImage"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label asp-for="Video"></label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control" asp-for="Video" />
+                            </div>
+                            <div class="col-sm-3">
+                                <span asp-validation-for="Video"></span>
                             </div>
                         </div>
                     </div>
@@ -71,43 +86,58 @@
                 <div class="tab-pane fade" id="studyinform">
                     <div class="container">
                         <div class="row">
-                            <div class="col-sm-4">
-                                <label for="selectListDirections">Выберите направленность идеи:</label>
+                            <div class="col-sm-3">
+                                <label asp-for="DirectionId"></label>
                             </div>
-                            <div class="col-sm-8">
-                                <select class="form-control" id="selectListDirections" name="DirectionId"></select>
+                            <div class="col-sm-6">
+                                <select class="form-control" asp-for="DirectionId"></select>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputTarget">Цель:</label>
-                            </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputTarget" name="Target" type="text" value="@Model.Target" />
+                            <div class="col-sm-3">
+                                <span asp-validation-for="DirectionId"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputPurpose">Назначение:</label>
+                            <div class="col-sm-3">
+                                <label asp-for="Target"></label>
                             </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputPurpose" name="Purpose" type="text" value="@Model.Purpose" />
+                            <div class="col-sm-6">
+                                <input class="form-control" asp-for="Target" />
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputEquipment">Перечень оборудования и материалов:</label>
-                            </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputEquipment" name="Equipment" type="text" value="@Model.Equipment" />
+                            <div class="col-sm-3">
+                                <span asp-validation-for="Target"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-4">
-                                <label for="inputSafety">Техника безопасности:</label>
+                            <div class="col-sm-3">
+                                <label asp-for="Purpose"></label>
                             </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" id="inputSafety" name="Safety" type="text" value="@Model.Safety" />
+                            <div class="col-sm-6">
+                                <input class="form-control" asp-for="Purpose" />
+                            </div>
+                            <div class="col-sm-3">
+                                <span asp-validation-for="Purpose"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label asp-for="Equipment"></label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control" asp-for="Equipment" />
+                            </div>
+                            <div class="col-sm-3">
+                                <span asp-validation-for="Equipment"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label asp-for="Safety"></label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control" asp-for="Safety" />
+                            </div>
+                            <div class="col-sm-3">
+                                <span asp-validation-for="Safety"></span>
                             </div>
                         </div>
                     </div>
@@ -144,15 +174,19 @@
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
     </div>
-}
+</form>
+</div>
 
 <style>
     .component {
         border: 1px solid lightgrey;
         margin-top: 10px;
     }
-    form {
+    .background {
         background-color: rgba(194, 223, 255, 0.81);
+    }
+    span {
+        color: red;
     }
 </style>
 
@@ -175,9 +209,9 @@
             var str = '';
             ListDirections.forEach(function (item) {
                 if (item.Id == id)
-                    str += '<option selected value="' + item.Id + '">' + item.Name + '</option > ';
+                    str += '<option class="form-control" selected value="' + item.Id + '">' + item.Name + '</option > ';
                 else
-                    str += '<option value="' + item.Id + '">' + item.Name + '</option > ';
+                    str += '<option class="form-control" value="' + item.Id + '">' + item.Name + '</option > ';
             });
             return str;
         }
@@ -185,7 +219,7 @@
         function loadListComponents() { // инициализирует список типов компонент
             var str = '';
             ListComponents.forEach(function (item) {
-                str += '<option value="' + item + '">' + item + '</option > ';
+                str += '<option class="form-control" value="' + item + '">' + item + '</option > ';
             });
             return str;
         }
@@ -266,7 +300,7 @@
         }
 
         (function () {
-            $('#selectListDirections').append(loadListDirections(@Model.DirectionId));
+            $('#DirectionId').append(loadListDirections(@Model.DirectionId));
             $('#selectListComponents').append(loadListComponents());
             // загружаем раздел итоговых результатов на форму
             addSection('Раздел итоговых результатов');
