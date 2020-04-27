@@ -1,7 +1,9 @@
-﻿using ProjectLab.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProjectLab.Models;
 using ProjectLab.Models.References;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,5 +16,6 @@ namespace ProjectLab.ViewModels
         public string Direction { get; set; }               // направленность идеи
         public string Author { get; set; }                  // автор идеи
         public string EducationalInstitution { get; set; }  // учебное заведение
+        public string ImageId { get; set; }
     }
 }

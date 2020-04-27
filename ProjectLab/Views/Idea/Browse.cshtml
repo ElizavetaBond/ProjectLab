@@ -28,82 +28,85 @@
                     <div class="tab-pane fade show active" id="description">
                         <div class="container">
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Name"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Name" readonly ></textarea>
                                 </div>
                             </div>
+                            @if (Model.ImageId != null)
+                            {
                             <div class="row">
-                                <div class="col-sm-4">
-                                    @if (Model.ImageId != null)
-                                    {
-                                        <img src="@Url.Action("GetImage", new { id=@Model.ImageId})" style="width:150px;height:200px;" />
-                                    }
+                                <div class="col-sm-3">
+                                    <label asp-for="ImageId"></label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <img src="@Url.Action("GetImage", new { id = @Model.ImageId })" style="width:300px;height:200px;" />
                                 </div>
                             </div>
+                            }
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Direction"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Direction" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Author"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Author" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Target"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Target" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Purpose"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Purpose" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Description"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Description" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Video"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <a href="@Model.Video" target="_blank">@Model.Video</a>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Equipment"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Equipment" readonly></textarea>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label asp-for="Safety"></label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <textarea class="form-control" asp-for="Safety" readonly></textarea>
                                 </div>
                             </div>
@@ -114,10 +117,10 @@
                         @foreach (var s in Model.Sections)
                         {
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label>@s.Name</label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     @foreach (var c in s.Components)
                                     {
                                         <textarea class="form-control" readonly>@c.Name  ( @c.Type )</textarea>

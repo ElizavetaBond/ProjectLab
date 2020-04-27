@@ -34,7 +34,8 @@ namespace ProjectLab.Controllers
                     Name = x.Name,
                     Direction = x.Direction.Name,
                     Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name
+                    EducationalInstitution = x.Author.EducationalInstitution.Name,
+                    ImageId = x.ImageId
                 }) ;
             }
             return View(vm);
@@ -118,7 +119,8 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Delete(string IdeaId)
         {
-            db.Ideas.DeleteOne(x => x.Id == IdeaId);
+            var idea = db.Ideas.FindOneAndDelete(x => x.Id == IdeaId);
+            if (idea.ImageId != null) db.DeleteImage(idea.ImageId);
             return RedirectToAction("IdeaMenu", "Account");
         }
 

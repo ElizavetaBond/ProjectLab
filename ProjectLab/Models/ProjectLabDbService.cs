@@ -66,5 +66,10 @@ namespace ProjectLab.Models
         {
             return gridFS.UploadFromStream(imageName, imageStream).ToString();
         }
+
+        public void DeleteImage(string id) // удаляет изображение из хранилища
+        {
+            gridFS.Delete(new ObjectId(id));
+        }
     }
 }

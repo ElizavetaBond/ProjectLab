@@ -125,7 +125,6 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult IdeaMenu()
         {
-            //SetExpert(db.Users.Find(x => x.Email == "@exp3").FirstOrDefault().Id);
             var ownideas = db.Ideas.Find(x => x.Author.Email == User.Identity.Name).ToList();
             var vm = new IdeasOwnViewModel
             {
@@ -136,7 +135,8 @@ namespace ProjectLab.Controllers
                     Name = x.Name,
                     Direction = x.Direction.Name,
                     Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name
+                    EducationalInstitution = x.Author.EducationalInstitution.Name,
+                    ImageId = x.ImageId
                 }).ToList(),
                 OnReviews = ownideas.FindAll(x=>x.IdeaStatus.Name == "На модерации").ToList()
                 .Select(x => new IdeaCardViewModel
@@ -145,7 +145,8 @@ namespace ProjectLab.Controllers
                     Name = x.Name,
                     Direction = x.Direction.Name,
                     Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name
+                    EducationalInstitution = x.Author.EducationalInstitution.Name,
+                    ImageId = x.ImageId
                 }).ToList(),
                 Approves = ownideas.FindAll(x => x.IdeaStatus.Name == "Утверждена").ToList()
                 .Select(x => new IdeaCardViewModel
@@ -154,7 +155,8 @@ namespace ProjectLab.Controllers
                     Name = x.Name,
                     Direction = x.Direction.Name,
                     Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name
+                    EducationalInstitution = x.Author.EducationalInstitution.Name,
+                    ImageId = x.ImageId
                 }).ToList(),
                 Rejects= ownideas.FindAll(x => x.IdeaStatus.Name == "Отклонена").ToList()
                 .Select(x => new IdeaCardViewModel
@@ -163,7 +165,8 @@ namespace ProjectLab.Controllers
                     Name = x.Name,
                     Direction = x.Direction.Name,
                     Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name
+                    EducationalInstitution = x.Author.EducationalInstitution.Name,
+                    ImageId = x.ImageId
                 }).ToList(),
                 MyReviews = new List<IdeaCardViewModel>()
             };
@@ -178,7 +181,8 @@ namespace ProjectLab.Controllers
                                             Name = x.Name,
                                             Direction = x.Direction.Name,
                                             Author = x.Author.Surname + " " + x.Author.Name,
-                                            EducationalInstitution = x.Author.EducationalInstitution.Name
+                                            EducationalInstitution = x.Author.EducationalInstitution.Name,
+                                            ImageId = x.ImageId
                                         }).ToList();
             }
             return View(vm);

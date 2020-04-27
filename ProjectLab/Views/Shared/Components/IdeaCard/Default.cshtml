@@ -7,7 +7,14 @@
 <div>
     <h2>Название - @Model.Name</h2>
     <div class="idea-photo">
-        <img src="~/imgs/idea_image.jpg" alt="" />
+        @if (Model.ImageId == null)
+        {
+            <img src="~/imgs/idea_image.jpg" alt="" />
+        }
+        else
+        {
+            <img src="@Url.Action("GetImage", "Idea", new { id = @Model.ImageId })" alt="" />
+        }
         <form method="get" asp-action="Browse" asp-controller="Idea">
             <input type="hidden" name="IdeaId" value="@Model.Id" />
             <button class="btn btn-primary idea-btn-preview" type="submit">

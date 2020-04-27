@@ -40,6 +40,7 @@ namespace ProjectLab.ViewModels.Idea
         [Display(Name="Ссылка на видео")]
         public string Video { get; set; }
 
+        [Display(Name="Изображение")]
         public string ImageId { get; set; }
 
         public string IdeaStatus { get; set; }
