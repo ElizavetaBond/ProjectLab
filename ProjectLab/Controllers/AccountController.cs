@@ -122,70 +122,9 @@ namespace ProjectLab.Controllers
         }        
 
         [HttpGet]
-        [Authorize]
-        public IActionResult IdeaMenu()
+        public IActionResult Account()
         {
-            var ownideas = db.Ideas.Find(x => x.Author.Email == User.Identity.Name).ToList();
-            var vm = new IdeasOwnViewModel
-            {
-                Drafts = ownideas.FindAll(x => x.IdeaStatus.Name == "Черновик").ToList()
-                .Select(x => new IdeaCardViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Direction = x.Direction.Name,
-                    Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name,
-                    ImageId = x.ImageId
-                }).ToList(),
-                OnReviews = ownideas.FindAll(x=>x.IdeaStatus.Name == "На модерации").ToList()
-                .Select(x => new IdeaCardViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Direction = x.Direction.Name,
-                    Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name,
-                    ImageId = x.ImageId
-                }).ToList(),
-                Approves = ownideas.FindAll(x => x.IdeaStatus.Name == "Утверждена").ToList()
-                .Select(x => new IdeaCardViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Direction = x.Direction.Name,
-                    Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name,
-                    ImageId = x.ImageId
-                }).ToList(),
-                Rejects= ownideas.FindAll(x => x.IdeaStatus.Name == "Отклонена").ToList()
-                .Select(x => new IdeaCardViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Direction = x.Direction.Name,
-                    Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name,
-                    ImageId = x.ImageId
-                }).ToList(),
-                MyReviews = new List<IdeaCardViewModel>()
-            };
-            if (User.IsInRole("Эксперт"))
-            {
-                vm.MyReviews = db.Experts.Find(x => x.User.Email == User.Identity.Name)
-                                        .FirstOrDefault()
-                                        .ReviewIdeas
-                                        .Select(x => new IdeaCardViewModel
-                                        {
-                                            Id = x.Id,
-                                            Name = x.Name,
-                                            Direction = x.Direction.Name,
-                                            Author = x.Author.Surname + " " + x.Author.Name,
-                                            EducationalInstitution = x.Author.EducationalInstitution.Name,
-                                            ImageId = x.ImageId
-                                        }).ToList();
-            }
-            return View(vm);
+            return View();
         }
 
         //[Authorize(Roles="Админ")]

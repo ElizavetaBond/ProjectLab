@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectLab.ViewModels.Account
+namespace ProjectLab.ViewModels.Idea
 {
-    public class IdeasOwnViewModel
+    public class IdeaMenuViewModel
     {
         // Черновики
         public List<IdeaCardViewModel> Drafts { get; set; }

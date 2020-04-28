@@ -13,5 +13,6 @@ namespace ProjectLab.ViewModels
         public string Description { get; set; }
         public DateTime Start { get; set; }
         public DateTime Finish { get; set; }
+        public string ImageId { get; set; }
     }
 }

@@ -1,35 +1,13 @@
 ﻿
 @{
     ViewData["Title"] = "IdeaMenu";
-    @model IdeasOwnViewModel
+    @model IdeaMenuViewModel
 }
 
 <h1>Мои идеи</h1>
 
 <div class="background">
     <div class=" row">
-        <div class="col-2">
-            <ul class="nav nav-tabs flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#Drafts">Черновики </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#OnReviews">На модерации</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#Approves">Утвержденные</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#Rejects">Отклоненные</a>
-                </li>
-                @if (User.IsInRole("Эксперт")) 
-                {
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#MyReviews">Мои рецензии</a>
-                </li>
-                }
-            </ul>
-        </div>
         <div class="col-10">
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="Drafts">
@@ -130,36 +108,58 @@
                 </div>
                 @if (User.IsInRole("Эксперт"))
                 {
-                <div class="tab-pane fade" id="MyReviews">
-                    <ul class="ideas clearfix">
-                        @foreach (var x in Model.MyReviews)
-                        {
-                            <li class="idea-wrapper">
-                                <div class="idea">
-                                    @await Component.InvokeAsync("IdeaCard", new { vm = x })
+                    <div class="tab-pane fade" id="MyReviews">
+                        <ul class="ideas clearfix">
+                            @foreach (var x in Model.MyReviews)
+                            {
+                                <li class="idea-wrapper">
+                                    <div class="idea">
+                                        @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
-                                    @using (Html.BeginForm("Review", "Idea", FormMethod.Get))
-                                    {
-                                        <input type="hidden" name="IdeaId" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
-                                            Оценить
-                                        </button>
-                                    }
+                                        @using (Html.BeginForm("Review", "Idea", FormMethod.Get))
+                                        {
+                                            <input type="hidden" name="IdeaId" value="@x.Id" />
+                                            <button class="btn btn-primary idea-btn-public" type="submit">
+                                                Оценить
+                                            </button>
+                                        }
 
-                                    @using (Html.BeginForm("CancelReview", "Idea", FormMethod.Post))
-                                    {
-                                        <input type="hidden" name="IdeaId" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
-                                            Отказаться
-                                        </button>
-                                    }
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                </div>
+                                        @using (Html.BeginForm("CancelReview", "Idea", FormMethod.Post))
+                                        {
+                                            <input type="hidden" name="IdeaId" value="@x.Id" />
+                                            <button class="btn btn-primary idea-btn-public" type="submit">
+                                                Отказаться
+                                            </button>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
                 }
             </div>
+        </div>
+        <div class="col-2">
+            <ul class="nav nav-tabs flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#Drafts">Черновики </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#OnReviews">На модерации</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#Approves">Утвержденные</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#Rejects">Отклоненные</a>
+                </li>
+                @if (User.IsInRole("Эксперт"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#MyReviews">Мои рецензии</a>
+                    </li>
+                }
+            </ul>
         </div>
     </div>
 </div>

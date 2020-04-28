@@ -17,5 +17,6 @@ namespace ProjectLab.Models
         public DateTime Start { get; set; }     // дата старта проекта
         public DateTime Finish { get; set; }    // дата окончания проекта
         public string Description { get; set; } // описание проекта
+        public string ImageId { get; set; } // ссылка на картинку
     }
 }

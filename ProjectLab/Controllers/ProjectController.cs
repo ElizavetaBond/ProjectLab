@@ -61,5 +61,15 @@ namespace ProjectLab.Controllers
                 db.Projects.ReplaceOne(new BsonDocument("Id", vm.Id), project);
             return RedirectToAction("Index");
         }
+
+        public ActionResult GetImage(string id)
+        {
+            var image = db.GetImage(id);
+            if (image == null)
+            {
+                return NotFound();
+            }
+            return File(image, "image/jpg");
+        }
     }
 }

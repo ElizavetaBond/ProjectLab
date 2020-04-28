@@ -4,7 +4,7 @@
 @if (User.Identity.IsAuthenticated)
 {
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="IdeaMenu"><em>@User.Identity.Name </em> </a>
+        <a  class="nav-link text-dark" asp-controller="Account" asp-action="Account"><em>@User.Identity.Name </em> </a>
     </li>
     <li class="nav-item">
         <form  class="form-inline" asp-controller="Account" asp-action="Logout">

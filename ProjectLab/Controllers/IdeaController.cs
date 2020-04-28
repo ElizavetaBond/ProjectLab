@@ -28,15 +28,7 @@ namespace ProjectLab.Controllers
             var vm = new List<IdeaCardViewModel>();
             foreach (var x in ideas)
             {
-                vm.Add(new IdeaCardViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Direction = x.Direction.Name,
-                    Author = x.Author.Surname + " " + x.Author.Name,
-                    EducationalInstitution = x.Author.EducationalInstitution.Name,
-                    ImageId = x.ImageId
-                }) ;
+                vm.Add(GetIdeaCardVM(x));
             }
             return View(vm);
         }
@@ -102,7 +94,7 @@ namespace ProjectLab.Controllers
                     }
                 }
                 db.Ideas.InsertOne(idea);
-                return RedirectToAction("IdeaMenu", "Account");
+                return RedirectToAction("Menu");
             }
             else
                 return View(vm);
@@ -121,7 +113,7 @@ namespace ProjectLab.Controllers
         {
             var idea = db.Ideas.FindOneAndDelete(x => x.Id == IdeaId);
             if (idea.ImageId != null) db.DeleteImage(idea.ImageId);
-            return RedirectToAction("IdeaMenu", "Account");
+            return RedirectToAction("Menu");
         }
 
         [HttpPost]
@@ -149,7 +141,7 @@ namespace ProjectLab.Controllers
 
             var update = new UpdateDefinitionBuilder<Idea>().Set(i => i.IdeaStatus, db.IdeaStatuses.Find(x => x.Name == "На модерации").FirstOrDefault());
             db.Ideas.FindOneAndUpdate(i => i.Id == IdeaId, update);
-            return RedirectToAction("IdeaMenu", "Account");
+            return RedirectToAction("Menu");
         }
 
         [HttpGet]
@@ -197,7 +189,7 @@ namespace ProjectLab.Controllers
                                                                     .Set(idea => idea.IdeaStatus, status);
                     db.Ideas.FindOneAndUpdate(idea => idea.Id == vm.IdeaId, update);
                 }
-                return RedirectToAction("IdeaMenu", "Account");
+                return RedirectToAction("Menu");
             }
             else
             {
@@ -210,10 +202,10 @@ namespace ProjectLab.Controllers
         [Authorize(Roles = "Эксперт, Админ")]
         public IActionResult CancelReview(string IdeaId) // эксперт отказался от выдачи рецензии
         {
-            return RedirectToAction("IdeaMenu", "Account");
+            return RedirectToAction("Menu");
         }
 
-        public async Task<ActionResult> GetImage(string id)
+        public ActionResult GetImage(string id)
         {
             var image = db.GetImage(id);
             if (image == null)
@@ -252,6 +244,46 @@ namespace ProjectLab.Controllers
                     }).ToList()
                 }).ToList()
             }) ;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Menu()
+        {
+            var ownideas = db.Ideas.Find(x => x.Author.Email == User.Identity.Name).ToList();
+            var vm = new IdeaMenuViewModel
+            {
+                Drafts      = ownideas.FindAll(x => x.IdeaStatus.Name == "Черновик").ToList()
+                                      .Select(x => GetIdeaCardVM(x)).ToList(),
+                OnReviews   = ownideas.FindAll(x => x.IdeaStatus.Name == "На модерации").ToList()
+                                      .Select(x => GetIdeaCardVM(x)).ToList(),
+                Approves    = ownideas.FindAll(x => x.IdeaStatus.Name == "Утверждена").ToList()
+                                      .Select(x => GetIdeaCardVM(x)).ToList(),
+                Rejects     = ownideas.FindAll(x => x.IdeaStatus.Name == "Отклонена").ToList()
+                                      .Select(x => GetIdeaCardVM(x)).ToList(),
+                MyReviews = new List<IdeaCardViewModel>()
+            };
+            if (User.IsInRole("Эксперт"))
+            {
+                vm.MyReviews = db.Experts.Find(x => x.User.Email == User.Identity.Name)
+                                        .FirstOrDefault()
+                                        .ReviewIdeas
+                                        .Select(x => GetIdeaCardVM(x)).ToList();
+            }
+            return View(vm);
+        }
+
+        public IdeaCardViewModel GetIdeaCardVM (Idea idea)
+        {
+            return new IdeaCardViewModel
+            {
+                Id = idea.Id,
+                Name = idea.Name,
+                Direction = idea.Direction.Name,
+                Author = idea.Author.Surname + " " + idea.Author.Name,
+                EducationalInstitution = idea.Author.EducationalInstitution.Name,
+                ImageId = idea.ImageId
+            };
         }
     }
 }
