@@ -11,9 +11,12 @@
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#description">Описание</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#template">Шаблон проекта</a>
-                    </li>
+                    @if (Model.Sections.Any())
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#template">Шаблон проекта</a>
+                        </li>
+                    }
                     @if (Model.IdeaStatus == "Утверждена")
                     {
                     <li class="nav-item">
@@ -32,19 +35,19 @@
                                     <label asp-for="Name"></label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" asp-for="Name" readonly ></textarea>
+                                    <textarea class="form-control" asp-for="Name" readonly></textarea>
                                 </div>
                             </div>
                             @if (Model.ImageId != null)
                             {
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <label asp-for="ImageId"></label>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <label asp-for="ImageId"></label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <img src="@Url.Action("GetImage", new { id = @Model.ImageId })" style="width:300px;height:200px;" />
+                                    </div>
                                 </div>
-                                <div class="col-sm-9">
-                                    <img src="@Url.Action("GetImage", new { id = @Model.ImageId })" style="width:300px;height:200px;" />
-                                </div>
-                            </div>
                             }
                             <div class="row">
                                 <div class="col-sm-3">
@@ -86,14 +89,17 @@
                                     <textarea class="form-control" asp-for="Description" readonly></textarea>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <label asp-for="Video"></label>
+                            @if (Model.Video != null)
+                            {
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <label asp-for="Video"></label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <a href="@Model.Video" target="_blank">@Model.Video</a>
+                                    </div>
                                 </div>
-                                <div class="col-sm-9">
-                                    <a href="@Model.Video" target="_blank">@Model.Video</a>
-                                </div>
-                            </div>
+                            }
                             <div class="row">
                                 <div class="col-sm-3">
                                     <label asp-for="Equipment"></label>
@@ -113,22 +119,25 @@
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="template">
-                        @foreach (var s in Model.Sections)
-                        {
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <label>@s.Name</label>
+                    @if (Model.Sections.Any())
+                    {
+                        <div class="tab-pane fade" id="template">
+                            @foreach (var s in Model.Sections)
+                            {
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <label>@s.Name</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @foreach (var c in s.Components)
+                                        {
+                                            <textarea class="form-control" readonly>@c.Name  ( @c.Type )</textarea>
+                                        }
+                                    </div>
                                 </div>
-                                <div class="col-sm-9">
-                                    @foreach (var c in s.Components)
-                                    {
-                                        <textarea class="form-control" readonly>@c.Name  ( @c.Type )</textarea>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
+                            }
+                        </div>
+                    }
 
                     @if (Model.IdeaStatus == "Утверждена")
                     {
@@ -141,8 +150,3 @@
         </div>      
     </div>
 
-<style>
-    .background {
-        background-color: rgba(194, 223, 255, 0.81);
-    }
-</style>

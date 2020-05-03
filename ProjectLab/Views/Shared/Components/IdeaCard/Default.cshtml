@@ -107,8 +107,11 @@
     }
 
     .idea-btn-preview {
-        transform: translate(45%, 500%);
+        position: relative;
+        left: 50%;
+        transform: translate(-50%, 300%);
         opacity: 0;
+        vertical-align: middle;
     }
 
     .idea:hover .idea-btn-preview {
@@ -116,7 +119,10 @@
     }
 
     .idea-btn-public {
-        transform: translate(25%, 0);
+        position: relative;
+        left: 50%;
+        transform: translate(-50%, 0%);
         margin-bottom: 10px;
+        width: 130px;
     }
 </style>

@@ -127,7 +127,6 @@ namespace ProjectLab.Controllers
             return View();
         }
 
-        //[Authorize(Roles="Админ")]
         public void SetExpert(string UserId)
         {
             var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Эксперт").FirstOrDefault());
@@ -135,6 +134,12 @@ namespace ProjectLab.Controllers
 
             var user = db.Users.Find(x => x.Id == UserId).FirstOrDefault();
             db.Experts.InsertOne(new Expert { User=user, ReviewIdeas = new List<Idea>() });
+        }
+
+        public void SetAdmin()
+        {
+            var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Админ").FirstOrDefault());
+            db.Users.FindOneAndUpdate(us => us.Email == "admin@ya.ru", update);
         }
     }
 }

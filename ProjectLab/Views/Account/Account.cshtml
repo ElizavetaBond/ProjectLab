@@ -4,5 +4,24 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<a asp-controller="Idea" asp-action="Menu">Мои идеи</a>
+<div class="background">
+    <div class="row">
+        <div class="col-10">
+
+        </div>
+        <div class="col-2">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a asp-action="Account"> Личные сведения </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Idea" asp-action="Menu"> Мои идеи </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="" asp-action=""> Мои награды </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 

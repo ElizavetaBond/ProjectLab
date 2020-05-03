@@ -218,7 +218,7 @@ namespace ProjectLab.Controllers
         public IdeaBrowseViewModel GetIdeaBrowseVM (string IdeaId)
         {
             var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
-            return (new IdeaBrowseViewModel
+            var vm = new IdeaBrowseViewModel
             {
                 Name = idea.Name,
                 IdeaType = idea.IdeaType,
@@ -232,7 +232,11 @@ namespace ProjectLab.Controllers
                 Author = idea.Author.Surname + " " + idea.Author.Name,
                 ImageId = idea.ImageId,
                 Video = idea.Video,
-                Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
+                Sections = new List<SectionBrowseViewModel>()
+            };
+            if (idea.Author.Email == User.Identity.Name || (User.IsInRole("Эксперт") && idea.IdeaStatus.Name == "На модерации"))
+            {
+                vm.Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
                 {
                     Name = i.Name,
                     SectionType = i.SectionType,
@@ -242,8 +246,9 @@ namespace ProjectLab.Controllers
                         Type = c.ComponentType,
                         Description = c.Description
                     }).ToList()
-                }).ToList()
-            }) ;
+                }).ToList();
+            }
+            return vm;
         }
 
         [HttpGet]
