@@ -101,7 +101,7 @@
                                 <label asp-for="Target"></label>
                             </div>
                             <div class="col-sm-6">
-                                <input class="form-control" asp-for="Target" />
+                                <input class="form-control" asp-for="Target"/>
                             </div>
                             <div class="col-sm-3">
                                 <span asp-validation-for="Target"></span>
@@ -147,10 +147,14 @@
                     <div class="row">
                         <div class="col-sm-4">
                             <ul class="nav nav-tabs flex-column" id="navSections"></ul>
-                            <button class="btn btn-primary" type="button" id="btnAddSection">
-                                <i class="fas fa-plus"></i>
-                                Добавить раздел
-                            </button>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="btnAddSection" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-plus"></i>
+                                    Добавить раздел
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="btnAddSection" id="dropdownSecTypes">
+                                </div>
+                            </div>
                         </div>
                         <div class="col-sm-8">
                             <div class="row">
@@ -197,6 +201,7 @@
         var currentSection = 0; // текущий открытый раздел
         var ListDirections = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListDirections"]));
         var ListComponents = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListComponents"]));
+        var ListSecTypes = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListSectionTypes"]));
 
         function selectSection(num) { // функция вызывается при выборе раздела из навигационного меню
             currentSection = num;
@@ -217,6 +222,16 @@
             var str = '';
             ListComponents.forEach(function (item) {
                 str += '<option class="form-control" value="' + item + '">' + item + '</option > ';
+            });
+            return str;
+        }
+
+        function loadListSecTypes() {
+            var str = '';
+            var i = 0;
+            ListSecTypes.forEach(function (item) {
+                str += '<button class="dropdown-item" type="button" id="btnAdd' + i + '" onclick="addSection(' + "'Новый раздел', '" + item + "'" + ')">' + item + '</button>';
+                i++;
             });
             return str;
         }
@@ -261,15 +276,25 @@
                 $('#' + idComp + 'IsNecessary').val('false');
         }
 
-        function addSection(title) { // загрузка разделов на форму
+        function addSection(name, type) { // загрузка разделов на форму
             var indSec = indSection;
             var navSectionId = 'navSection' + indSec;
             var areaSectionId = 'areaSection' + indSec;
             var btnDelId = 'btnDelete' + areaSectionId;
+            var btnRenameId = 'btnRename' + areaSectionId;
+            var elemNameId = 'elemName' + areaSectionId;
+            var inpSectionNameId = 'inpSectName' + areaSectionId;
             var str = '<li class="nav-item form-inline" id="' + navSectionId + '">' +
                 '<input type="hidden" id="' + navSectionId + 'IsDelete" name="Sections[' + indSec + '].IsDelete" value="false"/>' +
-                '<input type="hidden"  name="Sections[' + indSec + '].Name" value="' + title + '"/>' +
-                '<a class="nav-link" data-toggle="tab" href="#' + areaSectionId + '">' + title + '</a>';
+                '<input type="hidden" id="' + inpSectionNameId + '" name="Sections[' + indSec + '].Name" value="' + name + '"/>' +
+                '<input type="hidden"  name="Sections[' + indSec + '].SectionType" value="' + type + '"/>' +
+                '<a class="nav-link" data-toggle="tab" href="#' + areaSectionId + '" title="' + type + '" >' +
+                    '<label id="' + elemNameId + 'Lbl">'+ name + '</label>'  +
+                    '<input id="' + elemNameId + 'Inpt" type="text" style="display: none" value="' + name + '"/>' + 
+                '</a>' + 
+                '<button class="btn btn-sm btn-outline-secondary" id="' + btnRenameId + '" type="button" title="Переименовать">' +
+                    '<i class="fas fa-edit"></i>' +
+                '</button >';
             if (indSec != 0) // нельзя удалить раздел итоговых результатов
             {
                 str += '<button class="btn btn-sm btn-outline-secondary" id="' + btnDelId + '" type="button" title="Удалить">' +
@@ -282,12 +307,29 @@
                 $('#navSections').append(str); // загрузить раздел в меню
             }
             $('#' + navSectionId).on('click', function () { selectSection(indSec); });
+            $('#' + btnRenameId).on('click', function () { btnRenameSection(elemNameId, inpSectionNameId); });
 
             var str2 = '';
             if (indSec == 0) str2 = '<div class="tab-pane fade active show" id="' + areaSectionId + '"></div>';
             else str2 = '<div class="tab-pane fade" id="' + areaSectionId + '"></div>';
             $('#areaSections').append(str2); // загрузить раздел на форму
             indSection++;
+        }
+
+        function focusoutRenameSection(elemNameId, inpSectionNameId) {
+            var name = $('#' + elemNameId + 'Inpt').val();
+            $('#' + elemNameId + 'Inpt').val(name);
+            $('#' + elemNameId + 'Inpt').attr('style', 'display: none');
+            $('#' + elemNameId + 'Lbl').text(name);
+            $('#' + elemNameId + 'Lbl').attr('style', 'display: inline');
+            $('#' + inpSectionNameId).val(name);
+        }
+
+        function btnRenameSection(elemNameId, inpSectionNameId) { // кнопка "Переименовать раздел"
+            $('#' + elemNameId + 'Lbl').attr('style', 'display: none'); // скрыть нередактируемую метку
+            $('#' + elemNameId + 'Inpt').attr('style', 'display: inline'); // открыть редактируемое поле
+            $('#' + elemNameId + 'Inpt').focus();
+            $('#' + elemNameId + 'Inpt').focusout(function () { focusoutRenameSection(elemNameId, inpSectionNameId); });
         }
 
         function deleteSection(ind) {
@@ -299,9 +341,9 @@
         (function () {
             $('#DirectionId').append(loadListDirections(@Model.DirectionId));
             $('#selectListComponents').append(loadListComponents());
+            $('#dropdownSecTypes').append(loadListSecTypes());
             // загружаем раздел итоговых результатов на форму
-            addSection('Раздел итоговых результатов');
-            $('#btnAddSection').on('click', function () { addSection('Какое то название');  });
+            addSection('Раздел итоговых результатов', 'Раздел итоговых результатов');
             $('#btnAddComponent').on('click', function () { addComponent(); });
         })();
     </script>
