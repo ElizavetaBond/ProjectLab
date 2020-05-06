@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Edit";
+    @model ProjectCreateViewModel
+}
+
+<div class="background">
+    @using (Html.BeginForm("Create", "Project", FormMethod.Post))
+    {
+        <input asp-for="IdeaId" />
+        <div class="container form-style">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label asp-for="IdeaName"></label>
+                </div>
+                <div class="col-sm-6">
+                    @Html.ActionLink(Model.IdeaName, "Browse", "Idea", new { IdeaId = Model.IdeaId }, null)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label asp-for="ProjectTypeId"></label>
+                </div>
+                <div class="col-sm-6">
+                    <select class="form-control" asp-for="ProjectTypeId"></select>
+                </div>
+                <div class="col-sm-3">
+                    <span asp-validation-for="ProjectTypeId"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label asp-for="Finish"></label>
+                </div>
+                <div class="col-sm-6">
+                    <input class="form-control" asp-for="Finish" />
+                </div>
+                <div class="col-sm-3">
+                    <span asp-validation-for="Finish"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-primary" type="submit">Опубликовать проект</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        var ListProjectTypes = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListProjectTypes"]));
+
+        function loadProjectTypes() {
+            var str = '';
+            ListProjectTypes.forEach(function (item) {
+                str += '<option class="form-control" value="' + item.Id + '">' + item.Name + '</option > ';
+            });
+            return str;
+        }
+
+        (function () {
+            $('#ProjectTypeId').append(loadProjectTypes());
+        })();
+    </script>
+}
+
+

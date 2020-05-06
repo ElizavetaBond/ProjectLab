@@ -17,7 +17,8 @@ namespace ProjectLab.Models
         public IMongoCollection<Education> Educations { get; set; }
         public IMongoCollection<EducationalInstitution> EducationalInstitutions { get; set; }
         public IMongoCollection<IdeaStatus> IdeaStatuses { get; set; }
-        public IMongoCollection<ProjectStatus> ProjectsStatuses { get; set; }
+        public IMongoCollection<ProjectStatus> ProjectStatuses { get; set; }
+        public IMongoCollection<ProjectType> ProjectTypes { get; set; }
         public IMongoCollection<Region> Regions { get; set; }
         public IMongoCollection<Reward> RewardTypes { get; set; }
         public IMongoCollection<UserCategory> UserCategories { get; set; }
@@ -44,7 +45,8 @@ namespace ProjectLab.Models
             Educations = database.GetCollection<Education>("Educations");
             EducationalInstitutions = database.GetCollection<EducationalInstitution>("EducationalInstitutions");
             IdeaStatuses = database.GetCollection<IdeaStatus>("IdeaStatuses");
-            ProjectsStatuses = database.GetCollection<ProjectStatus>("ProjectStatuses");
+            ProjectStatuses = database.GetCollection<ProjectStatus>("ProjectStatuses");
+            ProjectTypes = database.GetCollection<ProjectType>("ProjectTypes");
             Regions = database.GetCollection<Region>("Regions");
             RewardTypes = database.GetCollection<Reward>("RewardTypes");
             UserCategories = database.GetCollection<UserCategory>("UserCategories");

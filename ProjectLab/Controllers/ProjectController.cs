@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectLab.Models;
+using ProjectLab.Models.References;
 using ProjectLab.ViewModels;
+using ProjectLab.ViewModels.Project;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +25,7 @@ namespace ProjectLab.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var filter = new BsonDocument();
-            var projects = db.Projects.Find(filter).ToList();
+            /*var projects = db.Projects.Find( x => x.ProjectType.Name != "Приватный" && x.ProjectStatus.Name == "Рабочий").ToList();
             var vm = new List<ProjectViewModel>();
             foreach (var p in projects)
             {
@@ -33,22 +34,24 @@ namespace ProjectLab.Controllers
                     Name = p.Name,
                     Manager = (p.Manager == null) ? "" : p.Manager.Name
                 });
-            }
-            return View(vm);
+            }*/
+            return View();
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(string IdeaId)
+        public IActionResult Create(string IdeaId)
         {
-            var vm = new ProjectViewModel();
+            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
+            var vm = new ProjectCreateViewModel { IdeaId = IdeaId, IdeaName = idea.Name };
+            ViewData["ListProjectTypes"] = db.ProjectTypes.Find(new BsonDocument()).ToList();
             return View(vm);
         }
 
         [HttpPost]
-        public IActionResult Edit(ProjectViewModel vm)
+        public IActionResult Create(ProjectCatalogViewModel vm)
         {
-            var project = new Project
+            /*var project = new Project
             {
                 Name = vm.Name,
                 Start = vm.Start,
@@ -58,7 +61,7 @@ namespace ProjectLab.Controllers
             if (vm.Id == null)
                 db.Projects.InsertOne(project);
             else
-                db.Projects.ReplaceOne(new BsonDocument("Id", vm.Id), project);
+                db.Projects.ReplaceOne(new BsonDocument("Id", vm.Id), project);*/
             return RedirectToAction("Index");
         }
 

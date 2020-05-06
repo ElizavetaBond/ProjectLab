@@ -23,7 +23,7 @@
 
                 @if (User.Identity.IsAuthenticated)
                 {
-                    @using (Html.BeginForm("Edit", "Project", FormMethod.Get))
+                    @using (Html.BeginForm("Create", "Project", FormMethod.Get))
                     {
                         <input type="hidden" name="IdeaId" value="@x.Id" />
                         <button class="btn btn-primary idea-btn-public" type="submit">

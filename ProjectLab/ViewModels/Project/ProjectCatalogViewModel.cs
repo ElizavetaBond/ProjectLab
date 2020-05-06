@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ProjectLab.ViewModels
 {
-    public class ProjectViewModel
+    public class ProjectCatalogViewModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
