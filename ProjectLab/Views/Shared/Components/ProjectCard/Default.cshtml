@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewData["Title"] = "Default";
+    @model ProjectCardViewModel
+}
+
+<div>
+    <h2>@Model.Name</h2>
+    <div class="card-photo">
+        @if (Model.ImageId == null)
+        {
+            <img src="~/imgs/project.jpg" alt="" />
+        }
+        else
+        {
+            <img src="@Url.Action("GetImage", "Project", new { id = @Model.ImageId })" alt="" />
+        }
+        <form method="get" asp-action="Browse" asp-controller="Project">
+            <input type="hidden" name="ProjectId" value="@Model.Id" />
+            <button class="btn btn-primary card-btn-preview" type="submit">
+                Просмотр проекта
+            </button>
+        </form>
+    </div>
+    <h3>Направленность - @Model.Direction</h3>
+    <h3>Руководитель - @Model.Manager</h3>
+    <h3>Учебное заведение руководителя - @Model.EducationalInstitution</h3>
+</div>

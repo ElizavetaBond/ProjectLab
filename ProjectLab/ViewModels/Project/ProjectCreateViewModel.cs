@@ -13,6 +13,7 @@ namespace ProjectLab.ViewModels.Project
         public string IdeaId { get; set; }
 
         [Display(Name = "Идея")]
+        [HiddenInput(DisplayValue = false)]
         public string IdeaName { get; set; }
 
         [Required(ErrorMessage = "Заполните данное поле")]

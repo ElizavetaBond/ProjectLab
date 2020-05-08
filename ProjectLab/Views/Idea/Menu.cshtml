@@ -11,17 +11,17 @@
         <div class="col-10">
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="Drafts">
-                    <ul class="ideas clearfix">
+                    <ul class="cards clearfix">
                         @foreach (var x in Model.Drafts)
                         {
-                            <li class="idea-wrapper">
-                                <div class="idea">
+                            <li class="card-wrapper">
+                                <div class="card">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                     @using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
                                     {
                                         <input type="hidden" name="IdIdea" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                        <button class="btn btn-primary card-btn-public" type="submit">
                                             Редактировать
                                         </button>
                                     }
@@ -29,7 +29,7 @@
                                     @using (Html.BeginForm("Delete", "Idea", FormMethod.Post))
                                     {
                                         <input type="hidden" name="IdeaId" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                        <button class="btn btn-primary card-btn-public" type="submit">
                                             Удалить
                                         </button>
                                     }
@@ -37,7 +37,7 @@
                                     @using (Html.BeginForm("SendToReview", "Idea", FormMethod.Post))
                                     {
                                         <input type="hidden" name="IdeaId" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                        <button class="btn btn-primary card-btn-public" type="submit">
                                             Отправить на модерацию
                                         </button>
                                     }
@@ -47,11 +47,11 @@
                     </ul>
                 </div>
                 <div class="tab-pane fade" id="OnReviews">
-                    <ul class="ideas clearfix">
+                    <ul class="cards clearfix">
                         @foreach (var x in Model.OnReviews)
                         {
-                            <li class="idea-wrapper">
-                                <div class="idea">
+                            <li class="card-wrapper">
+                                <div class="card">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
                                 </div>
                             </li>
@@ -59,17 +59,17 @@
                     </ul>
                 </div>
                 <div class="tab-pane fade" id="Approves">
-                    <ul class="ideas clearfix">
+                    <ul class="cards clearfix">
                         @foreach (var x in Model.Approves)
                         {
-                            <li class="idea-wrapper">
-                                <div class="idea">
+                            <li class="card-wrapper">
+                                <div class="card">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                     @using (Html.BeginForm("Create", "Project", FormMethod.Get))
                                     {
                                         <input type="hidden" name="IdeaId" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                        <button class="btn btn-primary card-btn-public" type="submit">
                                             Опубликовать проект
                                         </button>
                                     }
@@ -77,7 +77,7 @@
                                     @using (Html.BeginForm("Delete", "Idea", FormMethod.Post))
                                     {
                                         <input type="hidden" name="IdeaId" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                        <button class="btn btn-primary card-btn-public" type="submit">
                                             Удалить
                                         </button>
                                     }
@@ -87,17 +87,17 @@
                     </ul>
                 </div>
                 <div class="tab-pane fade" id="Rejects">
-                    <ul class="ideas clearfix">
+                    <ul class="cards clearfix">
                         @foreach (var x in Model.Rejects)
                         {
-                            <li class="idea-wrapper">
-                                <div class="idea">
+                            <li class="card-wrapper">
+                                <div class="card">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                     @using (Html.BeginForm("Delete", "Idea", FormMethod.Post))
                                     {
                                         <input type="hidden" name="IdeaId" value="@x.Id" />
-                                        <button class="btn btn-primary idea-btn-public" type="submit">
+                                        <button class="btn btn-primary card-btn-public" type="submit">
                                             Удалить
                                         </button>
                                     }
@@ -109,17 +109,17 @@
                 @if (User.IsInRole("Эксперт"))
                 {
                     <div class="tab-pane fade" id="MyReviews">
-                        <ul class="ideas clearfix">
+                        <ul class="cards clearfix">
                             @foreach (var x in Model.MyReviews)
                             {
-                                <li class="idea-wrapper">
-                                    <div class="idea">
+                                <li class="card-wrapper">
+                                    <div class="card">
                                         @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                         @using (Html.BeginForm("Review", "Idea", FormMethod.Get))
                                         {
                                             <input type="hidden" name="IdeaId" value="@x.Id" />
-                                            <button class="btn btn-primary idea-btn-public" type="submit">
+                                            <button class="btn btn-primary card-btn-public" type="submit">
                                                 Оценить
                                             </button>
                                         }
@@ -127,7 +127,7 @@
                                         @using (Html.BeginForm("CancelReview", "Idea", FormMethod.Post))
                                         {
                                             <input type="hidden" name="IdeaId" value="@x.Id" />
-                                            <button class="btn btn-primary idea-btn-public" type="submit">
+                                            <button class="btn btn-primary card-btn-public" type="submit">
                                                 Отказаться
                                             </button>
                                         }

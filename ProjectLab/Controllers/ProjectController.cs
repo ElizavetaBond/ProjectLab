@@ -23,19 +23,26 @@ namespace ProjectLab.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Catalog()
         {
-            /*var projects = db.Projects.Find( x => x.ProjectType.Name != "Приватный" && x.ProjectStatus.Name == "Рабочий").ToList();
-            var vm = new List<ProjectViewModel>();
+            var projects = db.Projects.Find( x => x.ProjectType.Name != "Приватный" && x.ProjectStatus.Name == "Рабочий").ToList();
+            var vm = new List<ProjectCardViewModel>();
             foreach (var p in projects)
             {
-                vm.Add(new ProjectViewModel
+                vm.Add (new ProjectCardViewModel
                 {
-                    Name = p.Name,
-                    Manager = (p.Manager == null) ? "" : p.Manager.Name
+                    Id = p.Id,
+                    Name = p.Idea.Name,
+                    Direction = p.Idea.Direction.Name,
+                    EducationalInstitution = p.Manager.EducationalInstitution.Name,
+                    Manager = p.Manager.Surname + p.Manager.Name,
+                    ProjectType = p.ProjectType.Name,
+                    ImageId = p.Idea.ImageId,
+                    IsManager = p.Manager.Email == User.Identity.Name,
+                    IsParticipant = p.Participants.Find(x => x.Email == User.Identity.Name) != null
                 });
-            }*/
-            return View();
+            }
+            return View(vm);
         }
 
         [HttpGet]
@@ -44,25 +51,32 @@ namespace ProjectLab.Controllers
         {
             var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
             var vm = new ProjectCreateViewModel { IdeaId = IdeaId, IdeaName = idea.Name };
-            ViewData["ListProjectTypes"] = db.ProjectTypes.Find(new BsonDocument()).ToList();
+            loadReferences(idea.IdeaType);
             return View(vm);
         }
 
         [HttpPost]
-        public IActionResult Create(ProjectCatalogViewModel vm)
+        public IActionResult Create(ProjectCreateViewModel vm)
         {
-            /*var project = new Project
+            if (vm.Finish <= DateTime.Now)
+                ModelState.AddModelError("Finish", "Некорректная дата");
+            if (ModelState.IsValid)
             {
-                Name = vm.Name,
-                Start = vm.Start,
-                Finish = vm.Finish,
-                Description = vm.Description
-            };
-            if (vm.Id == null)
-                db.Projects.InsertOne(project);
-            else
-                db.Projects.ReplaceOne(new BsonDocument("Id", vm.Id), project);*/
-            return RedirectToAction("Index");
+                db.Projects.InsertOne(new Project
+                {
+                    Idea = db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault(),
+                    Manager = db.Users.Find(x => x.Email == User.Identity.Name).FirstOrDefault(),
+                    ProjectType = db.ProjectTypes.Find(x => x.Id == vm.ProjectTypeId).FirstOrDefault(),
+                    ProjectStatus = db.ProjectStatuses.Find(x => x.Name == "Рабочий").FirstOrDefault(),
+                    Start = DateTime.Now,
+                    Finish = vm.Finish,
+                    Comments = new List<Comment>(),
+                    Participants = new List<User>()
+                });
+                return RedirectToAction("Catalog");
+            }
+            loadReferences(db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault().IdeaType);
+            return View(vm);
         }
 
         public ActionResult GetImage(string id)
@@ -73,6 +87,12 @@ namespace ProjectLab.Controllers
                 return NotFound();
             }
             return File(image, "image/jpg");
+        }
+
+        private void loadReferences (string IdeaType)
+        {
+            ViewData["ListProjectTypes"] = (IdeaType == "Открытая") ? db.ProjectTypes.Find(new BsonDocument()).ToList() :
+                                           db.ProjectTypes.Find(x => x.Name == "Приватный").ToList();
         }
     }
 }

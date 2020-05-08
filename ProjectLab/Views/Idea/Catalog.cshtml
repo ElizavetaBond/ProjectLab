@@ -14,11 +14,11 @@
     }
 }
 
-<ul class="ideas clearfix">
+<ul class="cards clearfix">
     @foreach (var x in Model)
     {
-        <li class="idea-wrapper">
-            <div class="idea">
+        <li class="card-wrapper">
+            <div class="card">
                 @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                 @if (User.Identity.IsAuthenticated)
@@ -26,7 +26,7 @@
                     @using (Html.BeginForm("Create", "Project", FormMethod.Get))
                     {
                         <input type="hidden" name="IdeaId" value="@x.Id" />
-                        <button class="btn btn-primary idea-btn-public" type="submit">
+                        <button class="btn btn-primary card-btn-public" type="submit">
                             Опубликовать проект
                         </button>
                     }

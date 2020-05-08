@@ -6,7 +6,7 @@
 
 <div>
     <h2>Название - @Model.Name</h2>
-    <div class="idea-photo">
+    <div class="card-photo">
         @if (Model.ImageId == null)
         {
             <img src="~/imgs/idea_image.jpg" alt="" />
@@ -17,7 +17,7 @@
         }
         <form method="get" asp-action="Browse" asp-controller="Idea">
             <input type="hidden" name="IdeaId" value="@Model.Id" />
-            <button class="btn btn-primary idea-btn-preview" type="submit">
+            <button class="btn btn-primary card-btn-preview" type="submit">
                 Просмотр идеи
             </button>
         </form>
@@ -26,103 +26,3 @@
     <h3>Автор - @Model.Author</h3>
     <h3>УЗ - @Model.EducationalInstitution</h3>
 </div>
-
-<style>
-    .idea-wrapper {
-        display: block;
-        width: 100%;
-        float: left;
-        transition: width .2s;
-    }
-
-    @@media only screen and (min-width: 450px) {
-        .idea-wrapper {
-            width: 50%;
-        }
-    }
-
-    @@media only screen and (min-width: 768px) {
-        .idea-wrapper {
-            width: 33.333%;
-        }
-    }
-
-    @@media only screen and (min-width: 1000px) {
-        .idea-wrapper {
-            width: 25%;
-        }
-    }
-
-    .idea {
-        display: block;
-        border: 1px solid royalblue;
-        border-radius: 3px;
-        position: relative;
-        background-color: rgba(194, 223, 255, 0.81);
-        margin: 0 20px 20px 0;
-        text-decoration: none;
-        z-index: 0;
-    }
-
-    .ideas {
-        list-style: none;
-        margin: 0 -20px 0 0;
-        padding: 0;
-    }
-
-    .idea-photo {
-        position: relative;
-        padding-bottom: 100%;
-        overflow: hidden;
-    }
-
-        .idea-photo img {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 100%;
-            max-height: 100%;
-            margin: auto;
-            transition: transform .4s ease-out;
-        }
-
-    .idea:hover .idea-photo img {
-        transform: scale(1.05);
-    }
-
-    .idea h2 {
-        font-size: 18px;
-        text-align: center;
-        color: royalblue;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    .idea h3 {
-        text-align: center;
-        font-size: 16px;
-        color: darkblue;
-    }
-
-    .idea-btn-preview {
-        position: relative;
-        left: 50%;
-        transform: translate(-50%, 300%);
-        opacity: 0;
-        vertical-align: middle;
-    }
-
-    .idea:hover .idea-btn-preview {
-        opacity: 1;
-    }
-
-    .idea-btn-public {
-        position: relative;
-        left: 50%;
-        transform: translate(-50%, 0%);
-        margin-bottom: 10px;
-        width: 130px;
-    }
-</style>

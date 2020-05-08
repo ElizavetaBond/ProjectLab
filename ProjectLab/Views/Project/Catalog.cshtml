@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Каталог проектов";
+    @model IEnumerable<ProjectCardViewModel>
+}
+
+    <ul class="cards clearfix">
+        @foreach (var x in Model)
+        {
+            <li class="card-wrapper">
+                <div class="card">
+                    @await Component.InvokeAsync("ProjectCard", new { vm = x })
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        if (x.IsManager)
+                        {
+                            <label>Вы являетесь руководителем</label>
+                        }
+                        else if (x.IsParticipant)
+                        {
+                            <label>Вы являетесь участником</label>
+                        }
+                        else
+                        {
+                            @using (Html.BeginForm("", "Project", FormMethod.Get))
+                            {
+                                <input type="hidden" name="ProjectId" value="@x.Id" />
+                                <button class="btn btn-primary card-btn-public" type="submit">
+                                    Принять участие
+                                </button>
+                            }
+                        }
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+
