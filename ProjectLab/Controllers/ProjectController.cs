@@ -29,17 +29,18 @@ namespace ProjectLab.Controllers
             var vm = new List<ProjectCardViewModel>();
             foreach (var p in projects)
             {
+                var manager = db.Users.Find(x => x.Email == p.ManagerEmail).FirstOrDefault();
                 vm.Add (new ProjectCardViewModel
                 {
                     Id = p.Id,
                     Name = p.Idea.Name,
                     Direction = p.Idea.Direction.Name,
-                    EducationalInstitution = p.Manager.EducationalInstitution.Name,
-                    Manager = p.Manager.Surname + p.Manager.Name,
+                    EducationalInstitution = manager.EducationalInstitution.Name,
+                    Manager = manager.Surname + manager.Name,
                     ProjectType = p.ProjectType.Name,
                     ImageId = p.Idea.ImageId,
-                    IsManager = p.Manager.Email == User.Identity.Name,
-                    IsParticipant = p.Participants.Find(x => x.Email == User.Identity.Name) != null
+                    IsManager = manager.Email == User.Identity.Name,
+                    IsParticipant = p.ParticipantsEmail.Find(x => x == User.Identity.Name) != null
                 });
             }
             return View(vm);
@@ -55,6 +56,7 @@ namespace ProjectLab.Controllers
             return View(vm);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult Create(ProjectCreateViewModel vm)
         {
@@ -62,16 +64,18 @@ namespace ProjectLab.Controllers
                 ModelState.AddModelError("Finish", "Некорректная дата");
             if (ModelState.IsValid)
             {
+                var idea = db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault();
                 db.Projects.InsertOne(new Project
                 {
-                    Idea = db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault(),
-                    Manager = db.Users.Find(x => x.Email == User.Identity.Name).FirstOrDefault(),
+                    Idea = idea,
+                    ManagerEmail = User.Identity.Name,
                     ProjectType = db.ProjectTypes.Find(x => x.Id == vm.ProjectTypeId).FirstOrDefault(),
                     ProjectStatus = db.ProjectStatuses.Find(x => x.Name == "Рабочий").FirstOrDefault(),
                     Start = DateTime.Now,
                     Finish = vm.Finish,
                     Comments = new List<Comment>(),
-                    Participants = new List<User>()
+                    ParticipantsEmail = new List<string>(),
+                    Sections = idea.ProjectTemplate.Sections
                 });
                 return RedirectToAction("Catalog");
             }
@@ -93,6 +97,21 @@ namespace ProjectLab.Controllers
         {
             ViewData["ListProjectTypes"] = (IdeaType == "Открытая") ? db.ProjectTypes.Find(new BsonDocument()).ToList() :
                                            db.ProjectTypes.Find(x => x.Name == "Приватный").ToList();
+        }
+
+        [Authorize]
+        public ActionResult Join(string ProjectId) // стать участником проекта
+        {
+            var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsEmail, User.Identity.Name);
+            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
+            return RedirectToAction("Catalog");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Browse(string ProjectId)
+        {
+            return View();
         }
     }
 }

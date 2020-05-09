@@ -22,7 +22,7 @@
                         }
                         else
                         {
-                            @using (Html.BeginForm("", "Project", FormMethod.Get))
+                            @using (Html.BeginForm("Join", "Project"))
                             {
                                 <input type="hidden" name="ProjectId" value="@x.Id" />
                                 <button class="btn btn-primary card-btn-public" type="submit">

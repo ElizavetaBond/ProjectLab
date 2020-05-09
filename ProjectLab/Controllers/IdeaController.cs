@@ -81,6 +81,7 @@ namespace ProjectLab.Controllers
                         {
                             Name = vm.Sections[i].Name,
                             SectionType = vm.Sections[i].SectionType,
+                            Answears = new List<Answear>(),
                             Components = vm.Components.FindAll(x => x.Section == i && !x.IsDelete)
                                                   .Select(x => new Component
                                                   {
