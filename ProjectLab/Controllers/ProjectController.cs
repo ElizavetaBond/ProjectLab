@@ -100,18 +100,69 @@ namespace ProjectLab.Controllers
         }
 
         [Authorize]
+        [HttpPost]
         public ActionResult Join(string ProjectId) // стать участником проекта
         {
             var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsEmail, User.Identity.Name);
             db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
-            return RedirectToAction("Catalog");
+            return RedirectToAction("Browse", "Project", new { ProjectId = ProjectId });
         }
 
-        [Authorize]
         [HttpGet]
         public IActionResult Browse(string ProjectId)
         {
-            return View();
+            var project = db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault();
+            var vm =  new ProjectBrowseViewModel 
+            { 
+                Id = project.Id,
+                Name = project.Idea.Name,
+                AuthorIdea  = project.Idea.Author.Email,
+                Description = project.Idea.Description,
+                Direction = project.Idea.Direction.Name,
+                Equipment = project.Idea.Equipment,
+                Finish = project.Finish,
+                ImageId = project.Idea.ImageId,
+                Manager = project.ManagerEmail,
+                ProjectType = project.ProjectType.Name,
+                Purpose = project.Idea.Purpose,
+                Safety = project.Idea.Safety,
+                Start = project.Start,
+                Target = project.Idea.Target,
+                Video = project.Idea.Video,
+                Participants = project.ParticipantsEmail,
+                Sections = new List<SectionBrowseViewModel>()
+            };
+            var i = 0;
+            foreach (var s in project.Sections)
+            {
+                vm.Sections.Add(new SectionBrowseViewModel
+                {
+                    SectionId = "areaSection" + i,
+                    Name=s.Name,
+                    SectionType=s.SectionType,
+                    Components = s.Components.Select(x => new ComponentBrowseViewModel
+                    {
+                        Name = x.Name,
+                        ComponentType = x.ComponentType,
+                        Description = x.Description,
+                        IsNecessary = x.IsNecessary
+                    }).ToList(),
+                    Answears = s.Answears.Select(x => new AnswearBrowseViewModel
+                    {
+                        AuthorEmail = x.AuthorEmail,
+                        Date = x.Date,
+                        Components = x.Components.Select(y => new ComponentBrowseViewModel
+                        {
+                            Name = y.Name,
+                            ComponentType = y.ComponentType,
+                            Description = y.Description,
+                            IsNecessary = y.IsNecessary
+                        }).ToList()
+                    }).ToList()
+                });
+                i++;
+            }
+            return View(vm);
         }
     }
 }

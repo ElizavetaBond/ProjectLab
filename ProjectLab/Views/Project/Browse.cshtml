@@ -2,36 +2,185 @@
 @{
     ViewData["Title"] = "Browse";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @model ProjectBrowseViewModel
 }
 
-    <div class="background">
-        <ul class="nav nav-tabs flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#generalinform">Общая информация</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#studyinform">Информация об исследовании</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#participants">Участники</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#comments">Комментарии</a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="generalinform">
+<div class="background">
+    <div class="row">
+        <div class="col-2">
+            <ul class="nav nav-tabs flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#generalinform">Общая информация</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#studyinform">Информация об исследовании</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#participants">Участники</a>
+                </li>
+                @foreach (var x in Model.Sections)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#@x.SectionId" title="@x.SectionType">@x.Name</a>
+                    </li>
+                }
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#comments">Комментарии</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-10">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="generalinform">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <input asp-for="Id" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Name"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Name" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Manager"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Manager" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="ProjectType"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="ProjectType" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="AuthorIdea"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="AuthorIdea" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Description"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Description" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="ImageId"></label>
+                            </div>
+                            <div class="col-9">
+                                <img src="@Url.Action("GetImage", new { id = @Model.ImageId })" style="width:300px;height:200px;" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Video"></label>
+                            </div>
+                            <div class="col-9">
+                                <a href="@Model.Video" target="_blank">@Model.Video</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Start"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Start" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Finish"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Finish" class="form-control" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            </div>
-            <div class="tab-pane fade" id="studyinform">
 
-            </div>
-            <div class="tab-pane fade" id="participants">
+                <div class="tab-pane fade" id="studyinform">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Direction"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Direction" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Target"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Target" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Purpose"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Purpose" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Equipment"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Equipment" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label asp-for="Safety"></label>
+                            </div>
+                            <div class="col-9">
+                                <input asp-for="Safety" class="form-control" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            </div>
-            <div class="tab-pane fade" id="comments">
+                <div class="tab-pane fade" id="participants">
+                    @foreach (var x in Model.Participants)
+                    {
+                        <label>@x</label>
+                    }
+                </div>
 
+                @foreach (var s in Model.Sections)
+                {
+                    <div class="tab-pane fade" id="@s.SectionId">
+                        @foreach (var a in s.Answears)
+                        {
+                            <label>@a.AuthorEmail</label>
+                        }
+                    </div>
+                }
+
+                <div class="tab-pane fade" id="comments">
+
+                </div>
             </div>
         </div>
     </div>
+</div>
 
