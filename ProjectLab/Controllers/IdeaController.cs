@@ -124,7 +124,7 @@ namespace ProjectLab.Controllers
             if (idea.IdeaType == "Приватная") ; // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
             else
             {
-                var experts = db.Experts.Find(x => x.User.Direction.Id == idea.Direction.Id) // выбрали экспертов по направленности
+                var experts = db.Experts.Find(x => x.Direction.Id == idea.Direction.Id) // выбрали экспертов по направленности
                                       .ToList()
                                       .OrderBy(x => x.ReviewIdeas.Count)
                                       .ToList(); // отсортировали по количеству работы
@@ -158,7 +158,7 @@ namespace ProjectLab.Controllers
         {
             if (ModelState.IsValid)
             {
-                var ExpertId = db.Experts.Find(x => x.User.Id == User.Identity.Name).FirstOrDefault().Id;
+                var ExpertId = db.Experts.Find(x => x.UserId == User.Identity.Name).FirstOrDefault().Id;
                 var resol = new Resolution // резолюция эксперта
                 {
                     ExpertId = ExpertId,
@@ -271,7 +271,7 @@ namespace ProjectLab.Controllers
             };
             if (User.IsInRole("Эксперт"))
             {
-                vm.MyReviews = db.Experts.Find(x => x.User.Id == User.Identity.Name)
+                vm.MyReviews = db.Experts.Find(x => x.UserId == User.Identity.Name)
                                         .FirstOrDefault()
                                         .ReviewIdeas
                                         .Select(x => GetIdeaCardVM(x)).ToList();

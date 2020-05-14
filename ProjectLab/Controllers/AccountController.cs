@@ -132,7 +132,7 @@ namespace ProjectLab.Controllers
             db.Users.FindOneAndUpdate(us => us.Id == UserId, update);
 
             var user = db.Users.Find(x => x.Id == UserId).FirstOrDefault();
-            db.Experts.InsertOne(new Expert { User=user, ReviewIdeas = new List<Idea>() });
+            db.Experts.InsertOne(new Expert { UserId = user.Id, Direction=user.Direction, ReviewIdeas = new List<Idea>() });
         }
 
         public void SetAdmin()

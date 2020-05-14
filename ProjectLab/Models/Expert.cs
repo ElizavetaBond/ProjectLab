@@ -12,7 +12,8 @@ namespace ProjectLab.Models
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }              // идентификатор
-        public User User { get; set; }              // данные пользователя, которым он является
+        public string UserId { get; set; }
+        public Direction Direction { get; set; }
         public List<Idea> ReviewIdeas { get; set; } // идеи на проверке
     }
 }
