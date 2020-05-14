@@ -29,18 +29,17 @@ namespace ProjectLab.Controllers
             var vm = new List<ProjectCardViewModel>();
             foreach (var p in projects)
             {
-                var manager = db.Users.Find(x => x.Email == p.ManagerEmail).FirstOrDefault();
+                var managerId = db.Users.Find(x => x.Id == p.ManagerId).FirstOrDefault().Id;
                 vm.Add (new ProjectCardViewModel
                 {
                     Id = p.Id,
                     Name = p.Idea.Name,
                     Direction = p.Idea.Direction.Name,
-                    EducationalInstitution = manager.EducationalInstitution.Name,
-                    Manager = manager.Surname + manager.Name,
+                    ManagerId = managerId,
                     ProjectType = p.ProjectType.Name,
                     ImageId = p.Idea.ImageId,
-                    IsManager = manager.Email == User.Identity.Name,
-                    IsParticipant = p.ParticipantsEmail.Find(x => x == User.Identity.Name) != null
+                    IsManager = managerId == User.Identity.Name,
+                    IsParticipant = p.ParticipantsId.Find(x => x == User.Identity.Name) != null
                 });
             }
             return View(vm);
@@ -68,13 +67,13 @@ namespace ProjectLab.Controllers
                 db.Projects.InsertOne(new Project
                 {
                     Idea = idea,
-                    ManagerEmail = User.Identity.Name,
+                    ManagerId = User.Identity.Name,
                     ProjectType = db.ProjectTypes.Find(x => x.Id == vm.ProjectTypeId).FirstOrDefault(),
                     ProjectStatus = db.ProjectStatuses.Find(x => x.Name == "Рабочий").FirstOrDefault(),
                     Start = DateTime.Now,
                     Finish = vm.Finish,
                     Comments = new List<Comment>(),
-                    ParticipantsEmail = new List<string>(),
+                    ParticipantsId = new List<string>(),
                     Sections = idea.ProjectTemplate.Sections
                 });
                 return RedirectToAction("Catalog");
@@ -103,7 +102,7 @@ namespace ProjectLab.Controllers
         [HttpPost]
         public ActionResult Join(string ProjectId) // стать участником проекта
         {
-            var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsEmail, User.Identity.Name);
+            var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsId, User.Identity.Name);
             db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
             return RedirectToAction("Browse", "Project", new { ProjectId = ProjectId });
         }
@@ -116,42 +115,42 @@ namespace ProjectLab.Controllers
             { 
                 Id = project.Id,
                 Name = project.Idea.Name,
-                AuthorIdea  = project.Idea.Author.Email,
+                AuthorIdeaId  = project.Idea.AuthorId,
                 Description = project.Idea.Description,
                 Direction = project.Idea.Direction.Name,
                 Equipment = project.Idea.Equipment,
                 Finish = project.Finish,
                 ImageId = project.Idea.ImageId,
-                Manager = project.ManagerEmail,
+                ManagerId = project.ManagerId,
                 ProjectType = project.ProjectType.Name,
                 Purpose = project.Idea.Purpose,
                 Safety = project.Idea.Safety,
                 Start = project.Start,
                 Target = project.Idea.Target,
                 Video = project.Idea.Video,
-                Participants = project.ParticipantsEmail,
-                Sections = new List<SectionBrowseViewModel>()
+                ParticipantsId = project.ParticipantsId,
+                Sections = new List<SectionBrowseProjectViewModel>()
             };
             var i = 0;
             foreach (var s in project.Sections)
             {
-                vm.Sections.Add(new SectionBrowseViewModel
+                vm.Sections.Add(new SectionBrowseProjectViewModel
                 {
                     SectionId = "areaSection" + i,
                     Name=s.Name,
                     SectionType=s.SectionType,
-                    Components = s.Components.Select(x => new ComponentBrowseViewModel
+                    Components = s.Components.Select(x => new ComponentBrowseProjectViewModel
                     {
                         Name = x.Name,
                         ComponentType = x.ComponentType,
                         Description = x.Description,
                         IsNecessary = x.IsNecessary
                     }).ToList(),
-                    Answears = s.Answears.Select(x => new AnswearBrowseViewModel
+                    Answears = s.Answears.Select(x => new AnswearBrowseProjectViewModel
                     {
-                        AuthorEmail = x.AuthorEmail,
+                        AuthorId = x.AuthorId,
                         Date = x.Date,
-                        Components = x.Components.Select(y => new ComponentBrowseViewModel
+                        Components = x.Components.Select(y => new ComponentBrowseProjectViewModel
                         {
                             Name = y.Name,
                             ComponentType = y.ComponentType,
@@ -163,6 +162,27 @@ namespace ProjectLab.Controllers
                 i++;
             }
             return View(vm);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Fill (string ProjectId, int SectionNum)
+        {
+            return View(db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault()
+                                .Sections[SectionNum].Components.Select(x => new ComponentBrowseProjectViewModel
+            {
+                ComponentType = x.ComponentType,
+                Description = x.Description,
+                IsNecessary = x.IsNecessary,
+                Name = x.Name
+            }).ToList());
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Fill(List<ComponentBrowseProjectViewModel> vm)
+        {
+            return RedirectToAction();
         }
     }
 }

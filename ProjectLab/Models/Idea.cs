@@ -20,7 +20,8 @@ namespace ProjectLab.Models
         public string Safety { get; set; }          // техника безопасности
         public int ValueDegree { get; set; }        // степень ценности
 
-        public User Author { get; set; }            // ссылка на автора
+
+        public string AuthorId { get; set; }
         public IdeaStatus IdeaStatus { get; set; }  // ссылка на статус идеи
         public Direction Direction { get; set; }    // ссылка на направленность идеи
 

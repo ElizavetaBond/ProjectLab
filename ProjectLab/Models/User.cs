@@ -30,7 +30,7 @@ namespace ProjectLab.Models
         public List<Reward> Rewards { get; set; }
 
         public string Contacts { get; set; }
-        public string Photo { get; set; }
+        public string ImageId { get; set; }
         public string AddInform { get; set; }
     }
 }

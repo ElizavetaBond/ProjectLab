@@ -23,6 +23,5 @@
         </form>
     </div>
     <h3>Направленность - @Model.Direction</h3>
-    <h3>Руководитель - @Model.Manager</h3>
-    <h3>Учебное заведение руководителя - @Model.EducationalInstitution</h3>
+    <h3>Руководитель</h3> @await Component.InvokeAsync("AccountLink", new { UserId = Model.ManagerId })
 </div>

@@ -35,7 +35,7 @@ namespace ProjectLab.ViewModels.Idea
         public string Direction { get; set; }
 
         [Display(Name = "Автор")]
-        public string Author { get; set; }
+        public string AuthorId { get; set; }
 
         [Display(Name="Ссылка на видео")]
         public string Video { get; set; }

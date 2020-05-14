@@ -39,7 +39,7 @@ namespace ProjectLab.Controllers
         {
             var filter = new BsonDocument();
             ViewData["ListDirections"] = db.Directions.Find(filter).ToList();
-            ViewData["ListComponents"] = new List<string> { "Текст", "Сообщение", "Дата/Время",  "Число", "Флаг",
+            ViewData["ListComponents"] = new List<string> { "Текст", "Сообщение", "Дата", "Время",  "Число", "Флаг",
                                                             "Файл", "Фото", "Место", "Выбор", "Гиперссылка"};
             ViewData["ListIdeaTypes"] = new List<string> { "Открытая", "Приватная" };
             ViewData["ListSectionTypes"] = new List<string> { "Раздел итоговых результатов", 
@@ -54,7 +54,6 @@ namespace ProjectLab.Controllers
         {
             if (ModelState.IsValid)
             {
-                var author = db.Users.Find(x => x.Email == User.Identity.Name).FirstOrDefault();
                 var idea = new Idea
                 {
                     Name = vm.Name,
@@ -64,7 +63,7 @@ namespace ProjectLab.Controllers
                     Description = vm.Description,
                     Equipment = vm.Equipment,
                     Safety = vm.Safety,
-                    Author = author,
+                    AuthorId = User.Identity.Name,
                     IdeaStatus = db.IdeaStatuses.Find(x => x.Name == "Черновик").FirstOrDefault(),
                     Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
                     Video = vm.Video,
@@ -159,7 +158,7 @@ namespace ProjectLab.Controllers
         {
             if (ModelState.IsValid)
             {
-                var ExpertId = db.Experts.Find(x => x.User.Email == User.Identity.Name).FirstOrDefault().Id;
+                var ExpertId = db.Experts.Find(x => x.User.Id == User.Identity.Name).FirstOrDefault().Id;
                 var resol = new Resolution // резолюция эксперта
                 {
                     ExpertId = ExpertId,
@@ -219,6 +218,7 @@ namespace ProjectLab.Controllers
         public IdeaBrowseViewModel GetIdeaBrowseVM (string IdeaId)
         {
             var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
+            var authorId = db.Users.Find(x => x.Id == idea.AuthorId).FirstOrDefault().Id;
             var vm = new IdeaBrowseViewModel
             {
                 Name = idea.Name,
@@ -230,12 +230,12 @@ namespace ProjectLab.Controllers
                 Equipment = idea.Equipment,
                 Description = idea.Description,
                 Direction = idea.Direction.Name,
-                Author = idea.Author.Surname + " " + idea.Author.Name,
+                AuthorId = authorId,
                 ImageId = idea.ImageId,
                 Video = idea.Video,
                 Sections = new List<SectionBrowseViewModel>()
             };
-            if (idea.Author.Email == User.Identity.Name || (User.IsInRole("Эксперт") && idea.IdeaStatus.Name == "На модерации"))
+            if (authorId == User.Identity.Name || (User.IsInRole("Эксперт") && idea.IdeaStatus.Name == "На модерации"))
             {
                 vm.Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
                 {
@@ -256,7 +256,7 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Menu()
         {
-            var ownideas = db.Ideas.Find(x => x.Author.Email == User.Identity.Name).ToList();
+            var ownideas = db.Ideas.Find(x => x.AuthorId == User.Identity.Name).ToList();
             var vm = new IdeaMenuViewModel
             {
                 Drafts      = ownideas.FindAll(x => x.IdeaStatus.Name == "Черновик").ToList()
@@ -271,7 +271,7 @@ namespace ProjectLab.Controllers
             };
             if (User.IsInRole("Эксперт"))
             {
-                vm.MyReviews = db.Experts.Find(x => x.User.Email == User.Identity.Name)
+                vm.MyReviews = db.Experts.Find(x => x.User.Id == User.Identity.Name)
                                         .FirstOrDefault()
                                         .ReviewIdeas
                                         .Select(x => GetIdeaCardVM(x)).ToList();
@@ -286,8 +286,7 @@ namespace ProjectLab.Controllers
                 Id = idea.Id,
                 Name = idea.Name,
                 Direction = idea.Direction.Name,
-                Author = idea.Author.Surname + " " + idea.Author.Name,
-                EducationalInstitution = idea.Author.EducationalInstitution.Name,
+                AuthorId = idea.AuthorId,
                 ImageId = idea.ImageId
             };
         }

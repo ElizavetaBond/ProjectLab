@@ -85,13 +85,12 @@ namespace ProjectLab.Controllers
                         Education = db.Educations.Find(x => x.Id == model.EducationId).FirstOrDefault(),
                         AddInform = model.AddInform,
                         Contacts = model.Contacts,
-                        Photo = "",
                         Rewards = new List<Reward>(),
                         Direction = db.Directions.Find(x=>x.Id==model.DirectionId).FirstOrDefault()
                     };
                     db.Users.InsertOne(newUser);
 
-                    await Authenticate(newUser); // аутентификация
+                    await Authenticate(db.Users.Find(x=>x.Email==newUser.Email).FirstOrDefault()); // аутентификация
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -105,7 +104,7 @@ namespace ProjectLab.Controllers
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Id),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, user.UserStatus.Name)
             };
 
@@ -140,6 +139,16 @@ namespace ProjectLab.Controllers
         {
             var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Админ").FirstOrDefault());
             db.Users.FindOneAndUpdate(us => us.Email == "admin@ya.ru", update);
+        }
+
+        public ActionResult GetImage(string id)
+        {
+            var image = db.GetImage(id);
+            if (image == null)
+            {
+                return NotFound();
+            }
+            return File(image, "image/jpg");
         }
     }
 }

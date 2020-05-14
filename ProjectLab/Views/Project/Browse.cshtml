@@ -48,10 +48,10 @@
                         </div>
                         <div class="row">
                             <div class="col-3">
-                                <label asp-for="Manager"></label>
+                                <label asp-for="ManagerId"></label>
                             </div>
                             <div class="col-9">
-                                <input asp-for="Manager" class="form-control" readonly />
+                                @await  Component.InvokeAsync("AccountLink", new { UserId = Model.ManagerId })
                             </div>
                         </div>
                         <div class="row">
@@ -64,10 +64,10 @@
                         </div>
                         <div class="row">
                             <div class="col-3">
-                                <label asp-for="AuthorIdea"></label>
+                                <label asp-for="AuthorIdeaId"></label>
                             </div>
                             <div class="col-9">
-                                <input asp-for="AuthorIdea" class="form-control" readonly />
+                                @await  Component.InvokeAsync("AccountLink", new { UserId = Model.AuthorIdeaId })
                             </div>
                         </div>
                         <div class="row">
@@ -160,18 +160,23 @@
                 </div>
 
                 <div class="tab-pane fade" id="participants">
-                    @foreach (var x in Model.Participants)
+                    @foreach (var x in Model.ParticipantsId)
                     {
-                        <label>@x</label>
+                        @await Component.InvokeAsync("AccountLink", new { UserId = x})
                     }
                 </div>
 
-                @foreach (var s in Model.Sections)
+                @for(int i = 0; i < Model.Sections.Count; i++)
                 {
-                    <div class="tab-pane fade" id="@s.SectionId">
-                        @foreach (var a in s.Answears)
+                    <div class="tab-pane fade" id="@Model.Sections[i].SectionId">
+                        <form asp-controller="Project" asp-action="Fill" method="get">
+                            <input type="hidden" name="ProjectId" value="@Model.Id" />
+                            <input type="hidden" name="SectionNum" value="@i" />
+                            <button type="submit" class="btn btn-primary">Загрузить данные</button>
+                        </form>
+                        @foreach (var a in Model.Sections[i].Answears)
                         {
-                            <label>@a.AuthorEmail</label>
+                            @await Component.InvokeAsync("AccountLink", new { UserId = a.AuthorId })
                         }
                     </div>
                 }

@@ -18,13 +18,13 @@ namespace ProjectLab.ViewModels.Project
         public string Name { get; set; }
 
         [Display(Name = "Руководитель")]
-        public string Manager { get; set; }
+        public string ManagerId { get; set; }
 
         [Display(Name = "Уровень доступа")]
         public string ProjectType { get; set; }
 
         [Display(Name = "Автор идеи")]
-        public string AuthorIdea { get; set; }
+        public string AuthorIdeaId { get; set; }
 
         [Display(Name = "Цель")]
         public string Target { get; set; }          // цель
@@ -55,20 +55,20 @@ namespace ProjectLab.ViewModels.Project
 
         [Display(Name = "Дата окончания")]
         public DateTime Finish { get; set; }                // дата окончания проекта
-        public List<string> Participants { get; set; }
-        public List<SectionBrowseViewModel> Sections { get; set; }
+        public List<string> ParticipantsId { get; set; }
+        public List<SectionBrowseProjectViewModel> Sections { get; set; }
     }
 
-    public class SectionBrowseViewModel
+    public class SectionBrowseProjectViewModel
     {
         public string SectionId { get; set; }
         public string Name { get; set; }                // название раздела
         public string SectionType { get; set; }         // тип раздела
-        public List<ComponentBrowseViewModel> Components { get; set; } // компоненты в разделе
-        public List<AnswearBrowseViewModel> Answears { get; set; }
+        public List<ComponentBrowseProjectViewModel> Components { get; set; } // компоненты в разделе
+        public List<AnswearBrowseProjectViewModel> Answears { get; set; }
     }
 
-    public class ComponentBrowseViewModel
+    public class ComponentBrowseProjectViewModel
     {
         public string Name { get; set; }                // название компоненты
         public string ComponentType { get; set; }       // тип компоненты
@@ -78,10 +78,10 @@ namespace ProjectLab.ViewModels.Project
         public IFormFile File { get; set; }
     }
 
-    public class AnswearBrowseViewModel
+    public class AnswearBrowseProjectViewModel
     {
-        public string AuthorEmail { get; set; }
+        public string AuthorId { get; set; }
         public DateTime Date { get; set; }
-        public List<ComponentBrowseViewModel> Components { get; set; }
+        public List<ComponentBrowseProjectViewModel> Components { get; set; }
     }
 }

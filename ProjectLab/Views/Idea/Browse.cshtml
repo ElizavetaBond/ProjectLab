@@ -59,10 +59,10 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <label asp-for="Author"></label>
+                                    <label asp-for="AuthorId"></label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" asp-for="Author" readonly></textarea>
+                                    @await Component.InvokeAsync("AccountLink", new { UserId = Model.AuthorId })
                                 </div>
                             </div>
                             <div class="row">

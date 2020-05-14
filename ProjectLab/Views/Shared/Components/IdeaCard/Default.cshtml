@@ -4,25 +4,24 @@
     @model IdeaCardViewModel
 }
 
-<div>
-    <h2>Название - @Model.Name</h2>
-    <div class="card-photo">
-        @if (Model.ImageId == null)
-        {
-            <img src="~/imgs/idea_image.jpg" alt="" />
-        }
-        else
-        {
-            <img src="@Url.Action("GetImage", "Idea", new { id = @Model.ImageId })" alt="" />
-        }
-        <form method="get" asp-action="Browse" asp-controller="Idea">
-            <input type="hidden" name="IdeaId" value="@Model.Id" />
-            <button class="btn btn-primary card-btn-preview" type="submit">
-                Просмотр идеи
-            </button>
-        </form>
+    <div>
+        <h2>@Model.Name</h2>
+        <div class="card-photo">
+            @if (Model.ImageId == null)
+            {
+                <img src="~/imgs/idea_image.jpg" alt="" />
+            }
+            else
+            {
+                <img src="@Url.Action("GetImage", "Idea", new { id = @Model.ImageId })" alt="" />
+            }
+            <form method="get" asp-action="Browse" asp-controller="Idea">
+                <input type="hidden" name="IdeaId" value="@Model.Id" />
+                <button class="btn btn-primary card-btn-preview" type="submit">
+                    Просмотр идеи
+                </button>
+            </form>
+        </div>
+        <h3>Направленность - @Model.Direction</h3>
+        <h3>Автор</h3> @await Component.InvokeAsync("AccountLink", new { UserId = Model.AuthorId })
     </div>
-    <h3>Направленность - @Model.Direction</h3>
-    <h3>Автор - @Model.Author</h3>
-    <h3>УЗ - @Model.EducationalInstitution</h3>
-</div>

@@ -1,0 +1,42 @@
+﻿
+@{
+    Layout = null;
+    @model AccountLinkViewModel
+}
+
+<div class="cd-block">
+    @if (Model.ImageId == null)
+    {
+        <img src="~/imgs/person.jpg" alt="" class="avatar">
+    }
+    else
+    {
+        <img src="@Url.Action("GetImage", "Account", new { id = @Model.ImageId })" alt="" />
+    }
+    @Html.ActionLink(Model.Surname + " " + Model.Name, "Browse", "Account", new { UserId = Model.UserId }, null)
+</div>
+
+<style>
+
+    .avatar {
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+    }
+
+    .cd-block {
+        margin: 12.5px 25px;
+        padding: .5rem .1rem;
+        display: inline-block;
+        max-width: 10rem;
+        height: auto;
+        border: 1px solid #000;
+        border-radius: 5px;
+        text-align: center;
+        background-color: antiquewhite;
+    }
+
+        .cd-block span {
+            word-break: break-word;
+        }
+</style>

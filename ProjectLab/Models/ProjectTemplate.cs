@@ -29,7 +29,7 @@ namespace ProjectLab.Models
 
     public class Answear
     {
-        public string AuthorEmail { get; set; }
+        public string AuthorId { get; set; }
         public DateTime Date { get; set; }
         public List<Component> Components { get; set; }
     }
