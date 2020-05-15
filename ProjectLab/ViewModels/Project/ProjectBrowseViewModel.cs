@@ -80,6 +80,8 @@ namespace ProjectLab.ViewModels.Project
 
     public class AnswearBrowseProjectViewModel
     {
+        public string ProjectId { get; set; }
+        public int SectionNum { get; set; }
         public string AuthorId { get; set; }
         public DateTime Date { get; set; }
         public List<ComponentBrowseProjectViewModel> Components { get; set; }

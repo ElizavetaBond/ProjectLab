@@ -166,23 +166,29 @@ namespace ProjectLab.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Fill (string ProjectId, int SectionNum)
+        public IActionResult Fill(string ProjectId, int SectionNum)
         {
-            return View(db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault()
-                                .Sections[SectionNum].Components.Select(x => new ComponentBrowseProjectViewModel
+            return View(new AnswearBrowseProjectViewModel
             {
-                ComponentType = x.ComponentType,
-                Description = x.Description,
-                IsNecessary = x.IsNecessary,
-                Name = x.Name
-            }).ToList());
+                ProjectId = ProjectId,
+                SectionNum = SectionNum,
+                Components =
+                db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault()
+                                .Sections[SectionNum].Components.Select(x => new ComponentBrowseProjectViewModel
+                                {
+                                    ComponentType = x.ComponentType,
+                                    Description = x.Description,
+                                    IsNecessary = x.IsNecessary,
+                                    Name = x.Name
+                                }).ToList()
+            });
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Fill(List<ComponentBrowseProjectViewModel> vm)
+        public IActionResult Fill(AnswearBrowseProjectViewModel Model)
         {
-            return RedirectToAction();
+            return RedirectToAction("Catalog");
         }
     }
 }
