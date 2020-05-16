@@ -69,6 +69,7 @@ namespace ProjectLab.ViewModels.Idea
         public string Name { get; set; } // название компоненты
         public string Type { get; set; } // тип компоненты
         public string Description { get; set; } // описание компоненты
+        public List<string> ListSelect { get; set; }
         public bool IsNecessary { get; set; } // признак необходимости заполнения
         public int Section { get; set; } // номер раздела, к которому относится
         public bool IsDelete { get; set; } // признак удаления

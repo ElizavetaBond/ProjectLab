@@ -25,6 +25,7 @@ namespace ProjectLab.Models
         public string Description { get; set; }         // описание компоненты
         public bool IsNecessary { get; set; }           // необходимость заполнения
         public string Value { get; set; }
+        public List <string> ListSelect {get; set;}
     }
 
     public class Answear

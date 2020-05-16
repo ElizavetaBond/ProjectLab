@@ -179,7 +179,9 @@ namespace ProjectLab.Controllers
                                     ComponentType = x.ComponentType,
                                     Description = x.Description,
                                     IsNecessary = x.IsNecessary,
-                                    Name = x.Name
+                                    Name = x.Name,
+                                    Value = "",
+                                    ListSelect = x.ListSelect
                                 }).ToList()
             });
         }

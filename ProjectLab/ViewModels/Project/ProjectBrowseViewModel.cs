@@ -76,6 +76,8 @@ namespace ProjectLab.ViewModels.Project
         public bool IsNecessary { get; set; }           // необходимость заполнения
         public string Value { get; set; }
         public IFormFile File { get; set; }
+        public List<string> ListSelect { get; set; }
+        public bool Flag { get; set; }
     }
 
     public class AnswearBrowseProjectViewModel

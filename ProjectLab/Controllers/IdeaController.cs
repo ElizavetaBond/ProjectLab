@@ -87,7 +87,8 @@ namespace ProjectLab.Controllers
                                                       Name = x.Name,
                                                       ComponentType = x.Type,
                                                       Description = x.Description,
-                                                      IsNecessary = x.IsNecessary
+                                                      IsNecessary = x.IsNecessary,
+                                                      ListSelect = x.ListSelect
                                                   }).ToList()
                         };
                         idea.ProjectTemplate.Sections.Add(section);
