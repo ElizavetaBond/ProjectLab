@@ -40,7 +40,7 @@ namespace ProjectLab.Controllers
             var filter = new BsonDocument();
             ViewData["ListDirections"] = db.Directions.Find(filter).ToList();
             ViewData["ListComponents"] = new List<string> { "Текст", "Сообщение", "Дата", "Время",  "Число", "Флаг",
-                                                            "Файл", "Фото", "Место", "Выбор", "Гиперссылка"};
+                                                            "Файл", "Фото", "Место", "Выбор", "Множественный выбор", "Гиперссылка"};
             ViewData["ListIdeaTypes"] = new List<string> { "Открытая", "Приватная" };
             ViewData["ListSectionTypes"] = new List<string> { "Раздел итоговых результатов", 
                                                               "Раздел опроса", "Раздел данных" };

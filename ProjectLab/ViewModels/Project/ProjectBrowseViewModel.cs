@@ -77,6 +77,7 @@ namespace ProjectLab.ViewModels.Project
         public string Value { get; set; }
         public IFormFile File { get; set; }
         public List<string> ListSelect { get; set; }
+        public List<bool> ListRes { get; set; }
         public bool Flag { get; set; }
     }
 

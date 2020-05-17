@@ -168,6 +168,12 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Fill(string ProjectId, int SectionNum)
         {
+            /*var update = new UpdateDefinitionBuilder<Project>().Push(x => x.Sections[0].Components, new Component 
+            { 
+                ComponentType = "Выбор", Name = "Множ. выбор", IsNecessary = false,
+                ListSelect = new List<string> { "Значение1", "Значение2", "Значение3", "Значение4", "Значение5", "Значение6" }
+            });
+            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);*/
             return View(new AnswearBrowseProjectViewModel
             {
                 ProjectId = ProjectId,
