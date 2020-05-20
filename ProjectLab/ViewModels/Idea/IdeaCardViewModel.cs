@@ -15,6 +15,6 @@ namespace ProjectLab.ViewModels
         public string Name { get; set; }                    // название идеи
         public string Direction { get; set; }               // направленность идеи
         public string AuthorId { get; set; }                  // автор идеи
-        public string ImageId { get; set; }
+        public File Image { get; set; }
     }
 }

@@ -3,13 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectLab.Models;
-using ProjectLab.Models.References;
-using ProjectLab.ViewModels;
 using ProjectLab.ViewModels.Project;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ProjectLab.Controllers
 {
@@ -37,7 +34,7 @@ namespace ProjectLab.Controllers
                     Direction = p.Idea.Direction.Name,
                     ManagerId = managerId,
                     ProjectType = p.ProjectType.Name,
-                    ImageId = p.Idea.ImageId,
+                    Image = p.Idea.Image,
                     IsManager = managerId == User.Identity.Name,
                     IsParticipant = p.ParticipantsId.Find(x => x == User.Identity.Name) != null
                 });
@@ -82,14 +79,14 @@ namespace ProjectLab.Controllers
             return View(vm);
         }
 
-        public ActionResult GetImage(string id)
+        public ActionResult GetFile(string id, string type)
         {
-            var image = db.GetImage(id);
-            if (image == null)
+            var file = db.GetFile(id);
+            if (file == null)
             {
                 return NotFound();
             }
-            return File(image, "image/jpg");
+            return File(file, type);
         }
 
         private void loadReferences (string IdeaType)
@@ -120,7 +117,7 @@ namespace ProjectLab.Controllers
                 Direction = project.Idea.Direction.Name,
                 Equipment = project.Idea.Equipment,
                 Finish = project.Finish,
-                ImageId = project.Idea.ImageId,
+                Image = project.Idea.Image,
                 ManagerId = project.ManagerId,
                 ProjectType = project.ProjectType.Name,
                 Purpose = project.Idea.Purpose,
@@ -196,6 +193,26 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Fill(AnswearBrowseProjectViewModel Model)
         {
+            foreach (var x in Model.Components)
+            {
+                
+                switch(x.ComponentType)
+                {
+                    case "Флаг":
+                        break;
+                    case "Файл":
+                    case "Фото":
+                        break;
+                    case "Множественный выбор":
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (ModelState.IsValid)
+            {
+
+            }
             return RedirectToAction("Catalog");
         }
     }

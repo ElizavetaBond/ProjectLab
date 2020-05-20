@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -44,7 +45,9 @@ namespace ProjectLab.ViewModels.Account
         public string DirectionId { get; set; }
 
         public string Contacts { get; set; }
-        public string Photo { get; set; }
         public string AddInform { get; set; }
+
+        [Display(Name="Ваше фото")]
+        public IFormFile Photo { get; set; }
     }
 }

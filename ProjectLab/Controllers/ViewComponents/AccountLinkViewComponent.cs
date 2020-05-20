@@ -24,7 +24,7 @@ namespace ProjectLab.Controllers.ViewComponents
             return View(new AccountLinkViewModel
             {
                 UserId = user.Id,
-                ImageId = user.ImageId,
+                Image = user.Photo,
                 Name = user.Name,
                 Surname = user.Surname
             });

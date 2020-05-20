@@ -48,7 +48,7 @@ namespace ProjectLab.ViewModels.Project
         public string Video { get; set; }
 
         [Display(Name = "Изображение")]
-        public string ImageId { get; set; } // ссылка на файл изображения
+        public File Image { get; set; } // ссылка на файл изображения
 
         [Display(Name = "Дата старта")]
         public DateTime Start { get; set; }                 // дата старта проекта

@@ -59,17 +59,17 @@ namespace ProjectLab.Models
             Experts = database.GetCollection<Expert>("Experts");
         }
         
-        public byte[] GetImage(string id) // получение изображения
+        public byte[] GetFile(string id) // получение изображения
         {
             return gridFS.DownloadAsBytes(new ObjectId(id));
         }
         
-        public string LoadImage(Stream imageStream, string imageName) // сохранение изображения
+        public string SaveFile(Stream imageStream, string imageName) // сохранение изображения
         {
             return gridFS.UploadFromStream(imageName, imageStream).ToString();
         }
 
-        public void DeleteImage(string id) // удаляет изображение из хранилища
+        public void DeleteFile(string id) // удаляет изображение из хранилища
         {
             gridFS.Delete(new ObjectId(id));
         }

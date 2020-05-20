@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectLab.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -41,7 +42,7 @@ namespace ProjectLab.ViewModels.Idea
         public string Video { get; set; }
 
         [Display(Name="Изображение")]
-        public string ImageId { get; set; }
+        public File Image { get; set; }
 
         public string IdeaStatus { get; set; }
 

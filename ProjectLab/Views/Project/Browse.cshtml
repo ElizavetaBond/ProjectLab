@@ -78,14 +78,17 @@
                                 <input asp-for="Description" class="form-control" readonly />
                             </div>
                         </div>
+                        @if (Model.Image != null)
+                        {
                         <div class="row">
                             <div class="col-3">
-                                <label asp-for="ImageId"></label>
+                                <label asp-for="Image"></label>
                             </div>
                             <div class="col-9">
-                                <img src="@Url.Action("GetImage", new { id = @Model.ImageId })" style="width:300px;height:200px;" />
+                                <img src="@Url.Action("GetFile", "Project", new { id = Model.Image.Id, type = Model.Image.Type })" style="width:300px;height:200px;" />
                             </div>
                         </div>
+                        }
                         <div class="row">
                             <div class="col-3">
                                 <label asp-for="Video"></label>

@@ -7,13 +7,13 @@
     <div>
         <h2>@Model.Name</h2>
         <div class="card-photo">
-            @if (Model.ImageId == null)
+            @if (Model.Image == null)
             {
                 <img src="~/imgs/idea_image.jpg" alt="" />
             }
             else
             {
-                <img src="@Url.Action("GetImage", "Idea", new { id = @Model.ImageId })" alt="" />
+                <img src="@Url.Action("GetFile", "Idea", new { id = Model.Image.Id, type = Model.Image.Type })" alt="" />
             }
             <form method="get" asp-action="Browse" asp-controller="Idea">
                 <input type="hidden" name="IdeaId" value="@Model.Id" />

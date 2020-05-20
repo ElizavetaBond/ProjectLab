@@ -32,12 +32,7 @@ namespace ProjectLab.Models
 
 
         public string Video { get; set; }
-        public string ImageId { get; set; } // ссылка на файл изображения
-
-        public bool HasImage()
-        {
-            return !(String.IsNullOrWhiteSpace(ImageId));
-        }
+        public File Image { get; set; } // ссылка на файл изображения
 
     }
 }

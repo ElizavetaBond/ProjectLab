@@ -7,7 +7,7 @@
 
 <h1>Регистрация нового пользователя</h1>
 
-<form method="post" asp-controller="Account" asp-action="Register">
+<form method="post" asp-controller="Account" asp-action="Register" enctype="multipart/form-data">
     <div class="container">
         <div class="row">
             <div class="col-4">
@@ -40,6 +40,17 @@
             </div>
             <div class="col-3">
                 <span asp-validation-for="ConfirmPassword"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label class="form-control" asp-for="Photo"></label><br />
+            </div>
+            <div class="col-5">
+                <input class="form-control" asp-for="Photo" type="file" />
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="Photo"></span>
             </div>
         </div>
         <div class="row">
@@ -144,14 +155,6 @@
             </div>
             <div class="col-5">
                 <input class="form-control" asp-for="AddInform" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-4">
-                <label class="form-control" asp-for="Photo">Фото</label><br />
-            </div>
-            <div class="col-5">
-                <input class="form-control" asp-for="Photo" />
             </div>
         </div>
         <div class="row">

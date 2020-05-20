@@ -24,6 +24,12 @@ namespace ProjectLab.Controllers
         public AccountController(ProjectLabDbService context)
         {
             db = context;
+            /*var id1 = db.Users.Find(x => x.Email == "exp1@mail.ru").FirstOrDefault().Id;
+            SetExpert(id1);
+            var id2 = db.Users.Find(x => x.Email == "exp2@mail.ru").FirstOrDefault().Id;
+            SetExpert(id2);
+            var id3 = db.Users.Find(x => x.Email == "exp3@mail.ru").FirstOrDefault().Id;
+            SetExpert(id3);*/
         }
 
         [HttpGet]
@@ -71,10 +77,10 @@ namespace ProjectLab.Controllers
                 User user = await db.Users.Find(u => u.Email == model.Email).FirstOrDefaultAsync();
                 if (user == null)
                 {
-                    var newUser = new User 
-                    { 
-                        Email = model.Email, 
-                        Password = model.Password, 
+                    var newUser = new User
+                    {
+                        Email = model.Email,
+                        Password = model.Password,
                         Surname = model.Surname,
                         Name = model.Name,
                         Patronymic = model.Patronymic,
@@ -86,7 +92,13 @@ namespace ProjectLab.Controllers
                         AddInform = model.AddInform,
                         Contacts = model.Contacts,
                         Rewards = new List<Reward>(),
-                        Direction = db.Directions.Find(x=>x.Id==model.DirectionId).FirstOrDefault()
+                        Direction = db.Directions.Find(x => x.Id == model.DirectionId).FirstOrDefault(),
+                        Photo = model.Photo == null ? null :
+                            new File
+                            {
+                                Id = db.SaveFile(model.Photo.OpenReadStream(), model.Photo.FileName),
+                                Type = model.Photo.ContentType
+                            }
                     };
                     db.Users.InsertOne(newUser);
 
@@ -141,14 +153,14 @@ namespace ProjectLab.Controllers
             db.Users.FindOneAndUpdate(us => us.Email == "admin@ya.ru", update);
         }
 
-        public ActionResult GetImage(string id)
+        public ActionResult GetFile(string id, string type)
         {
-            var image = db.GetImage(id);
+            var image = db.GetFile(id);
             if (image == null)
             {
                 return NotFound();
             }
-            return File(image, "image/jpg");
+            return File(image, type);
         }
     }
 }

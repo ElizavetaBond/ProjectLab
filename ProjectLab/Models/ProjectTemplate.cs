@@ -24,8 +24,8 @@ namespace ProjectLab.Models
         public string ComponentType { get; set; }       // тип компоненты
         public string Description { get; set; }         // описание компоненты
         public bool IsNecessary { get; set; }           // необходимость заполнения
-        public string Value { get; set; }
-        public List <string> ListSelect {get; set;}
+        public string Value { get; set; }               // значение, заполненное участником
+        public List <string> ListSelect {get; set;}     // список вариантов ответа для компоненты "Выбор"
     }
 
     public class Answear

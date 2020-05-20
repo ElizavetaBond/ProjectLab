@@ -19,6 +19,16 @@ namespace ProjectLab.Controllers
         public IdeaController(ProjectLabDbService context)
         {
             db = context;
+            /*var update1 = new UpdateDefinitionBuilder<Idea>().Set(x => x.ProjectTemplate.Sections[0].Components[9].ListSelect, new List<string>
+            {
+                "Значение1", "Значение2", "Значение3"
+            });
+            db.Ideas.FindOneAndUpdate(x => x.Name == "Идея 1", update1);
+            var update2 = new UpdateDefinitionBuilder<Idea>().Set(x => x.ProjectTemplate.Sections[0].Components[10].ListSelect, new List<string>
+            {
+                "Значение1", "Значение2", "Значение3", "Значение4", "Значение5", "Значение6"
+            });
+            db.Ideas.FindOneAndUpdate(x => x.Name == "Идея 1", update2);*/
         }
 
         [HttpGet]
@@ -67,7 +77,10 @@ namespace ProjectLab.Controllers
                     IdeaStatus = db.IdeaStatuses.Find(x => x.Name == "Черновик").FirstOrDefault(),
                     Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
                     Video = vm.Video,
-                    ImageId = vm.FileImage == null ? null : db.LoadImage(vm.FileImage.OpenReadStream(), vm.FileImage.FileName),
+                    Image = vm.FileImage == null ? null : 
+                            new File {
+                                Id = db.SaveFile(vm.FileImage.OpenReadStream(), vm.FileImage.FileName),
+                                Type = vm.FileImage.ContentType },
                     Resolutions = new List<Resolution>(),
                     Comments = new List<Comment>(),
                     ProjectTemplate = new ProjectTemplate { Sections = new List<Section>() }
@@ -112,8 +125,10 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Delete(string IdeaId)
         {
-            var idea = db.Ideas.FindOneAndDelete(x => x.Id == IdeaId);
-            if (idea.ImageId != null) db.DeleteImage(idea.ImageId);
+            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
+            if (idea.IdeaStatus.Name != "Утверждена" && idea.Image != null)
+                db.DeleteFile(idea.Image.Id);
+            db.Ideas.DeleteOne(x => x.Id == idea.Id);
             return RedirectToAction("Menu");
         }
 
@@ -206,14 +221,14 @@ namespace ProjectLab.Controllers
             return RedirectToAction("Menu");
         }
 
-        public ActionResult GetImage(string id)
+        public ActionResult GetFile(string id, string type)
         {
-            var image = db.GetImage(id);
+            var image = db.GetFile(id);
             if (image == null)
             {
                 return NotFound();
             }
-            return File(image, "image/jpg");
+            return File(image, type);
         }
 
         public IdeaBrowseViewModel GetIdeaBrowseVM (string IdeaId)
@@ -232,7 +247,7 @@ namespace ProjectLab.Controllers
                 Description = idea.Description,
                 Direction = idea.Direction.Name,
                 AuthorId = authorId,
-                ImageId = idea.ImageId,
+                Image = idea.Image,
                 Video = idea.Video,
                 Sections = new List<SectionBrowseViewModel>()
             };
@@ -288,7 +303,7 @@ namespace ProjectLab.Controllers
                 Name = idea.Name,
                 Direction = idea.Direction.Name,
                 AuthorId = idea.AuthorId,
-                ImageId = idea.ImageId
+                Image = idea.Image
             };
         }
     }

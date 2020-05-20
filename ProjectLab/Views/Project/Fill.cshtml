@@ -7,7 +7,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKnnWoLjXlIQJdIoSJasoMLr0FalKwCtw"></script>
 
 <div class="background">
-    <form asp-action="Fill" asp-controller="Project" method="post">
+    <form asp-action="Fill" asp-controller="Project" method="post" enctype="multipart/form-data">
         <div class="container">
             <input type="hidden" asp-for="ProjectId" />
             <input type="hidden" asp-for="SectionNum" />
@@ -18,7 +18,7 @@
                 <input type="hidden" asp-for="Components[i].Description" />
                 <input type="hidden" asp-for="Components[i].ComponentType" />
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-2">
                         <label>@Model.Components[i].Name</label>
                     </div>
                     <div class="col-8">
@@ -52,9 +52,11 @@
                         }
                         else if (Model.Components[i].ComponentType == "Фото")
                         {
-                            <input type="file" asp-for="Components[i].File" title="@Model.Components[i].Description" class="form-control" accept="image/*" id="Component_File_@i" onchange="loadImg(@i)" />
-                            <div id="image_@i">
-                                <img id="Component_Img_@i" src="~/imgs/noimage.jpg" style="width: 200px; height: 200px;" />
+                            <div class="form-inline">
+                                <div id="image_@i">
+                                    <img id="Component_Img_@i" src="~/imgs/noimage.jpg" style="width: 200px; height: 200px;" />
+                                </div>
+                                <input type="file" asp-for="Components[i].File" title="@Model.Components[i].Description" class="form-control" accept="image/*" onchange="loadImg(@i)" />
                             </div>
                         }
                         else if (Model.Components[i].ComponentType == "Место")
@@ -66,20 +68,23 @@
                         {
                             @foreach (var x in Model.Components[i].ListSelect)
                             {
-                                <p><input type="radio" asp-for="Components[i].Value" title="@Model.Components[i].Description" value="@x" /> @x </p>
+                                <p><input type="radio" asp-for="Components[i].Value" title="@Model.Components[i].Description" checked value="@x" /> @x </p>
                             }
                         }
                         else if (Model.Components[i].ComponentType == "Множественный выбор")
                         {
-                            @for (var j=0; j < Model.Components[i].ListSelect.Count; j++)
+                            @for (var j = 0; j < Model.Components[i].ListSelect.Count; j++)
                             {
-                                <p><input type="checkbox" asp-for="Components[i].ListRes[j]" title="@Model.Components[i].Description" /> @Model.Components[i].ListSelect[j] </p>
+                                <p><input type="checkbox" asp-for="Components[i].ListRes[j]" title="@Model.Components[i].Description" checked /> @Model.Components[i].ListSelect[j] </p>
                             }
                         }
                         else if (Model.Components[i].ComponentType == "Гиперссылка")
                         {
                             <input type="url" asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" />
                         }
+                    </div>
+                    <div class="col-2">
+                        <span asp-validation-for="Components[i]"></span>
                     </div>
                 </div>
             }
@@ -96,7 +101,7 @@
         var Markers;
 
         function loadImg(i) {  // загрузить изображение
-            var imageId = 'Component_Img_' + i, divId = 'image_' + i, btnId = 'Component_Btn_' + i, fileId = 'Component_File_' + i;
+            var imageId = 'Component_Img_' + i, divId = 'image_' + i, btnId = 'Component_Btn_' + i, fileId = 'Components_' + i + '__File';
             var file = document.getElementById(fileId);
             $('#' + imageId).attr('src', URL.createObjectURL(file.files[0]));
             var str = '<button type="button" id="' + btnId + '" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>';
@@ -104,7 +109,7 @@
             $('#' + btnId).on('click', function () {
                 $('#' + imageId).attr('src', '/imgs/noimage.jpg');
                 $('#' + btnId).remove();
-                $('#' + fileId).val('');
+                $('#' + fileId).val(null);
             });
         }
 
