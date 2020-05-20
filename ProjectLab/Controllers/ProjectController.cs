@@ -193,26 +193,28 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Fill(AnswearBrowseProjectViewModel Model)
         {
-            foreach (var x in Model.Components)
+            for (int i = 0; i < Model.Components.Count; i++)
             {
-                
-                switch(x.ComponentType)
+                var isValid = true;
+                if (Model.Components[i].IsNecessary)
                 {
-                    case "Флаг":
-                        break;
-                    case "Файл":
-                    case "Фото":
-                        break;
-                    case "Множественный выбор":
-                        break;
-                    default:
-                        break;
+                    if (Model.Components[i].ComponentType == "Файл" || Model.Components[i].ComponentType == "Фото")
+                        isValid = Model.Components[i].File != null;
+                    else if (Model.Components[i].ComponentType == "Множественный выбор")
+                        isValid = Model.Components[i].ListRes.Contains(true);
+                    else
+                        isValid = !(Model.Components[i].Value == null || Model.Components[i].Value.Trim().Length == 0);
                 }
+                if (!isValid)
+                    ModelState.AddModelError("Components[" + i + "]", "Заполните данное поле");
             }
+
             if (ModelState.IsValid)
             {
 
             }
+            else
+                return View(Model);
             return RedirectToAction("Catalog");
         }
     }

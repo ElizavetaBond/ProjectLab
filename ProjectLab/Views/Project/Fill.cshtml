@@ -24,7 +24,7 @@
                     <div class="col-8">
                         @if (Model.Components[i].ComponentType == "Текст")
                         {
-                            <input type="text" asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" readonly />
+                            <input type="text" asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" value="Текст" readonly />
                         }
                         else if (Model.Components[i].ComponentType == "Сообщение")
                         {
@@ -44,7 +44,7 @@
                         }
                         else if (Model.Components[i].ComponentType == "Флаг")
                         {
-                            <input type="checkbox" asp-for="Components[i].Flag" title="@Model.Components[i].Description" class="form-control" />
+                            <input type="checkbox" asp-for="Components[i].Flag" title="@Model.Components[i].Description" class="form-control" checked />
                         }
                         else if (Model.Components[i].ComponentType == "Файл")
                         {
@@ -66,15 +66,17 @@
                         }
                         else if (Model.Components[i].ComponentType == "Выбор")
                         {
-                            @foreach (var x in Model.Components[i].ListSelect)
+                            @for (var j = 0; j < Model.Components[i].ListSelect.Count; j++)
                             {
-                                <p><input type="radio" asp-for="Components[i].Value" title="@Model.Components[i].Description" checked value="@x" /> @x </p>
+                                <input type="hidden" asp-for="Components[i].ListSelect[j]" />
+                                <p><input type="radio" asp-for="Components[i].Value" title="@Model.Components[i].Description" checked value="@Model.Components[i].ListSelect[j]" /> @Model.Components[i].ListSelect[j] </p>
                             }
                         }
                         else if (Model.Components[i].ComponentType == "Множественный выбор")
                         {
                             @for (var j = 0; j < Model.Components[i].ListSelect.Count; j++)
                             {
+                                <input type="hidden" asp-for="Components[i].ListSelect[j]" />
                                 <p><input type="checkbox" asp-for="Components[i].ListRes[j]" title="@Model.Components[i].Description" checked /> @Model.Components[i].ListSelect[j] </p>
                             }
                         }
