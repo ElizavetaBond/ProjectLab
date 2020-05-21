@@ -193,7 +193,7 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Fill(AnswearBrowseProjectViewModel Model)
         {
-            for (int i = 0; i < Model.Components.Count; i++)
+            for (int i = 0; i < Model.Components.Count; i++) // проверяем заполнены ли все обязательные поля
             {
                 var isValid = true;
                 if (Model.Components[i].IsNecessary)
@@ -204,18 +204,62 @@ namespace ProjectLab.Controllers
                         isValid = Model.Components[i].ListRes.Contains(true);
                     else
                         isValid = !(Model.Components[i].Value == null || Model.Components[i].Value.Trim().Length == 0);
+                    if (!isValid)
+                        ModelState.AddModelError("Components[" + i + "]", "Заполните данное поле");
                 }
-                if (!isValid)
-                    ModelState.AddModelError("Components[" + i + "]", "Заполните данное поле");
             }
 
             if (ModelState.IsValid)
             {
-
+                var answear = new Answear
+                {
+                    AuthorId = User.Identity.Name,
+                    Date = DateTime.Now,
+                    Components = new List<Component>()
+                }; 
+                foreach (var x in Model.Components)
+                {
+                    var value = "";
+                    File file = null;
+                    if (x.ComponentType == "Флаг")
+                    {
+                        value = x.Flag.ToString();
+                    }
+                    else if (x.ComponentType == "Файл" || x.ComponentType == "Фото")
+                    {
+                        file = x.File == null ? null :
+                            new File
+                            {
+                                Id = db.SaveFile(x.File.OpenReadStream(), x.File.FileName),
+                                Type = x.File.ContentType
+                            };
+                    }
+                    else if (x.ComponentType == "Множественный выбор")
+                    {
+                        for (int i=0;  i<x.ListSelect.Count; i++)
+                            if (x.ListRes[i]) 
+                                value += x.ListSelect[i] + "; ";
+                    }
+                    else
+                    {
+                        value = x.Value;
+                    }
+                    answear.Components.Add(new Component
+                    {
+                        Name = x.Name,
+                        ComponentType = x.ComponentType,
+                        Description = x.Description,
+                        IsNecessary = x.IsNecessary,
+                        ListSelect = x.ListSelect,
+                        Value = value,
+                        File = file
+                    });
+                }
+                var update = new UpdateDefinitionBuilder<Project>().Push(x => x.Sections[Model.SectionNum].Answears, answear);
+                db.Projects.FindOneAndUpdate(x => x.Id == Model.ProjectId, update);
+                return RedirectToAction("Catalog");
             }
-            else
-                return View(Model);
-            return RedirectToAction("Catalog");
+            return View(Model);
         }
     }
 }
