@@ -177,10 +177,22 @@
                             <input type="hidden" name="SectionNum" value="@i" />
                             <button type="submit" class="btn btn-primary">Загрузить данные</button>
                         </form>
-                        @foreach (var a in Model.Sections[i].Answears)
-                        {
-                            @await Component.InvokeAsync("AccountLink", new { UserId = a.AuthorId })
-                        }
+                        <div class="container">
+                            @for (var j=0; j < Model.Sections[i].Answears.Count; j++)
+                            {
+                                <div class="row">
+                                    <div class="col-4">
+                                        @await Component.InvokeAsync("AccountLink", new { UserId = Model.Sections[i].Answears[j].AuthorId })
+                                    </div>
+                                    <div class="col-4">
+                                        @Html.ActionLink("Просмотреть ответ", "BrowseAnswear", "Project", new { ProjectId = Model.Id, SectionNum = i, AnswearNum = j}, null)
+                                    </div>
+                                    <div class="col-4">
+                                        @Model.Sections[i].Answears[j].Date
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 }
 

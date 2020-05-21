@@ -136,24 +136,10 @@ namespace ProjectLab.Controllers
                     SectionId = "areaSection" + i,
                     Name=s.Name,
                     SectionType=s.SectionType,
-                    Components = s.Components.Select(x => new ComponentBrowseProjectViewModel
-                    {
-                        Name = x.Name,
-                        ComponentType = x.ComponentType,
-                        Description = x.Description,
-                        IsNecessary = x.IsNecessary
-                    }).ToList(),
                     Answears = s.Answears.Select(x => new AnswearBrowseProjectViewModel
                     {
                         AuthorId = x.AuthorId,
-                        Date = x.Date,
-                        Components = x.Components.Select(y => new ComponentBrowseProjectViewModel
-                        {
-                            Name = y.Name,
-                            ComponentType = y.ComponentType,
-                            Description = y.Description,
-                            IsNecessary = y.IsNecessary
-                        }).ToList()
+                        Date = x.Date
                     }).ToList()
                 });
                 i++;
@@ -163,7 +149,7 @@ namespace ProjectLab.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Fill(string ProjectId, int SectionNum)
+        public IActionResult Fill(string ProjectId, int SectionNum) // получить форму для заполнения результатов
         {
             /*var update = new UpdateDefinitionBuilder<Project>().Push(x => x.Sections[0].Components, new Component 
             { 
@@ -191,7 +177,7 @@ namespace ProjectLab.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Fill(AnswearBrowseProjectViewModel Model)
+        public IActionResult Fill(AnswearBrowseProjectViewModel Model) // заполнить раздел
         {
             for (int i = 0; i < Model.Components.Count; i++) // проверяем заполнены ли все обязательные поля
             {
@@ -260,6 +246,25 @@ namespace ProjectLab.Controllers
                 return RedirectToAction("Catalog");
             }
             return View(Model);
+        }
+    
+        [HttpGet]
+        public IActionResult BrowseAnswear (string ProjectId, int SectionNum, int AnswearNum)
+        {
+            var answear = db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault().Sections[SectionNum].Answears[AnswearNum];
+            return View(new BrowseAnswearViewModel
+            {
+                AuthorId = answear.AuthorId,
+                Date = answear.Date.ToString(),
+                Components = answear.Components.Select(x => new BrowseAnswearComponentViewModel
+                {
+                    ComponentType = x.ComponentType,
+                    Description = x.Description,
+                    File = x.File,
+                    Name = x.Name,
+                    Value = x.Value
+                }).ToList()
+            });
         }
     }
 }

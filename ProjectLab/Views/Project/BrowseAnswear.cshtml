@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewData["Title"] = "BrowseAnswear";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model BrowseAnswearViewModel
+}
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKnnWoLjXlIQJdIoSJasoMLr0FalKwCtw"></script>
+
+<div class="background">
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <label>Автор</label>
+            </div>
+            <div class="col-9">
+                @await Component.InvokeAsync("AccountLink", new { UserId = Model.AuthorId })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <label>Дата ответа</label>
+            </div>
+            <div class="col-9">
+                @Model.Date
+            </div>
+        </div>
+        @for (var i = 0; i < Model.Components.Count; i++)
+        {
+            <div class="row">
+                <div class="col-3">
+                    <label>@Model.Components[i].Name</label>
+                </div>
+                <div class="col-9">
+                    @if (Model.Components[i].ComponentType == "Файл" && Model.Components[i].File != null)
+                    {
+                        <a title="@Model.Components[i].Description" href="@Url.Action("GetFile", "Project", new { id = Model.Components[i].File.Id, type = Model.Components[i].File.Type })">
+                            Скачать файл
+                        </a>
+                    }
+                    else if (Model.Components[i].ComponentType == "Фото" && Model.Components[i].File != null)
+                    {
+                        <img title="@Model.Components[i].Description" src="@Url.Action("GetFile", "Project", new { id = Model.Components[i].File.Id, type = Model.Components[i].File.Type })" style="width: 300px; height: 200px;" alt="" />
+                    }
+                    else if (Model.Components[i].ComponentType == "Флаг" && Model.Components[i].Value == "true")
+                    {
+                        <input type="checkbox" title="@Model.Components[i].Description" checked readonly />
+                    }
+                    else if (Model.Components[i].ComponentType == "Флаг" && Model.Components[i].Value == "false")
+                    {
+                        <input type="checkbox" title="@Model.Components[i].Description" readonly />
+                    }
+                    else if (Model.Components[i].ComponentType == "Гиперссылка")
+                    {
+                        <a href="@Model.Components[i].Value" title="@Model.Components[i].Description">@Model.Components[i].Value</a>
+                    }
+                    else if (Model.Components[i].ComponentType == "Место")
+                    {
+                        <input id="map_coords_@i" type="hidden" value="@Model.Components[i].Value" />
+                        <div id="map_@i" style="width: 300px; height: 200px;" title="@Model.Components[i].Description">  </div>
+                    }
+                    else
+                    {
+                        <input type="text" value="@Model.Components[i].Value" title="@Model.Components[i].Description" class="form-control" readonly />
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        var Maps;
+        var Markers;
+
+        function loadMap(i) {
+            var coords = $('#map_coords_' + i).val();
+            var myCenter = new google.maps.LatLng(coords);
+            var mapCanvas = document.getElementById("map_" + i);
+            var mapOptions = { center: myCenter, zoom: 5 };
+            Maps[i] = new google.maps.Map(mapCanvas, mapOptions);
+            Markers[i] = new google.maps.Marker({
+                position: myCenter,
+                map: Maps[i]
+            });
+        }
+
+        (function () {
+            var size = @Model.Components.Count;
+            Maps = Array(size);
+            Markers = Array(size);
+            for (i = 0; i < size ; i++) {
+                if (document.getElementById('map_' + i) != null) loadMap(i);
+            }
+        })();
+    </script>
+}
