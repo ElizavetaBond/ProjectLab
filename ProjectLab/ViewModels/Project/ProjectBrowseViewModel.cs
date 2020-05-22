@@ -57,6 +57,7 @@ namespace ProjectLab.ViewModels.Project
         public DateTime Finish { get; set; }                // дата окончания проекта
         public List<string> ParticipantsId { get; set; }
         public List<SectionBrowseProjectViewModel> Sections { get; set; }
+        public bool IsParticipant { get; set; }
     }
 
     public class SectionBrowseProjectViewModel

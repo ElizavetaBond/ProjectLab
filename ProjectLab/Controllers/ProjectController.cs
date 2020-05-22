@@ -70,9 +70,9 @@ namespace ProjectLab.Controllers
                     Start = DateTime.Now,
                     Finish = vm.Finish,
                     Comments = new List<Comment>(),
-                    ParticipantsId = new List<string>(),
+                    ParticipantsId = new List<string> { User.Identity.Name },
                     Sections = idea.ProjectTemplate.Sections
-                });
+                }) ;
                 return RedirectToAction("Catalog");
             }
             loadReferences(db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault().IdeaType);
@@ -126,7 +126,8 @@ namespace ProjectLab.Controllers
                 Target = project.Idea.Target,
                 Video = project.Idea.Video,
                 ParticipantsId = project.ParticipantsId,
-                Sections = new List<SectionBrowseProjectViewModel>()
+                Sections = new List<SectionBrowseProjectViewModel>(),
+                IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null
             };
             var i = 0;
             foreach (var s in project.Sections)

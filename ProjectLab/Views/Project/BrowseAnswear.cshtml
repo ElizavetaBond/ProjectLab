@@ -78,12 +78,18 @@
 
         function loadMap(i) {
             var coords = $('#map_coords_' + i).val();
-            var myCenter = new google.maps.LatLng(coords);
+            coords = coords.replace('(', '');
+            coords = coords.replace(')', '');
+            var arr = coords.split(',', 2);
             var mapCanvas = document.getElementById("map_" + i);
-            var mapOptions = { center: myCenter, zoom: 5 };
+            var mapOptions =
+            {
+                center: { lat: parseFloat(arr[0]), lng: parseFloat(arr[1])},
+                zoom: 5
+            };
             Maps[i] = new google.maps.Map(mapCanvas, mapOptions);
             Markers[i] = new google.maps.Marker({
-                position: myCenter,
+                position: { lat: parseFloat(arr[0]), lng: parseFloat(arr[1])},
                 map: Maps[i]
             });
         }

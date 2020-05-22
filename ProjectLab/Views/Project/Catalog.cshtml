@@ -22,12 +22,18 @@
                         }
                         else
                         {
-                            @using (Html.BeginForm("Join", "Project", FormMethod.Post))
+                            @if (x.ProjectType == "Открытый")
                             {
-                                <input type="hidden" name="ProjectId" value="@x.Id" />
-                                <button class="btn btn-primary card-btn-public" type="submit">
-                                    Принять участие
-                                </button>
+                                @using (Html.BeginForm("Join", "Project", FormMethod.Post))
+                                {
+                                    <input type="hidden" name="ProjectId" value="@x.Id" />
+                                    <button class="btn btn-primary card-btn-public" type="submit">
+                                        Принять участие
+                                    </button>
+                                }
+                            } else
+                            {
+                                <label>Проект закрытый. Участие по приглашению руководителя</label>
                             }
                         }
                     }
