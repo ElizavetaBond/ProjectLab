@@ -33,6 +33,19 @@
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="generalinform">
                     <div class="container">
+                        @if (Model.IsManager && Model.IsWork)
+                        {
+                            <div class="row">
+                                <div class="col-9"></div>
+                                <div class="col-3">
+                                    @using (Html.BeginForm("Finish", "Project", FormMethod.Post))
+                                    {
+                                        <input type="hidden" name="ProjectId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-danger">Завершить проект</button>
+                                    }
+                                </div>
+                            </div>
+                        }
                         <div class="row">
                             <div class="col">
                                 <input asp-for="Id" />
@@ -51,7 +64,7 @@
                                 <label asp-for="ManagerId"></label>
                             </div>
                             <div class="col-9">
-                                @await  Component.InvokeAsync("AccountLink", new { UserId = Model.ManagerId })
+                                @await Component.InvokeAsync("AccountLink", new { UserId = Model.ManagerId })
                             </div>
                         </div>
                         <div class="row">
@@ -67,7 +80,7 @@
                                 <label asp-for="AuthorIdeaId"></label>
                             </div>
                             <div class="col-9">
-                                @await  Component.InvokeAsync("AccountLink", new { UserId = Model.AuthorIdeaId })
+                                @await Component.InvokeAsync("AccountLink", new { UserId = Model.AuthorIdeaId })
                             </div>
                         </div>
                         <div class="row">
@@ -80,14 +93,14 @@
                         </div>
                         @if (Model.Image != null)
                         {
-                        <div class="row">
-                            <div class="col-3">
-                                <label asp-for="Image"></label>
+                            <div class="row">
+                                <div class="col-3">
+                                    <label asp-for="Image"></label>
+                                </div>
+                                <div class="col-9">
+                                    <img src="@Url.Action("GetFile", "Project", new { id = Model.Image.Id, type = Model.Image.Type })" style="width:300px;height:200px;" />
+                                </div>
                             </div>
-                            <div class="col-9">
-                                <img src="@Url.Action("GetFile", "Project", new { id = Model.Image.Id, type = Model.Image.Type })" style="width:300px;height:200px;" />
-                            </div>
-                        </div>
                         }
                         <div class="row">
                             <div class="col-3">
@@ -172,7 +185,7 @@
                 @for(int i = 0; i < Model.Sections.Count; i++)
                 {
                     <div class="tab-pane fade" id="@Model.Sections[i].SectionId">
-                        @if (Model.IsParticipant)
+                        @if (Model.IsParticipant && Model.IsWork)
                         {
                             <form asp-controller="Project" asp-action="Fill" method="get">
                                 <input type="hidden" name="ProjectId" value="@Model.Id" />

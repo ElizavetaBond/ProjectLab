@@ -58,6 +58,8 @@ namespace ProjectLab.ViewModels.Project
         public List<string> ParticipantsId { get; set; }
         public List<SectionBrowseProjectViewModel> Sections { get; set; }
         public bool IsParticipant { get; set; }
+        public bool IsManager { get; set; }
+        public bool IsWork { get; set; }
     }
 
     public class SectionBrowseProjectViewModel

@@ -27,17 +27,20 @@ namespace ProjectLab.Controllers
             foreach (var p in projects)
             {
                 var managerId = db.Users.Find(x => x.Id == p.ManagerId).FirstOrDefault().Id;
-                vm.Add (new ProjectCardViewModel
-                {
-                    Id = p.Id,
-                    Name = p.Idea.Name,
-                    Direction = p.Idea.Direction.Name,
-                    ManagerId = managerId,
-                    ProjectType = p.ProjectType.Name,
-                    Image = p.Idea.Image,
-                    IsManager = managerId == User.Identity.Name,
-                    IsParticipant = p.ParticipantsId.Find(x => x == User.Identity.Name) != null
-                });
+                vm.Add (CreateProjectCard(p));
+            }
+            return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult Archive()
+        {
+            var projects = db.Projects.Find(x => x.ProjectType.Name != "Приватный" && x.ProjectStatus.Name == "Завершенный").ToList();
+            var vm = new List<ProjectCardViewModel>();
+            foreach (var p in projects)
+            {
+                var managerId = db.Users.Find(x => x.Id == p.ManagerId).FirstOrDefault().Id;
+                vm.Add(CreateProjectCard(p));
             }
             return View(vm);
         }
@@ -127,7 +130,9 @@ namespace ProjectLab.Controllers
                 Video = project.Idea.Video,
                 ParticipantsId = project.ParticipantsId,
                 Sections = new List<SectionBrowseProjectViewModel>(),
-                IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null
+                IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null,
+                IsManager = project.ManagerId == User.Identity.Name,
+                IsWork = project.ProjectStatus.Name == "Рабочий"
             };
             var i = 0;
             foreach (var s in project.Sections)
@@ -265,6 +270,30 @@ namespace ProjectLab.Controllers
                     Name = x.Name,
                     Value = x.Value
                 }).ToList()
+            });
+        }
+
+        [HttpPost]
+        public IActionResult Finish (string ProjectId)
+        {
+            var update = new UpdateDefinitionBuilder<Project>().Set(x => x.ProjectStatus, db.ProjectStatuses.Find(s => s.Name == "Завершенный").FirstOrDefault());
+            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
+            return RedirectToAction("Archive");
+        }
+
+        private ProjectCardViewModel CreateProjectCard(Project project)
+        {
+            var managerId = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault().Id;
+            return(new ProjectCardViewModel
+            {
+                Id = project.Id,
+                Name = project.Idea.Name,
+                Direction = project.Idea.Direction.Name,
+                ManagerId = managerId,
+                ProjectType = project.ProjectType.Name,
+                Image = project.Idea.Image,
+                IsManager = managerId == User.Identity.Name,
+                IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null
             });
         }
     }

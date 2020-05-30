@@ -14,11 +14,15 @@
                     {
                         if (x.IsManager)
                         {
-                            <label>Вы являетесь руководителем</label>
+                            <div class="label-info">
+                                <h2>Вы являетесь руководителем</h2>
+                            </div>
                         }
                         else if (x.IsParticipant)
                         {
-                            <label>Вы являетесь участником</label>
+                            <div class="label-info">
+                                <h2>Вы являетесь участником</h2>
+                            </div>
                         }
                         else
                         {
@@ -31,9 +35,14 @@
                                         Принять участие
                                     </button>
                                 }
-                            } else
+                            }
+                            else
                             {
-                                <label>Проект закрытый. Участие по приглашению руководителя</label>
+                                <div class="label-info">
+                                    <h2>
+                                        Проект закрытый. Участие по приглашению руководителя
+                                    </h2>
+                                </div>
                             }
                         }
                     }
