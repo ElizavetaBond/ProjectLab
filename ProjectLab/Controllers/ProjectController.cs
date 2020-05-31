@@ -100,6 +100,15 @@ namespace ProjectLab.Controllers
 
         [Authorize]
         [HttpPost]
+        public ActionResult AddParticipant(string ProjectId, string UserId) // стать участником проекта
+        {
+            var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsId, UserId);
+            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
+            return RedirectToAction("Browse", "Project", new { ProjectId = ProjectId });
+        }
+
+        [Authorize]
+        [HttpPost]
         public ActionResult Join(string ProjectId) // стать участником проекта
         {
             var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsId, User.Identity.Name);
@@ -149,6 +158,16 @@ namespace ProjectLab.Controllers
                     }).ToList()
                 });
                 i++;
+            }
+            if (vm.IsManager)
+            {
+                var listUsers = new List<ParticipantViewModel>();
+                foreach (var x in db.Users.Find(new BsonDocument()).ToList())
+                {
+                    if (!project.ParticipantsId.Exists(p => p == x.Id))
+                        listUsers.Add(new ParticipantViewModel { Name = x.Surname + " " + x.Name, UserId = x.Id });
+                }
+                ViewData["ListUsers"] = listUsers;
             }
             return View(vm);
         }
@@ -249,7 +268,7 @@ namespace ProjectLab.Controllers
                 }
                 var update = new UpdateDefinitionBuilder<Project>().Push(x => x.Sections[Model.SectionNum].Answears, answear);
                 db.Projects.FindOneAndUpdate(x => x.Id == Model.ProjectId, update);
-                return RedirectToAction("Catalog");
+                return RedirectToAction("Browse", "Project", new { ProjectId = Model.ProjectId });
             }
             return View(Model);
         }
