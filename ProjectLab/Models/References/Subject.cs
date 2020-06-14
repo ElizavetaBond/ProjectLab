@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProjectLab.Models.References
 {
-    public class Region
+    public class Subject
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }

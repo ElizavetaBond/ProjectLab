@@ -169,8 +169,9 @@
     form {
         background-color: rgba(194, 223, 255, 0.81);
     }
-    span {
-        color: red;
+    .chosen-container{
+        min-width: 400px;
+        font-size: 16px;
     }
 </style>
 
@@ -190,9 +191,19 @@
             });
             return str;
         }
+
+        function loadListEducInstToSelect() {
+            var str = '';
+            ListEducationalInstitutions.forEach(function (item) {
+                str += '<option value="' + item.Id + '">' + item.Name + ', ' + item.Municipality.Name + ', ' + item.Municipality.Subject.Name + '</option>';
+            });
+            return str;
+        }
+
         (function () {
             $('#selectListUserCategories').append(loadListToSelect(ListUserCategories));
-            $('#selectListEducationalInstitutions').append(loadListToSelect(ListEducationalInstitutions));
+            $('#selectListEducationalInstitutions').append(loadListEducInstToSelect());
+            $('#selectListEducationalInstitutions').chosen();
             $('#selectListEducations').append(loadListToSelect(ListEducations));
             $('#selectListDirections').append(loadListToSelect(ListDirections));
         })();

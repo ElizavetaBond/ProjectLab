@@ -12,7 +12,6 @@ namespace ProjectLab.Models.References
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         public string Name { get; set; }
-        public string OwnershipForm { get; set; }
-        public City City { get; set; }
+        public Municipality Municipality { get; set; }
     }
 }

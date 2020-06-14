@@ -11,15 +11,14 @@ namespace ProjectLab.Models
         private IGridFSBucket gridFS;   // файловое хранилище
         
         // справочники
-        public IMongoCollection<Area> Areas { get; set; }
-        public IMongoCollection<City> Cities { get; set; }
+        public IMongoCollection<Subject> Subjects { get; set; }
         public IMongoCollection<Direction> Directions { get; set; }
         public IMongoCollection<Education> Educations { get; set; }
         public IMongoCollection<EducationalInstitution> EducationalInstitutions { get; set; }
         public IMongoCollection<IdeaStatus> IdeaStatuses { get; set; }
         public IMongoCollection<ProjectStatus> ProjectStatuses { get; set; }
         public IMongoCollection<ProjectType> ProjectTypes { get; set; }
-        public IMongoCollection<Region> Regions { get; set; }
+        public IMongoCollection<Municipality> Municipalities { get; set; }
         public IMongoCollection<Reward> RewardTypes { get; set; }
         public IMongoCollection<UserCategory> UserCategories { get; set; }
         public IMongoCollection<UserStatus> UserStatuses { get; set; }
@@ -39,15 +38,14 @@ namespace ProjectLab.Models
             gridFS = new GridFSBucket(database);
 
             // справочники
-            Areas = database.GetCollection<Area>("Areas");
-            Cities = database.GetCollection<City>("Cities");
+            Subjects = database.GetCollection<Subject>("Subjects");
             Directions = database.GetCollection<Direction>("Directions");
             Educations = database.GetCollection<Education>("Educations");
             EducationalInstitutions = database.GetCollection<EducationalInstitution>("EducationalInstitutions");
             IdeaStatuses = database.GetCollection<IdeaStatus>("IdeaStatuses");
             ProjectStatuses = database.GetCollection<ProjectStatus>("ProjectStatuses");
             ProjectTypes = database.GetCollection<ProjectType>("ProjectTypes");
-            Regions = database.GetCollection<Region>("Regions");
+            Municipalities = database.GetCollection<Municipality>("Municipalities");
             RewardTypes = database.GetCollection<Reward>("RewardTypes");
             UserCategories = database.GetCollection<UserCategory>("UserCategories");
             UserStatuses = database.GetCollection<UserStatus>("UserStatuses");

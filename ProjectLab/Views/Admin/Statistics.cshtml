@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewData["Title"] = "Статистика";
+    Layout = "~/Views/Admin/AdminLayout.cshtml";
+    @model StatisticsSettingsViewModel
+}
+
+<h2>Статистика @ViewData["Name"]</h2>
+
+<form asp-action="LoadChart" asp-controller="Admin" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#chart" method="post">
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <label asp-for="Criterion"></label>
+            </div>
+            <div class="col-6">
+                <select asp-for="Criterion" class="form-control"></select>
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="Criterion"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2>Фильтры</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <label asp-for="Begin"></label>
+            </div>
+            <div class="col-2">
+                <input type="date" asp-for="Begin" class="form-control" />
+            </div>
+            <div class="col-1">
+                <label asp-for="End"></label>
+            </div>
+            <div class="col-3">
+                <input type="date" asp-for="End" class="form-control" />
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="Begin"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <label asp-for="Direction"></label>
+            </div>
+            <div class="col-6">
+                <select asp-for="Direction" multiple class="form-control"></select>
+            </div>
+            <div class="col-3">
+                <span asp-validation-for="Direction"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Сформировать статистику</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<div id="chart" style="padding: 20px;"> </div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        var ListCriterions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListCriterions"]));
+        var ListDirections = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListDirections"]));
+        
+        function loadListToSelectReference(list) {
+            var str = '';
+            list.forEach(function (item) {
+                str += '<option value="' + item.Id + '"> ' + item.Name + '</option>';
+            });
+            return str;
+        }
+
+        function loadListToSelectString(list) {
+            var str = '';
+            list.forEach(function (item) {
+                str += '<option>' + item + '</option>';
+            });
+            return str;
+        }
+
+        (function () {
+            $('#Criterion').append(loadListToSelectString(ListCriterions));
+            $('#Direction').append(loadListToSelectReference(ListDirections));
+            $('#Direction').chosen();
+        })();
+    </script>
+
+}

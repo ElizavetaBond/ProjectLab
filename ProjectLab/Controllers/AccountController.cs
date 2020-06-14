@@ -24,12 +24,6 @@ namespace ProjectLab.Controllers
         public AccountController(ProjectLabDbService context)
         {
             db = context;
-            /*var id1 = db.Users.Find(x => x.Email == "exp1@mail.ru").FirstOrDefault().Id;
-            SetExpert(id1);
-            var id2 = db.Users.Find(x => x.Email == "exp2@mail.ru").FirstOrDefault().Id;
-            SetExpert(id2);
-            var id3 = db.Users.Find(x => x.Email == "exp3@mail.ru").FirstOrDefault().Id;
-            SetExpert(id3);*/
         }
 
         [HttpGet]
@@ -62,7 +56,7 @@ namespace ProjectLab.Controllers
         {
             var filter = new BsonDocument();
             ViewData["ListUserCategories"] = db.UserCategories.Find(filter).ToList();
-            ViewData["ListEducationalInstitutions"] = db.EducationalInstitutions.Find(filter).ToList();
+            ViewData["ListEducationalInstitutions"] = db.EducationalInstitutions.Find(filter).ToList().OrderBy(x => x.Name);
             ViewData["ListEducations"] = db.Educations.Find(filter).ToList();
             ViewData["ListDirections"] = db.Directions.Find(filter).ToList();
             return View();
@@ -103,7 +97,6 @@ namespace ProjectLab.Controllers
                     db.Users.InsertOne(newUser);
 
                     await Authenticate(db.Users.Find(x=>x.Email==newUser.Email).FirstOrDefault()); // аутентификация
-
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -150,7 +143,7 @@ namespace ProjectLab.Controllers
         public void SetAdmin()
         {
             var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Админ").FirstOrDefault());
-            db.Users.FindOneAndUpdate(us => us.Email == "admin@ya.ru", update);
+            db.Users.FindOneAndUpdate(us => us.Email == "admin@mail.ru", update);
         }
 
         public ActionResult GetFile(string id, string type)

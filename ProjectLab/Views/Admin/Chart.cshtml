@@ -1,0 +1,30 @@
+﻿@{
+    @model ChartViewModel
+}
+
+<div id="chart1" style="border: 1px solid black;"></div>
+
+<script type="text/javascript">
+
+    var vm_chart = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', vm_chart.NameX);
+        data.addColumn('number', vm_chart.NameY);
+
+        vm_chart.KeyValues.forEach(function (item) {
+            data.addRow([item.Key, { v: item.Value }]);
+        });
+
+        var option = {
+            title: vm_chart.Title
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart1'));
+        chart.draw(data, option);
+    }
+
+</script>
