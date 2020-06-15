@@ -33,10 +33,7 @@ namespace ProjectLab.Controllers
                     ViewData["ListDirections"] = db.Directions.Find(new BsonDocument()).ToList();
                     ViewData["ListCriterions"] = new List<string>
                     {
-                        "Количество утвержденных идей",
-                        "Количество проектов, опубликованных обучающимися/педагогами",
-                        "Количество проектов, в которых участвуют обучающиеся/педагоги",
-                        "Количество активных пользователей"
+                       
                     };
                     break;
                 case 2:

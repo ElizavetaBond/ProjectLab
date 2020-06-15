@@ -202,7 +202,8 @@ namespace ProjectLab.Controllers
                     if (res > 0) status = db.IdeaStatuses.Find(x => x.Name == "Утверждена").FirstOrDefault();
                     else status = db.IdeaStatuses.Find(x => x.Name == "Отклонена").FirstOrDefault();
                     var update = new UpdateDefinitionBuilder<Idea>().Set(idea => idea.ValueDegree, (int)(degree / 3))
-                                                                    .Set(idea => idea.IdeaStatus, status);
+                                                                    .Set(idea => idea.IdeaStatus, status)
+                                                                    .Set(idea => idea.Date, DateTime.Now);
                     db.Ideas.FindOneAndUpdate(idea => idea.Id == vm.IdeaId, update);
                 }
                 return RedirectToAction("Menu");

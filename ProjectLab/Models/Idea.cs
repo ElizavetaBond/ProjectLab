@@ -19,6 +19,7 @@ namespace ProjectLab.Models
         public string Equipment { get; set; }       // тех оснащение
         public string Safety { get; set; }          // техника безопасности
         public int ValueDegree { get; set; }        // степень ценности
+        public DateTime Date { get; set; }
 
 
         public string AuthorId { get; set; }
