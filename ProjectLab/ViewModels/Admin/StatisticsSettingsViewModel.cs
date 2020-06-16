@@ -9,21 +9,28 @@ namespace ProjectLab.ViewModels.Admin
     public class StatisticsSettingsViewModel
     {
         [Required]
-        [Display(Name = "Выберите критерий сбора статистики:")]
-        public string Criterion { get; set; }
+        [Display(Name = "Выберите сравниваемую категорию:")]
+        public string ComparedCategory { get; set; }
 
         [Required]
-        [Display(Name = "Дата с")]
+        [Display(Name = "Выберите измеряемую величину:")]
+        public string MeasuredQuantity { get; set; }
+
+        [Required]
+        [Display(Name = "Фильтр по дате:")]
         public DateTime Begin { get; set; }
 
         [Required]
-        [Display(Name = "по")]
+        [Display(Name = "------")]
         public DateTime End { get; set; }
 
-        [Display(Name = "Учебные заведения")]
-        public string EducationalInstitution { get; set; }
+        [Display(Name = "Фильтр по учебным заведениям:")]
+        public List<string> EducationalInstitutionsId { get; set; }
 
-        [Display(Name = "Области специализации")]
-        public string Direction { get; set; }
+        [Display(Name = "Фильтр по областям специализации:")]
+        public List<string> DirectionsId { get; set; }
+
+        [Display(Name = "Фильтр по категориям пользователей:")]
+        public List<string> UserCategoriesId { get; set; }
     }
 }

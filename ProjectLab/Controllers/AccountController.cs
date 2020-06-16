@@ -87,6 +87,7 @@ namespace ProjectLab.Controllers
                         Contacts = model.Contacts,
                         Rewards = new List<Reward>(),
                         Direction = db.Directions.Find(x => x.Id == model.DirectionId).FirstOrDefault(),
+                        RegistDate = DateTime.Now,
                         Photo = model.Photo == null ? null :
                             new File
                             {

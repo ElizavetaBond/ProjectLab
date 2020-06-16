@@ -5,31 +5,55 @@
     @model StatisticsSettingsViewModel
 }
 
-<h2>Статистика @ViewData["Name"]</h2>
+<h2 style="text-align: center; background-color: rgba(254, 255, 194, 0.63);">Статистика</h2>
 
 <form asp-action="LoadChart" asp-controller="Admin" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#chart" method="post">
     <div class="container">
         <div class="row">
-            <div class="col-3">
-                <label asp-for="Criterion"></label>
+            <div class="col-5">
+                <label asp-for="ComparedCategory"></label>
             </div>
-            <div class="col-6">
-                <select asp-for="Criterion" class="form-control"></select>
-            </div>
-            <div class="col-3">
-                <span asp-validation-for="Criterion"></span>
+            <div class="col-7">
+                <select asp-for="ComparedCategory" class="form-control"></select>
             </div>
         </div>
         <div class="row">
-            <div class="col">
-                <h2>Фильтры</h2>
+            <div class="col-5">
+                <label asp-for="MeasuredQuantity"></label>
+            </div>
+            <div class="col-7">
+                <select asp-for="MeasuredQuantity" class="form-control"></select>
             </div>
         </div>
         <div class="row">
-            <div class="col-3">
+            <div class="col-5">
+                <label asp-for="EducationalInstitutionsId"></label>
+            </div>
+            <div class="col-7">
+                <select asp-for="EducationalInstitutionsId" multiple class="form-control"></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                <label asp-for="DirectionsId"></label>
+            </div>
+            <div class="col-7">
+                <select asp-for="DirectionsId" multiple class="form-control"></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                <label asp-for="UserCategoriesId"></label>
+            </div>
+            <div class="col-7">
+                <select asp-for="UserCategoriesId" multiple class="form-control"></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
                 <label asp-for="Begin"></label>
             </div>
-            <div class="col-2">
+            <div class="col-3">
                 <input type="date" asp-for="Begin" class="form-control" />
             </div>
             <div class="col-1">
@@ -38,38 +62,33 @@
             <div class="col-3">
                 <input type="date" asp-for="End" class="form-control" />
             </div>
-            <div class="col-3">
+        </div>
+        <div class="row">
+            <div class="col">
                 <span asp-validation-for="Begin"></span>
             </div>
         </div>
         <div class="row">
+            <div class="col"></div>
             <div class="col-3">
-                <label asp-for="Direction"></label>
-            </div>
-            <div class="col-6">
-                <select asp-for="Direction" multiple class="form-control"></select>
-            </div>
-            <div class="col-3">
-                <span asp-validation-for="Direction"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
                 <button type="submit" class="btn btn-primary">Сформировать статистику</button>
             </div>
         </div>
     </div>
 </form>
 
-
 <div id="chart" style="padding: 20px;"> </div>
+
 
 @section Scripts{
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script type="text/javascript">
-        var ListCriterions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListCriterions"]));
+        var ListComparedCategories = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListComparedCategories"]));
+        var ListMeasuredQuantities = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListMeasuredQuantities"]));
+        var ListEducationalInstitutions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListEducationalInstitutions"]));
         var ListDirections = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListDirections"]));
+        var ListUserCategories = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListUserCategories"]));
         
         function loadListToSelectReference(list) {
             var str = '';
@@ -88,9 +107,14 @@
         }
 
         (function () {
-            $('#Criterion').append(loadListToSelectString(ListCriterions));
-            $('#Direction').append(loadListToSelectReference(ListDirections));
-            $('#Direction').chosen();
+            $('#ComparedCategory').append(loadListToSelectString(ListComparedCategories));
+            $('#MeasuredQuantity').append(loadListToSelectString(ListMeasuredQuantities));
+            $('#EducationalInstitutionsId').append(loadListToSelectReference(ListEducationalInstitutions));
+            $('#EducationalInstitutionsId').chosen();
+            $('#DirectionsId').append(loadListToSelectReference(ListDirections));
+            $('#DirectionsId').chosen();
+            $('#UserCategoriesId').append(loadListToSelectReference(ListUserCategories));
+            $('#UserCategoriesId').chosen();
         })();
     </script>
 

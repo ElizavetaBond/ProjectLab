@@ -28,6 +28,7 @@ namespace ProjectLab.Models
         //public List<Direction> Directions { get; set; }
         public Direction Direction { get; set; }
         public List<Reward> Rewards { get; set; }
+        public DateTime RegistDate { get; set; }
 
         public string Contacts { get; set; }
         public File Photo { get; set; }

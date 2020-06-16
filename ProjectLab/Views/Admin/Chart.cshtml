@@ -12,8 +12,8 @@
 
     function drawChart() {
         var data = new google.visualization.DataTable();
-        data.addColumn('string', vm_chart.NameX);
-        data.addColumn('number', vm_chart.NameY);
+        data.addColumn('string', vm_chart.ComparedCategory);
+        data.addColumn('number', vm_chart.MeasuredQuantity);
 
         vm_chart.KeyValues.forEach(function (item) {
             data.addRow([item.Key, { v: item.Value }]);

@@ -8,7 +8,9 @@ using ProjectLab.ViewModels.Admin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectLab.StaticNames;
 using System.Threading.Tasks;
+using ProjectLab.Models.Statistics;
 
 namespace ProjectLab.Controllers
 {
@@ -24,53 +26,44 @@ namespace ProjectLab.Controllers
         }
 
         [HttpGet]
-        public IActionResult Statistics(int num)
+        public IActionResult Statistics()
         {
-            switch(num)
-            {
-                case 1:
-                    ViewData["Name"] = "учебных заведений";
-                    ViewData["ListDirections"] = db.Directions.Find(new BsonDocument()).ToList();
-                    ViewData["ListCriterions"] = new List<string>
-                    {
-                       
-                    };
-                    break;
-                case 2:
-                    ViewData["Name"] = "Областей специализаций";
-                    ViewData["ListFiltrs"] = db.EducationalInstitutions.Find(new BsonDocument()).ToList();
-                    break;
-                case 3:
-                    ViewData["Name"] = "Пользователей";
-                    break;
-            }
+            ViewData["ListComparedCategories"] = new List<string> { ComparedCategoriesNames.EducationalInstitutions,
+                                                                    ComparedCategoriesNames.Directions,
+                                                                    ComparedCategoriesNames.UserCategories };
+            ViewData["ListMeasuredQuantities"] = new List<string> { MeasuredQuantitiesNames.ApprovedIdeas,
+                                                                  MeasuredQuantitiesNames.CreatedProjects,
+                                                                  MeasuredQuantitiesNames.ProjectsWithParticipants,
+                                                                  MeasuredQuantitiesNames.ArchieveProjects,
+                                                                  MeasuredQuantitiesNames.RegisteredUsers };
+            ViewData["ListEducationalInstitutions"] = db.EducationalInstitutions.Find(new BsonDocument()).ToList();
+            ViewData["ListDirections"] = db.Directions.Find(new BsonDocument()).ToList();
+            ViewData["ListUserCategories"] = db.UserCategories.Find(new BsonDocument()).ToList();
             return View();
         }
 
         [HttpPost]
         public IActionResult LoadChart(StatisticsSettingsViewModel vm)
         {
-            var chart = new ChartViewModel
+            var chart = new ChartViewModel();
+            var settings = new StatisticsSettings(db, vm.ComparedCategory, vm.MeasuredQuantity, vm.Begin, vm.End,
+                                                  vm.DirectionsId, vm.EducationalInstitutionsId, vm.UserCategoriesId);
+
+            if (settings.ComparedCategory == ComparedCategoriesNames.EducationalInstitutions)
             {
-                NameX = "Учебные заведения",
-                NameY = "Количество утвержденных идей",
-                Title = "Учебные заведения / Количество утвержденных идей",
-                KeyValues = new List<ChartViewModel.KeyValue>()
-            };
-            var schools = db.EducationalInstitutions.Find(new BsonDocument()).ToList();
-            var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == "Утверждена").ToList();
-            foreach (var school in schools)
-            {
-                var value = 0;
-                foreach (var idea in ideas)
+                var statistics = new StatisticsEducationalInstitutions(db, settings);
+                statistics.Generate();
+                chart = new ChartViewModel
                 {
-                    var user = db.Users.Find(u => u.Id == idea.AuthorId).FirstOrDefault();
-                    if (user.EducationalInstitution.Id == school.Id)
+                    Title = statistics.Title,
+                    ComparedCategory = statistics.ComparedCategory,
+                    MeasuredQuantity = statistics.MeasuredQuantity,
+                    KeyValues = statistics.KeyValues.Select(x => new ChartViewModel.KeyValueViewModel
                     {
-                        value++;
-                    }
-                }
-                chart.KeyValues.Add(new ChartViewModel.KeyValue { Key = school.Name, Value = value });
+                        Key = x.Key,
+                        Value = x.Value
+                    }).ToList()
+                };
             }
             return PartialView("Chart", chart);
         }

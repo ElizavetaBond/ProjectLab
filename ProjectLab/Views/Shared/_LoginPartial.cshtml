@@ -6,7 +6,7 @@
     <li class="nav-item">
         @if (User.IsInRole("Админ"))
         {
-            <a class="nav-link text-dark" asp-controller="Admin" asp-action="Statistics" asp-route-num="1"><em>Личный кабинет</em> </a>
+            <a class="nav-link text-dark" asp-controller="Admin" asp-action="Statistics"><em>Личный кабинет</em> </a>
         }
         else
         {

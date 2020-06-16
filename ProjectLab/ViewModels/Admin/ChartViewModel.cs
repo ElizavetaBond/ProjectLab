@@ -8,13 +8,13 @@ namespace ProjectLab.ViewModels.Admin
     public class ChartViewModel
     {
         public string Title { get; set; }
-        public string NameX { get; set; }
-        public string NameY { get; set; }
-        public class KeyValue
+        public string ComparedCategory { get; set; }
+        public string MeasuredQuantity { get; set; }
+        public class KeyValueViewModel
         {
             public string Key { get; set; }
-            public int Value { get; set; }
+            public long Value { get; set; }
         }
-        public List<KeyValue> KeyValues { get; set; }
+        public List<KeyValueViewModel> KeyValues { get; set; }
     }
 }

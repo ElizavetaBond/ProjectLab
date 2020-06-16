@@ -8,25 +8,25 @@ using System.Threading.Tasks;
 
 namespace ProjectLab.Models.Statistics
 {
-    public class Filtrs
+    public class StatisticsSettings
     {
         private ProjectLabDbService db;
-        public string NameX { get; set; }
-        public string NameY { get; set; }
+        public string ComparedCategory { get; set; }
+        public string MeasuredQuantity { get; set; }
         public DateTime Start { get; set; }
         public DateTime Finish { get; set; }
         public List<Direction> Directions { get; set; }
         public List<EducationalInstitution> EducationalInstitutions { get; set; }
         public List<UserCategory> UserCategories { get; set; }
-        public Filtrs(ProjectLabDbService _db, string nameX, string nameY, DateTime start, DateTime finish,
+        public StatisticsSettings(ProjectLabDbService _db, string categ, string quant, DateTime start, DateTime finish,
                           List<string> dirsId, List<string> edsId, List<string> categsId)
         {
             db = _db;
-            NameX = nameX;
-            NameY = nameY;
+            ComparedCategory = categ;
+            MeasuredQuantity = quant;
             Start = start;
             Finish = finish;
-            if (dirsId.Any())
+            if (dirsId != null && dirsId.Any())
             {
                 Directions = new List<Direction>();
                 foreach (var dir in dirsId)
@@ -35,7 +35,7 @@ namespace ProjectLab.Models.Statistics
             else
                 Directions = db.Directions.Find(new BsonDocument()).ToList();
 
-            if (edsId.Any())
+            if (edsId != null && edsId.Any())
             {
                 EducationalInstitutions = new List<EducationalInstitution>();
                 foreach (var ed in edsId)
@@ -44,7 +44,7 @@ namespace ProjectLab.Models.Statistics
             else
                 EducationalInstitutions = db.EducationalInstitutions.Find(new BsonDocument()).ToList();
 
-            if (categsId.Any())
+            if (categsId != null && categsId.Any())
             {
                 UserCategories = new List<UserCategory>();
                 foreach (var cat in categsId)
