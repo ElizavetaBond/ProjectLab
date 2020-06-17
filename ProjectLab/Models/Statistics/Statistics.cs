@@ -5,21 +5,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using ProjectLab.StaticNames;
 
 namespace ProjectLab.Models.Statistics
 {
     public abstract class Statistics
     {
+        public string Title { get; set; }               // названиие диаграммы
+        public string ComparedCategory { get; set; }    // сравниваемая категория
+        public string MeasuredQuantity { get; set; }    // измеряемая величина
+        public List<KeyValue> KeyValues { get; set; }   // список значений
+
+
         protected ProjectLabDbService db;
-        public string Title { get; set; }
-        public string ComparedCategory { get; set; }
-        public string MeasuredQuantity { get; set; }
-        public List<KeyValue> KeyValues { get; set; }
+
+
+        // фильтры
         protected DateTime Start { get; set; }
         protected DateTime Finish { get; set; }
         protected List<Direction> Directions { get; set; }
         protected List<EducationalInstitution> EducationalInstitutions { get; set; }
         protected List<UserCategory> UserCategories { get; set; }
+
 
         public Statistics(ProjectLabDbService serv, StatisticsSettings settings)
         {
@@ -35,11 +42,25 @@ namespace ProjectLab.Models.Statistics
             UserCategories = settings.UserCategories;
         }
 
-        public abstract void Generate();
-        protected abstract void CountApprovedIdeas();
-        protected abstract void CountCreatedProjects();
-        protected abstract void CountProjectsWithParticipants();
-        protected abstract void CountArchieveProjects();
-        protected abstract void CountRegisteredUsers();
+        public void Generate() // вызывает метод для формирования статистики в зависимости от измеряемой величины
+        {
+            if (MeasuredQuantity == MeasuredQuantitiesNames.ApprovedIdeas)
+                CountApprovedIdeas();
+            else if (MeasuredQuantity == MeasuredQuantitiesNames.CreatedProjects)
+                CountCreatedProjects();
+            //else if (MeasuredQuantity == MeasuredQuantitiesNames.ProjectsWithParticipants)
+                //CountProjectsWithParticipants();
+            else if (MeasuredQuantity == MeasuredQuantitiesNames.ArchieveProjects)
+                CountArchieveProjects();
+            else if (MeasuredQuantity == MeasuredQuantitiesNames.RegisteredUsers)
+                CountRegisteredUsers();
+        }
+
+
+        protected abstract void CountApprovedIdeas();               // подсчет количества утвержденных идей
+        protected abstract void CountCreatedProjects();             // подсчет количества созданных проектов
+        //protected abstract void CountProjectsWithParticipants();    // подсчет количества проектов, в котором участвуют..
+        protected abstract void CountArchieveProjects();            // подсчет количества завершенных проектов
+        protected abstract void CountRegisteredUsers();             // подсчет количества зарегистрированных пользователей
     }
 }

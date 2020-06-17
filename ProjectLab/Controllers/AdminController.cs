@@ -65,6 +65,22 @@ namespace ProjectLab.Controllers
                     }).ToList()
                 };
             }
+            else if (settings.ComparedCategory == ComparedCategoriesNames.Directions)
+            {
+                var statistics = new StatisticsDirections(db, settings);
+                statistics.Generate();
+                chart = new ChartViewModel
+                {
+                    Title = statistics.Title,
+                    ComparedCategory = statistics.ComparedCategory,
+                    MeasuredQuantity = statistics.MeasuredQuantity,
+                    KeyValues = statistics.KeyValues.Select(x => new ChartViewModel.KeyValueViewModel
+                    {
+                        Key = x.Key,
+                        Value = x.Value
+                    }).ToList()
+                };
+            }
             return PartialView("Chart", chart);
         }
 

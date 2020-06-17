@@ -2,16 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ProjectLab.StaticNames;
 using System.Threading.Tasks;
 
 namespace ProjectLab.Models.Statistics
 {
-    public class StatisticsEducationalInstitutions : Statistics
+    public class StatisticsUserCategories : Statistics
     {
-        public StatisticsEducationalInstitutions (ProjectLabDbService serv, StatisticsSettings settings) : base(serv, settings)
+        public StatisticsUserCategories(ProjectLabDbService serv, StatisticsSettings settings) : base(serv, settings)
         {
-            foreach (var x in EducationalInstitutions)
+            foreach (var x in UserCategories)
             {
                 KeyValues.Add(new KeyValue { Key = x.Name, Value = 0, Id = x.Id });
             }
@@ -34,7 +33,7 @@ namespace ProjectLab.Models.Statistics
 
         protected override void CountCreatedProjects()
         {
-            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == "Рабочий" || x.ProjectStatus.Name == "Завершенный")  && x.Start >= Start && x.Start <= Finish).ToList();
+            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == "Рабочий" || x.ProjectStatus.Name == "Завершенный") && x.Start >= Start && x.Start <= Finish).ToList();
             foreach (var project in projects)
             {
                 var us = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault();
@@ -87,7 +86,7 @@ namespace ProjectLab.Models.Statistics
         {
             for (int i = 0; i < KeyValues.Count; i++)
             {
-                var users = db.Users.Find(x => x.EducationalInstitution.Id == KeyValues[i].Id 
+                var users = db.Users.Find(x => x.EducationalInstitution.Id == KeyValues[i].Id
                                         && x.RegistDate >= Start && x.RegistDate <= Finish).ToList();
                 foreach (var user in users)
                 {
