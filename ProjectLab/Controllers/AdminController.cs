@@ -17,9 +17,9 @@ namespace ProjectLab.Controllers
     [Authorize(Roles = "Админ")]
     public class AdminController: Controller
     {
-        private readonly ProjectLabDbService db;
+        private readonly AdminService db;
 
-        public AdminController(ProjectLabDbService context)
+        public AdminController(AdminService context)
         {
             db = context;
             //LoadReferences();
@@ -98,6 +98,43 @@ namespace ProjectLab.Controllers
                 };
             }
             return PartialView("Chart", chart);
+        }
+
+        [HttpGet]
+        public IActionResult Experts()
+        {
+            var vm = new List<ExpertsViewModel>();
+            var directions = db.GetDirections();
+            for (int i = 0; i < directions.Count; i++)
+            {
+                var users = db.GetUsersForDirection(directions[i].Id);
+                vm.Add(new ExpertsViewModel
+                {
+                    SectionId = "section" + i,
+                    DirectionName = directions[i].Name,
+                    ExpertsId = users.FindAll(x => x.UserStatus.Name == UserStatusesNames.Expert).Select(x => x.Id).ToList(),
+                    Users = users.FindAll(x => x.UserStatus.Name == UserStatusesNames.Participant).Select(x => new UserViewModel
+                    {
+                        UserId = x.Id,
+                        UserName = x.Surname + " " + x.Name + " " + x.Patronymic
+                    }).ToList()
+                });
+            }
+            return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult SetExpert(string UserId)
+        {
+            db.SetExpert(UserId);
+            return RedirectToAction("Experts");
+        }
+
+        [HttpPost]
+        public IActionResult CancelExpert(string ExpertId)
+        {
+            db.CancelExpert(ExpertId);
+            return RedirectToAction("Experts");
         }
 
         public void LoadReferences()

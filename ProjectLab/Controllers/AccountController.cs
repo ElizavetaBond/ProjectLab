@@ -132,15 +132,6 @@ namespace ProjectLab.Controllers
             return View();
         }
 
-        public void SetExpert(string UserId)
-        {
-            var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Эксперт").FirstOrDefault());
-            db.Users.FindOneAndUpdate(us => us.Id == UserId, update);
-
-            var user = db.Users.Find(x => x.Id == UserId).FirstOrDefault();
-            db.Experts.InsertOne(new Expert { UserId = user.Id, Direction=user.Direction, ReviewIdeas = new List<Idea>() });
-        }
-
         public void SetAdmin()
         {
             var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Админ").FirstOrDefault());

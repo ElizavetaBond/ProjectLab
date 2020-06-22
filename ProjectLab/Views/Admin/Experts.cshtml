@@ -17,6 +17,8 @@
             </ul>
         </div>
         <div class="col-9">
+            <div class="tab-content">
+            <h2 style="text-align: center;">Эксперты</h2>
             @for (int i = 0; i < Model.Count; i++)
             {
                 <div class="tab-pane fade" id="@Model[i].SectionId">
@@ -32,21 +34,28 @@
                                 </select>
                             </div>
                             <div class="col">
-                                <button type="submit" class="btn btn-primary">Добавить участника</button>
+                                <button type="submit" class="btn btn-primary">Назначить Экспертом</button>
                             </div>
                         </div>
                     }
-                    <h2>Список Экспертов:</h2>
                     <ul>
                         @foreach (var x in Model[i].ExpertsId)
                         {
-                            <li>
+                            <li class="form-inline">
                                 @await Component.InvokeAsync("AccountLink", new { UserId = x })
+                                @using (Html.BeginForm("CancelExpert", "Admin", FormMethod.Post))
+                                {
+                                    <input type="hidden" name="ExpertId" value="@x" />
+                                    <button type="submit" class="btn btm-small" title="Убрать из Экспертов">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                }
                             </li>
                         }
                     </ul>
                 </div>
             }
+            </div>
         </div>
     </div>
 

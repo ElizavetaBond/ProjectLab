@@ -29,6 +29,7 @@ namespace ProjectLab
         {
             services.AddTransient<IdeaService>();
             services.AddTransient<ProjectLabDbService>();
+            services.AddTransient<AdminService>();
             services.AddControllersWithViews();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
