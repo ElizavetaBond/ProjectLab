@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewData["Title"] = "Experts";
+    Layout = "~/Views/Admin/AdminLayout.cshtml";
+    @model List<ExpertsViewModel>
+}
+
+    <div class="row">
+        <div class="col-3">
+            <ul class="nav nav-tabs flex-column">
+                @foreach (var x in Model)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#@x.SectionId">@x.DirectionName</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-9">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="tab-pane fade" id="@Model[i].SectionId">
+                    @using (Html.BeginForm("SetExpert", "Admin", FormMethod.Post))
+                    {
+                        <div class="row">
+                            <div class="col">
+                                <select class="form-control" name="UserId" chosen>
+                                    @foreach (var x in Model[i].Users)
+                                    {
+                                        <option value="@x.UserId">@x.UserName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary">Добавить участника</button>
+                            </div>
+                        </div>
+                    }
+                    <h2>Список Экспертов:</h2>
+                    <ul>
+                        @foreach (var x in Model[i].ExpertsId)
+                        {
+                            <li>
+                                @await Component.InvokeAsync("AccountLink", new { UserId = x })
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+

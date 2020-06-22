@@ -9,14 +9,16 @@ using MongoDB.Driver;
 using ProjectLab.Models;
 using ProjectLab.ViewModels;
 using ProjectLab.ViewModels.Idea;
+using ProjectLab.StaticNames;
+using System.IO;
 
 namespace ProjectLab.Controllers
 {
     public class IdeaController : Controller
     {
-        private readonly ProjectLabDbService db;
+        private readonly IdeaService db;
 
-        public IdeaController(ProjectLabDbService context)
+        public IdeaController(IdeaService context)
         {
             db = context;
             /*var update1 = new UpdateDefinitionBuilder<Idea>().Set(x => x.ProjectTemplate.Sections[0].Components[9].ListSelect, new List<string>
@@ -34,7 +36,7 @@ namespace ProjectLab.Controllers
         [HttpGet]
         public IActionResult Catalog()
         {
-            var ideas = db.Ideas.Find(x => x.IdeaType == "Открытая" && x.IdeaStatus.Name == "Утверждена").ToList();
+            var ideas = db.GetOpenApprovedIdeas();
             var vm = new List<IdeaCardViewModel>();
             foreach (var x in ideas)
             {
@@ -47,13 +49,10 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Edit()
         {
-            var filter = new BsonDocument();
-            ViewData["ListDirections"] = db.Directions.Find(filter).ToList();
-            ViewData["ListComponents"] = new List<string> { "Текст", "Сообщение", "Дата", "Время",  "Число", "Флаг",
-                                                            "Файл", "Фото", "Место", "Выбор", "Множественный выбор", "Гиперссылка"};
-            ViewData["ListIdeaTypes"] = new List<string> { "Открытая", "Приватная" };
-            ViewData["ListSectionTypes"] = new List<string> { "Раздел итоговых результатов", 
-                                                              "Раздел опроса", "Раздел данных" };
+            ViewData["ListDirections"] = db.GetDirections();
+            ViewData["ListComponents"] = ComponentsNames.Get();
+            ViewData["ListIdeaTypes"] = IdeaTypesNames.Get();
+            ViewData["ListSectionTypes"] = SectionTypesNames.Get();
             var vm = new IdeaEditViewModel();
             return View(vm);
         }
@@ -64,27 +63,7 @@ namespace ProjectLab.Controllers
         {
             if (ModelState.IsValid)
             {
-                var idea = new Idea
-                {
-                    Name = vm.Name,
-                    IdeaType = vm.IdeaType,
-                    Target = vm.Target,
-                    Purpose = vm.Purpose,
-                    Description = vm.Description,
-                    Equipment = vm.Equipment,
-                    Safety = vm.Safety,
-                    AuthorId = User.Identity.Name,
-                    IdeaStatus = db.IdeaStatuses.Find(x => x.Name == "Черновик").FirstOrDefault(),
-                    Direction = db.Directions.Find(x => x.Id == vm.DirectionId).FirstOrDefault(),
-                    Video = vm.Video,
-                    Image = vm.FileImage == null ? null : 
-                            new File {
-                                Id = db.SaveFile(vm.FileImage.OpenReadStream(), vm.FileImage.FileName),
-                                Type = vm.FileImage.ContentType },
-                    Resolutions = new List<Resolution>(),
-                    Comments = new List<Comment>(),
-                    ProjectTemplate = new ProjectTemplate { Sections = new List<Section>() }
-                };
+                var sections = new List<Section>();
                 for (var i = 0; i < vm.Sections.Count; i++) // перебираем все разделы
                 {
                     if (!vm.Sections[i].IsDelete) // если раздел не удален
@@ -104,10 +83,25 @@ namespace ProjectLab.Controllers
                                                       ListSelect = x.ListSelect
                                                   }).ToList()
                         };
-                        idea.ProjectTemplate.Sections.Add(section);
+                        sections.Add(section);
                     }
                 }
-                db.Ideas.InsertOne(idea);
+                Stream fileStream;
+                string fileName, fileType;
+                if (vm.FileImage == null)
+                {
+                    fileStream = null;
+                    fileName = "";
+                    fileType = "";
+                }
+                else
+                {
+                    fileStream = vm.FileImage.OpenReadStream();
+                    fileName = vm.FileImage.FileName;
+                    fileType = vm.FileImage.ContentType;
+                }
+                db.CreateIdea(vm.Name, vm.IdeaType, vm.Target, vm.Purpose, vm.Description, vm.Equipment, vm.Safety,
+                    User.Identity.Name, vm.DirectionId, vm.Video, fileStream, fileName, fileType, sections);
                 return RedirectToAction("Menu");
             }
             else
@@ -125,10 +119,7 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Delete(string IdeaId)
         {
-            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
-            if (idea.IdeaStatus.Name != "Утверждена" && idea.Image != null)
-                db.DeleteFile(idea.Image.Id);
-            db.Ideas.DeleteOne(x => x.Id == idea.Id);
+            db.DeleteIdea(IdeaId);
             return RedirectToAction("Menu");
         }
 
@@ -136,27 +127,7 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult SendToReview(string IdeaId) // отправить идею на проверку
         {
-            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
-            if (idea.IdeaType == "Приватная") ; // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
-            else
-            {
-                var experts = db.Experts.Find(x => x.Direction.Id == idea.Direction.Id) // выбрали экспертов по направленности
-                                      .ToList()
-                                      .OrderBy(x => x.ReviewIdeas.Count)
-                                      .ToList(); // отсортировали по количеству работы
-                if (experts.Count < 3) ;  // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
-                else
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        var upd = new UpdateDefinitionBuilder<Expert>().Push(exp => exp.ReviewIdeas, idea);
-                        db.Experts.FindOneAndUpdate(exp => exp.Id == experts[i].Id, upd);
-                    }
-                }
-            }
-
-            var update = new UpdateDefinitionBuilder<Idea>().Set(i => i.IdeaStatus, db.IdeaStatuses.Find(x => x.Name == "На модерации").FirstOrDefault());
-            db.Ideas.FindOneAndUpdate(i => i.Id == IdeaId, update);
+            db.SendIdeaToReview(IdeaId);
             return RedirectToAction("Menu");
         }
 
@@ -174,38 +145,7 @@ namespace ProjectLab.Controllers
         {
             if (ModelState.IsValid)
             {
-                var ExpertId = db.Experts.Find(x => x.UserId == User.Identity.Name).FirstOrDefault().Id;
-                var resol = new Resolution // резолюция эксперта
-                {
-                    ExpertId = ExpertId,
-                    IsPositive = vm.IsPositive,
-                    ValueDegree = vm.IsPositive ? vm.ValueDegree : 0,
-                    Remark = vm.Remark
-                };
-
-                var updateExp = new UpdateDefinitionBuilder<Expert>().PullFilter(exp => exp.ReviewIdeas, x => x.Id == vm.IdeaId); // удаляем идею у эксперта
-                db.Experts.FindOneAndUpdate(x => x.Id == ExpertId, updateExp);
-
-                var updateIdea = new UpdateDefinitionBuilder<Idea>().Push(idea => idea.Resolutions, resol); // добавляем резолюцию в список
-                db.Ideas.FindOneAndUpdate(idea => idea.Id == vm.IdeaId, updateIdea);
-
-                var resolutions = db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault().Resolutions;
-                if (resolutions.Count == 3) // если все эксперты оценили, то меняем статус
-                {
-                    int res = 0, degree = 0;
-                    foreach (var x in resolutions)
-                    {
-                        degree += x.ValueDegree;
-                        res += (x.IsPositive ? 1 : (-1));
-                    }
-                    var status = new IdeaStatus();
-                    if (res > 0) status = db.IdeaStatuses.Find(x => x.Name == "Утверждена").FirstOrDefault();
-                    else status = db.IdeaStatuses.Find(x => x.Name == "Отклонена").FirstOrDefault();
-                    var update = new UpdateDefinitionBuilder<Idea>().Set(idea => idea.ValueDegree, (int)(degree / 3))
-                                                                    .Set(idea => idea.IdeaStatus, status)
-                                                                    .Set(idea => idea.Date, DateTime.Now);
-                    db.Ideas.FindOneAndUpdate(idea => idea.Id == vm.IdeaId, update);
-                }
+                db.RegistExpertResolution(User.Identity.Name, vm.IdeaId, vm.Decision, vm.Comment, vm.ValueDegree);
                 return RedirectToAction("Menu");
             }
             else
@@ -216,7 +156,7 @@ namespace ProjectLab.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Эксперт, Админ")]
+        [Authorize(Roles = "Эксперт")]
         public IActionResult CancelReview(string IdeaId) // эксперт отказался от выдачи рецензии
         {
             return RedirectToAction("Menu");
@@ -234,8 +174,8 @@ namespace ProjectLab.Controllers
 
         public IdeaBrowseViewModel GetIdeaBrowseVM (string IdeaId)
         {
-            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
-            var authorId = db.Users.Find(x => x.Id == idea.AuthorId).FirstOrDefault().Id;
+            var idea = db.GetIdea(IdeaId);
+            var authorId = db.GetUser(idea.AuthorId).Id;
             var vm = new IdeaBrowseViewModel
             {
                 Name = idea.Name,
@@ -252,7 +192,8 @@ namespace ProjectLab.Controllers
                 Video = idea.Video,
                 Sections = new List<SectionBrowseViewModel>()
             };
-            if (authorId == User.Identity.Name || (User.IsInRole("Эксперт") && idea.IdeaStatus.Name == "На модерации"))
+            if (authorId == User.Identity.Name || (User.IsInRole(UserStatusesNames.Expert) 
+                        && idea.IdeaStatus.Name == IdeaStatusesNames.OnReview))
             {
                 vm.Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
                 {
@@ -273,30 +214,28 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Menu()
         {
-            var ownideas = db.Ideas.Find(x => x.AuthorId == User.Identity.Name).ToList();
+            var ownideas = db.GetIdeasByAuthor(User.Identity.Name);
             var vm = new IdeaMenuViewModel
             {
-                Drafts      = ownideas.FindAll(x => x.IdeaStatus.Name == "Черновик").ToList()
+                Drafts      = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.Draft).ToList()
                                       .Select(x => GetIdeaCardVM(x)).ToList(),
-                OnReviews   = ownideas.FindAll(x => x.IdeaStatus.Name == "На модерации").ToList()
+                OnReviews   = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.OnReview).ToList()
                                       .Select(x => GetIdeaCardVM(x)).ToList(),
-                Approves    = ownideas.FindAll(x => x.IdeaStatus.Name == "Утверждена").ToList()
+                Approves    = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.Approved).ToList()
                                       .Select(x => GetIdeaCardVM(x)).ToList(),
-                Rejects     = ownideas.FindAll(x => x.IdeaStatus.Name == "Отклонена").ToList()
+                Rejects     = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.Rejected).ToList()
                                       .Select(x => GetIdeaCardVM(x)).ToList(),
                 MyReviews = new List<IdeaCardViewModel>()
             };
-            if (User.IsInRole("Эксперт"))
+            if (User.IsInRole(UserStatusesNames.Expert))
             {
-                vm.MyReviews = db.Experts.Find(x => x.UserId == User.Identity.Name)
-                                        .FirstOrDefault()
+                vm.MyReviews = db.GetExpert(User.Identity.Name)
                                         .ReviewIdeas
                                         .Select(x => GetIdeaCardVM(x)).ToList();
             }
             return View(vm);
         }
-
-        public IdeaCardViewModel GetIdeaCardVM (Idea idea)
+        private IdeaCardViewModel GetIdeaCardVM(Idea idea)
         {
             return new IdeaCardViewModel
             {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectLab.Models;
-using ProjectLab.ViewModels;
+using ProjectLab.ViewModels.Idea;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -19,7 +19,7 @@ namespace ProjectLab.Models.Statistics
 
         protected override void CountApprovedIdeas() // подсчет утвержденных идей для каждого УЗ согласно фильтрам
         {
-            var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == "Утверждена" && x.Date >= Start && x.Date <= Finish).ToList();
+            var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == IdeaStatusesNames.Approved && x.Date >= Start && x.Date <= Finish).ToList();
             foreach (var idea in ideas)
             {
                 var us = db.Users.Find(x => x.Id == idea.AuthorId).FirstOrDefault();
@@ -34,7 +34,8 @@ namespace ProjectLab.Models.Statistics
 
         protected override void CountCreatedProjects()
         {
-            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == "Рабочий" || x.ProjectStatus.Name == "Завершенный")  && x.Start >= Start && x.Start <= Finish).ToList();
+            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working 
+                             || x.ProjectStatus.Name == ProjectStatusesNames.Completed)  && x.Start >= Start && x.Start <= Finish).ToList();
             foreach (var project in projects)
             {
                 var us = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault();
@@ -47,9 +48,10 @@ namespace ProjectLab.Models.Statistics
             }
         }
 
-        /*protected override void CountProjectsWithParticipants()
+        protected override void CountParticipantsInProjects()
         {
-            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == "Рабочий" || x.ProjectStatus.Name == "Завершенный") && x.Start >= Start && x.Start <= Finish).ToList();
+            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working 
+                || x.ProjectStatus.Name == ProjectStatusesNames.Completed) && x.Start >= Start && x.Start <= Finish).ToList();
             foreach (var project in projects)
             {
                 if (Directions.Find(x => x.Id == project.Idea.Direction.Id) != null) 
@@ -66,15 +68,17 @@ namespace ProjectLab.Models.Statistics
                     }
                 }
             }
-        }*/
+        }
 
         protected override void CountArchieveProjects()
         {
-            var projects = db.Projects.Find(x => x.ProjectStatus.Name == "Завершенный" && x.Finish >= Start && x.Finish <= Finish).ToList();
+            var projects = db.Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Completed 
+                                    && x.Finish >= Start && x.Finish <= Finish).ToList();
             foreach (var project in projects)
             {
                 var us = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault();
-                if (Directions.Find(x => x.Id == project.Idea.Direction.Id) != null && UserCategories.Find(x => x.Id == us.UserCategory.Id) != null)
+                if (Directions.Find(x => x.Id == project.Idea.Direction.Id) != null 
+                            && UserCategories.Find(x => x.Id == us.UserCategory.Id) != null)
                 {
                     var ind = KeyValues.FindIndex(x => x.Id == us.EducationalInstitution.Id);
                     if (ind != -1)

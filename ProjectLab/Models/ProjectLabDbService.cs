@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using ProjectLab.Models.References;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ProjectLab.Models
@@ -62,14 +63,29 @@ namespace ProjectLab.Models
             return gridFS.DownloadAsBytes(new ObjectId(id));
         }
         
-        public string SaveFile(Stream imageStream, string imageName) // сохранение изображения
+        public string SaveFile(Stream fileStream, string fileName) // сохранение изображения
         {
-            return gridFS.UploadFromStream(imageName, imageStream).ToString();
+            return gridFS.UploadFromStream(fileName, fileStream).ToString();
         }
 
         public void DeleteFile(string id) // удаляет изображение из хранилища
         {
             gridFS.Delete(new ObjectId(id));
+        }
+
+        public List<Direction> GetDirections()
+        {
+            return Directions.Find(new BsonDocument()).ToList();
+        }
+
+        public Idea GetIdea (string IdeaId)
+        {
+            return Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
+        }
+
+        public User GetUser (string UserId)
+        {
+            return Users.Find(x => x.Id == UserId).FirstOrDefault();
         }
     }
 }

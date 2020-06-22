@@ -11,7 +11,7 @@ namespace ProjectLab.StaticNames
 
         public static readonly string CreatedProjects;
 
-        public static readonly string ProjectsWithParticipants;
+        public static readonly string ParticipantsInProjects;
 
         public static readonly string ArchieveProjects;
 
@@ -19,12 +19,19 @@ namespace ProjectLab.StaticNames
 
         static MeasuredQuantitiesNames()
         {
-            ApprovedIdeas = "Утвержденные идеи";
-            CreatedProjects = "Созданные проекты";
-            ProjectsWithParticipants = "Проекты с участием";
-            ArchieveProjects= "Завершенные проекты";
-            RegisteredUsers = "Зарегистированные пользователи";
+            ApprovedIdeas = "Количество утвержденных идей";
+            CreatedProjects = "Количество созданных проектов";
+            ParticipantsInProjects = "Общее количество участников в проектах";
+            ArchieveProjects= "Количество завершенных проектов";
+            RegisteredUsers = "Количество зарегистированных пользователей";
         }
 
+        public static List<string> Get()
+        {
+            return new List<string>()
+            {
+                ApprovedIdeas, CreatedProjects, ParticipantsInProjects, ArchieveProjects, RegisteredUsers
+            };
+        }
     }
 }

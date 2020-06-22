@@ -20,5 +20,13 @@ namespace ProjectLab.StaticNames
             UserCategories = "Категории пользователей";
         }
 
+        public static List<string> Get()
+        {
+            return new List<string>()
+            {
+                EducationalInstitutions, Directions, UserCategories
+            };
+        }
+
     }
 }

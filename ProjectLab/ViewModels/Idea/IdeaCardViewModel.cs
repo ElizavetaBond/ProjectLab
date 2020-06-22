@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectLab.ViewModels
+namespace ProjectLab.ViewModels.Idea
 {
     public class IdeaCardViewModel // представление идеи в каталоге идей
     {

@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using ProjectLab.StaticNames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace ProjectLab.Models.Statistics
         {
             for (int i = 0; i < KeyValues.Count; i++)
             {
-                var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == "Утверждена" && x.Date >= Start && x.Date <= Finish && 
+                var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == IdeaStatusesNames.Approved && x.Date >= Start && x.Date <= Finish && 
                                                x.Direction.Id == KeyValues[i].Id).ToList();
                 foreach (var idea in ideas)
                 {
@@ -37,7 +38,8 @@ namespace ProjectLab.Models.Statistics
         {
             for (int i = 0; i < KeyValues.Count; i++)
             {
-                var projects = db.Projects.Find(x => (x.ProjectStatus.Name == "Рабочий" || x.ProjectStatus.Name == "Завершенный")
+                var projects = db.Projects.Find(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working 
+                                                  || x.ProjectStatus.Name == ProjectStatusesNames.Completed)
                                                   && x.Start >= Start && x.Start <= Finish
                                                   && x.Idea.Direction.Id == KeyValues[i].Id).ToList();
                 foreach (var project in projects)
@@ -50,35 +52,33 @@ namespace ProjectLab.Models.Statistics
             }
         }
 
-        /*protected override void CountProjectsWithParticipants()
+        protected override void CountParticipantsInProjects()
         {
-            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == "Рабочий" || x.ProjectStatus.Name == "Завершенный") && x.Start >= Start && x.Start <= Finish).ToList();
-            foreach (var project in projects)
+            for (int i = 0; i < KeyValues.Count; i++)
             {
-                var ind = Directions.FindIndex(x => x.Id == project.Idea.Direction.Id);
-                if ( ind != -1 )
+                var projects = db.Projects.Find(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working
+                        || x.ProjectStatus.Name == ProjectStatusesNames.Completed) && x.Start >= Start && x.Start <= Finish  
+                        && x.Idea.Direction.Id == KeyValues[i].Id).ToList();
+                foreach (var project in projects)
                 {
                     foreach (var participant in project.ParticipantsId)
                     {
                         var us = db.Users.Find(x => x.Id == participant).FirstOrDefault();
-                        if (EducationalInstitutions.Find(x => x.Id == us.EducationalInstitution.Id) != null 
-                                        && UserCategories.Find(x => x.Id == us.UserCategory.Id) != null)
-                        {
-                            var ind = KeyValues.FindIndex(x => x.Id == us.EducationalInstitution.Id);
-                            if (ind != -1)
-                                KeyValues[ind].Value += 1;
-                        }
+                        if (EducationalInstitutions.Find(x => x.Id == us.EducationalInstitution.Id) != null
+                                && UserCategories.Find(x => x.Id == us.UserCategory.Id) != null)
+                            KeyValues[i].Value++;
                     }
                 }
             }
-        }*/
+        }
 
         protected override void CountArchieveProjects()
         {
             for (int i = 0; i < KeyValues.Count; i++)
             {
-                var projects = db.Projects.Find(x => x.ProjectStatus.Name == "Завершенный" && x.Finish >= Start && x.Finish <= Finish
-                                                     && x.Idea.Direction.Id == KeyValues[i].Id).ToList();
+                var projects = db.Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Completed 
+                                                    && x.Finish >= Start && x.Finish <= Finish
+                                                    && x.Idea.Direction.Id == KeyValues[i].Id).ToList();
                 foreach (var project in projects)
                 {
                     var us = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault();

@@ -7,52 +7,55 @@
 
 @Html.Partial("Browse", ViewData["idea"])
 
-<div class="background">
+<hr />
+
+<div class="background-review" style="background-color: rgba(255, 213, 194, 0.67);">
     <form method="post" asp-action="Review" asp-controller="Idea">
         <input asp-for="IdeaId" />
-        <div class="container">
-            <div class="row">
-                <div class="col-2 custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" name="IsPositive" id="IsPositiveTrue" value="true" checked />
-                    <label class="custom-control-label" for="IsPositiveTrue">Утвердить</label>
-                </div>
-                <div class="col-10">
-                    <div class="row">
-                        <div class="col-2">
-                            <label asp-for="ValueDegree"></label>
-                        </div>
-                        <div class="col-4">
-                            <input class="form-control" asp-for="ValueDegree" value="1" />
-                        </div>
-                        <div class="col-6">
-                            <span asp-validation-for="ValueDegree"></span>
-                        </div>
+        <div class="row">
+            <div class="col-2">
+
+            </div>
+            <div class="col-10">
+                <div class="row">
+                    <div class="col-3">
+                        <label asp-for="Decision"></label>
+                    </div>
+                    <div class="col-7">
+                        <select asp-for="Decision" class="form-control">
+                            <option value="1">@ExpertDecisionsNames.Approve</option>
+                            <option value="0">@ExpertDecisionsNames.Revision</option>
+                            <option value="-1">@ExpertDecisionsNames.Reject</option>
+                        </select>
                     </div>
                 </div>
-            </div>
-            <hr />
-            <div class="row">
-                <div class="col-2 custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" name="IsPositive" id="IsPositiveFalse" value="false" />
-                    <label class="custom-control-label" for="IsPositiveFalse">Отклонить</label>
-                </div>
-                <div class="col-10">
-                    <div class="row">
-                        <div class="col-2">
-                            <label asp-for="Remark"></label>
-                        </div>
-                        <div class="col-8">
-                            <textarea class="form-control" asp-for="Remark"></textarea>
-                        </div>
-                        <div class="col-2">
-                            <span asp-validation-for="Remark"></span>
-                        </div>
+                <div class="row">
+                    <div class="col-3">
+                        <label asp-for="Comment"></label>
+                    </div>
+                    <div class="col-7">
+                        <textarea asp-for="Comment" class="form-control"></textarea>
+                    </div>
+                    <div class="col-2">
+                        <span asp-validation-for="Comment"></span>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <button class="btn btn-primary" type="submit">Отправить</button>
+                <div class="row">
+                    <div class="col-3">
+                        <label asp-for="ValueDegree"></label>
+                    </div>
+                    <div class="col-7">
+                        <input type="number" asp-for="ValueDegree" class="form-control" value="1" />
+                    </div>
+                    <div class="col-2">
+                        <span asp-validation-for="ValueDegree"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col">
+                        <button class="btn btn-primary" type="submit">Отправить</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,25 +66,19 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script type="text/javascript">
-        function onClickTrue() {
-            $('#ValueDegree').attr('readonly', false);
-            var str = $('#Remark').val().replace(/\s+/g, '');
-            if (str.length == 0)
-                $('#Remark').val('Причина отказа');
-            $('#Remark').attr('readonly', true);
-        }
 
-        function onClickFalse() {
-            $('#Remark').attr('readonly', false);
-            if ($('#ValueDegree').val().length == 0)
-                $('#ValueDegree').val('1');
-            $('#ValueDegree').attr('readonly', true);
+        function changeDecision() {
+            if ($('#Decision').val() == 1)
+                $('#ValueDegree').attr('readonly', false);
+            else {
+                $('#ValueDegree').val(1);
+                $('#ValueDegree').attr('readonly', true);
+            }
         }
 
         (function () {
-            onClickTrue(); // так как изначально установлено утвердить
-            $('#IsPositiveTrue').on('change', function () { onClickTrue(); });
-            $('#IsPositiveFalse').on('change', function () { onClickFalse(); });
+            changeDecision();
+            $('#Decision').on('change', function () { changeDecision() });
         })();
 
     </script>

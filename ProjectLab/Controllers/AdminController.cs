@@ -33,7 +33,7 @@ namespace ProjectLab.Controllers
                                                                     ComparedCategoriesNames.UserCategories };
             ViewData["ListMeasuredQuantities"] = new List<string> { MeasuredQuantitiesNames.ApprovedIdeas,
                                                                   MeasuredQuantitiesNames.CreatedProjects,
-                                                                  MeasuredQuantitiesNames.ProjectsWithParticipants,
+                                                                  MeasuredQuantitiesNames.ParticipantsInProjects,
                                                                   MeasuredQuantitiesNames.ArchieveProjects,
                                                                   MeasuredQuantitiesNames.RegisteredUsers };
             ViewData["ListEducationalInstitutions"] = db.EducationalInstitutions.Find(new BsonDocument()).ToList();
@@ -68,6 +68,22 @@ namespace ProjectLab.Controllers
             else if (settings.ComparedCategory == ComparedCategoriesNames.Directions)
             {
                 var statistics = new StatisticsDirections(db, settings);
+                statistics.Generate();
+                chart = new ChartViewModel
+                {
+                    Title = statistics.Title,
+                    ComparedCategory = statistics.ComparedCategory,
+                    MeasuredQuantity = statistics.MeasuredQuantity,
+                    KeyValues = statistics.KeyValues.Select(x => new ChartViewModel.KeyValueViewModel
+                    {
+                        Key = x.Key,
+                        Value = x.Value
+                    }).ToList()
+                };
+            }
+            else if (settings.ComparedCategory == ComparedCategoriesNames.UserCategories)
+            {
+                var statistics = new StatisticsUserCategories(db, settings);
                 statistics.Generate();
                 chart = new ChartViewModel
                 {

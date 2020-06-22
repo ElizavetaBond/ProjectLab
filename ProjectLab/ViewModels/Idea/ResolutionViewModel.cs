@@ -11,16 +11,17 @@ namespace ProjectLab.ViewModels.Idea
     {
         [HiddenInput(DisplayValue = false)]
         public string IdeaId { get; set; }
- 
-        public bool IsPositive { get; set; }    // позитивное ли решение
 
-        [Required(ErrorMessage = "При утверждении идеи, ее необходимо оценить!")]
+        [Display(Name = "Ваше решение:")]
+        public int Decision { get; set; }    // позитивное ли решение
+
+        [Required(ErrorMessage = "Укажите степень ценности идеи!")]
         [Display(Name = "Степень ценности (1-10):")]
         [Range(1, 10, ErrorMessage = "Недопустимое значение")]
         public int ValueDegree { get; set; }    // степень ценности
 
-        [Required(ErrorMessage = "Укажите причину отказа!")]
+        [Required(ErrorMessage = "Оставьте комментарий пользователю!")]
         [Display(Name = "Комментарий:")]
-        public string Remark { get; set; }      // замечание эксперта
+        public string Comment { get; set; }      // замечание эксперта
     }
 }
