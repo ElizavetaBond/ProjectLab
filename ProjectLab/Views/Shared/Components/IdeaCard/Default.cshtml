@@ -24,4 +24,10 @@
         </div>
         <h3>Направленность - @Model.Direction</h3>
         <h3>Автор</h3> @await Component.InvokeAsync("AccountLink", new { UserId = Model.AuthorId })
+        @if (Model.ValueDegree > 1)
+        {
+            <div class="label-info">
+                <h2>Cтепень ценности: @Model.ValueDegree</h2>
+            </div>
+        }
     </div>

@@ -26,9 +26,10 @@ namespace ProjectLab.Models
         public IdeaStatus IdeaStatus { get; set; }  // ссылка на статус идеи
         public Direction Direction { get; set; }    // ссылка на направленность идеи
 
+        public string ReviewId { get; set; }
+
         
         public ProjectTemplate ProjectTemplate { get; set; }    // шаблон проекта
-        public List<Resolution> Resolutions { get; set; }       // резолюции 
         public List<Comment> Comments { get; set; }             // комментарии
 
 

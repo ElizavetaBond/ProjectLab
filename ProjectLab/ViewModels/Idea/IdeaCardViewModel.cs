@@ -16,5 +16,6 @@ namespace ProjectLab.ViewModels.Idea
         public string Direction { get; set; }               // направленность идеи
         public string AuthorId { get; set; }                  // автор идеи
         public File Image { get; set; }
+        public int ValueDegree { get; set; }
     }
 }

@@ -37,7 +37,6 @@ namespace ProjectLab.Models
                                 Id = SaveFile(fileStream, fileName),
                                 Type = fileType
                             },
-                Resolutions = new List<Resolution>(),
                 Comments = new List<Comment>(),
                 ProjectTemplate = new ProjectTemplate { Sections = sections }
             };
@@ -55,64 +54,76 @@ namespace ProjectLab.Models
             return Ideas.Find(x => x.AuthorId == authorId).ToList();
         }
 
-        public Expert GetExpert (string userId)
-        {
-            return Experts.Find(x => x.UserId == userId).FirstOrDefault();
-        }
-
         public void DeleteIdea(string IdeaId)
         {
             var idea = GetIdea(IdeaId);
             if (idea.IdeaStatus.Name != IdeaStatusesNames.Approved && idea.Image != null)
-                DeleteFile(idea.Image.Id);
+                DeleteFile(idea.Image.Id); // если утверждена, изображение привязано к проекту
             Ideas.DeleteOne(x => x.Id == idea.Id);
         }
 
         public void SendIdeaToReview(string IdeaId)
         {
             var idea = GetIdea(IdeaId);
+            var author = GetUser(idea.AuthorId);
             if (idea.IdeaType == IdeaTypesNames.Private) ; // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
             else
             {
-                var experts = Experts.Find(x => x.Direction.Id == idea.Direction.Id) // выбрали экспертов по направленности
-                                      .ToList()
-                                      .OrderBy(x => x.ReviewIdeas.Count)
-                                      .ToList(); // отсортировали по количеству работы
+                var experts = Experts.Find(x => x.Direction.Id == idea.Direction.Id
+                                              && x.EducationalInstitution.Id != author.EducationalInstitution.Id).ToList()
+                                              .OrderBy(x => x.ReviewIdeas.Count).ToList();
                 if (experts.Count < 3) ;  // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
                 else
                 {
+                    var review = new Review
+                    {
+                        Id = ObjectId.GenerateNewId().ToString(),
+                        Idea = idea,
+                        DateSending = DateTime.Now,
+                        Resolutions = new List<Resolution>(),
+                        ExpertsId = new List<string>()
+                    };
                     for (int i = 0; i < 3; i++)
                     {
-                        var upd = new UpdateDefinitionBuilder<Expert>().Push(exp => exp.ReviewIdeas, idea);
-                        Experts.FindOneAndUpdate(exp => exp.Id == experts[i].Id, upd);
+                        var updateExpert = new UpdateDefinitionBuilder<Expert>().Push(x => x.ReviewIdeas, idea);
+                        Experts.FindOneAndUpdate(x => x.Id == experts[i].Id, updateExpert);
+                        review.ExpertsId.Add(experts[i].Id);
                     }
+                    Reviews.InsertOne(review);
+                    var updateIdea = new UpdateDefinitionBuilder<Idea>().Set(i => i.IdeaStatus,
+                        IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.OnReview).FirstOrDefault())
+                        .Set(i => i.ReviewId, review.Id);
+                    Ideas.FindOneAndUpdate(i => i.Id == IdeaId, updateIdea);
                 }
             }
 
-            var update = new UpdateDefinitionBuilder<Idea>().Set(i => i.IdeaStatus, 
-                        IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.OnReview).FirstOrDefault());
-            Ideas.FindOneAndUpdate(i => i.Id == IdeaId, update);
+            
         }
 
-        public void RegistExpertResolution(string userId, string ideaId, int decision, string comment, int valueDegree)
+        public void RegistExpertResolution(string expertId, string ideaId, int decision, string comment, int valueDegree)
         {
-            var ExpertId = GetExpert(userId).Id;
+            var idea = GetIdea(ideaId);
             var resol = new Resolution // резолюция эксперта
             {
-                ExpertId = ExpertId,
+                ExpertId = expertId,
                 Decision = decision,
                 ValueDegree = decision > 0 ? valueDegree : 0,
-                Comment = comment
+                Comment = comment,
+                DateReview = DateTime.Now
             };
 
-            var updateExp = new UpdateDefinitionBuilder<Expert>().PullFilter(exp => exp.ReviewIdeas, x => x.Id == ideaId); // удаляем идею у эксперта
-            Experts.FindOneAndUpdate(x => x.Id == ExpertId, updateExp);
+            // сохраняем резолюцию в коллекции Reviews
+            var updateReview = new UpdateDefinitionBuilder<Review>().Push(x => x.Resolutions, resol); 
+            Reviews.FindOneAndUpdate(x => x.Id == idea.ReviewId, updateReview);
 
-            var updateIdea = new UpdateDefinitionBuilder<Idea>().Push(idea => idea.Resolutions, resol); // добавляем резолюцию в список
-            Ideas.FindOneAndUpdate(idea => idea.Id == ideaId, updateIdea);
+            // удаляем идею у Эксперта
+            var updateExp = new UpdateDefinitionBuilder<Expert>().PullFilter(exp => exp.ReviewIdeas, x => x.Id == ideaId); 
+            Experts.FindOneAndUpdate(x => x.Id == expertId, updateExp);
 
-            var resolutions = Ideas.Find(x => x.Id == ideaId).FirstOrDefault().Resolutions;
-            if (resolutions.Count == 3) // если все эксперты оценили, то меняем статус
+            // получаем резолюции
+            var resolutions = Reviews.Find(x => x.Id == idea.ReviewId).FirstOrDefault().Resolutions;
+            // если все эксперты оценили, то меняем статус
+            if (resolutions.Count == 3) 
             {
                 int res = 0, degree = 0;
                 foreach (var x in resolutions)
@@ -121,14 +132,29 @@ namespace ProjectLab.Models
                     res += x.Decision;
                 }
                 var status = new IdeaStatus();
-                if (res > 1) status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Approved).FirstOrDefault();
-                else if (res < -1) status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Rejected).FirstOrDefault();
-                else status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Draft).FirstOrDefault();
-                var update = new UpdateDefinitionBuilder<Idea>().Set(idea => idea.ValueDegree, (int)(degree / 3))
+                if (res > 1)  // утвердить
+                    status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Approved).FirstOrDefault();
+                else if (res < -1) // отклонить
+                    status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Rejected).FirstOrDefault();
+                else // отправить на доработку
+                    status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Draft).FirstOrDefault();
+                // изменить статус идеи, установить степень ценности
+                var updateIdea = new UpdateDefinitionBuilder<Idea>().Set(idea => idea.ValueDegree, (int)(degree / 3))
                                                                 .Set(idea => idea.IdeaStatus, status)
                                                                 .Set(idea => idea.Date, DateTime.Now);
-                Ideas.FindOneAndUpdate(idea => idea.Id == ideaId, update);
+                Ideas.FindOneAndUpdate(idea => idea.Id == ideaId, updateIdea);
             }
+        }
+
+        public Expert GetExpert (string ExpertId)
+        {
+            return Experts.Find(x => x.Id == ExpertId).FirstOrDefault();
+        }
+
+        public List<Resolution> GetResolutions(string IdeaId)
+        {
+            var idea = GetIdea(IdeaId);
+            return Reviews.Find(x => x.Id == idea.ReviewId).FirstOrDefault().Resolutions;
         }
         
     }

@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewData["Title"] = "Карточка резолюции";
+    @model ResolutionCardViewModel
+}
+
+    <div>
+        @if (Model.Decision == 1)
+        {
+            <h2 style="background-color:palegreen;">@ExpertDecisionsNames.Approve</h2>
+        }
+        else if (Model.Decision == 0)
+        {
+            <h2 style="background-color:lightyellow;">@ExpertDecisionsNames.Revision</h2>
+        }
+        else
+        {
+            <h2 style="background-color:pink;">@ExpertDecisionsNames.Reject</h2>
+        }
+
+        Комментарий: <p>@Model.Comment</p>
+
+        @if (Model.Decision == 1)
+        {
+            <div class="label-info">
+                <h2>Cтепень ценности: @Model.ValueDegree</h2>
+            </div>
+        }
+    </div>

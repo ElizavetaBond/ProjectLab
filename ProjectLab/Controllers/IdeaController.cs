@@ -190,8 +190,19 @@ namespace ProjectLab.Controllers
                 AuthorId = authorId,
                 Image = idea.Image,
                 Video = idea.Video,
-                Sections = new List<SectionBrowseViewModel>()
+                Sections = new List<SectionBrowseViewModel>(),
+                ResolutionCards = new List<ResolutionCardViewModel>()
             };
+            if (authorId == User.Identity.Name)
+            {
+                var resolutions = db.GetResolutions(idea.Id);
+                vm.ResolutionCards = resolutions.Select(x => new ResolutionCardViewModel
+                {
+                    Comment = x.Comment,
+                    Decision = x.Decision,
+                    ValueDegree = x.ValueDegree
+                }).ToList();
+            }
             if (authorId == User.Identity.Name || (User.IsInRole(UserStatusesNames.Expert) 
                         && idea.IdeaStatus.Name == IdeaStatusesNames.OnReview))
             {
@@ -228,11 +239,7 @@ namespace ProjectLab.Controllers
                 MyReviews = new List<IdeaCardViewModel>()
             };
             if (User.IsInRole(UserStatusesNames.Expert))
-            {
-                vm.MyReviews = db.GetExpert(User.Identity.Name)
-                                        .ReviewIdeas
-                                        .Select(x => GetIdeaCardVM(x)).ToList();
-            }
+                vm.MyReviews = db.GetExpert(User.Identity.Name).ReviewIdeas.Select(x => GetIdeaCardVM(x)).ToList();
             return View(vm);
         }
         private IdeaCardViewModel GetIdeaCardVM(Idea idea)
@@ -243,7 +250,8 @@ namespace ProjectLab.Controllers
                 Name = idea.Name,
                 Direction = idea.Direction.Name,
                 AuthorId = idea.AuthorId,
-                Image = idea.Image
+                Image = idea.Image,
+                ValueDegree = idea.ValueDegree
             };
         }
     }

@@ -27,8 +27,9 @@ namespace ProjectLab.Models
         // коллекции
         public IMongoCollection<Idea> Ideas { get; set; } // идеи
         public IMongoCollection<Project> Projects { get; set; }
-        public IMongoCollection<User> Users { get; set; } 
+        public IMongoCollection<User> Users { get; set; }
         public IMongoCollection<Expert> Experts { get; set; }
+        public IMongoCollection<Review> Reviews { get; set; }
 
         public ProjectLabDbService()
         {
@@ -56,6 +57,7 @@ namespace ProjectLab.Models
             Projects = database.GetCollection<Project>("Projects");
             Users = database.GetCollection<User>("Users");
             Experts = database.GetCollection<Expert>("Experts");
+            Reviews = database.GetCollection<Review>("Reviews");
         }
         
         public byte[] GetFile(string id) // получение изображения

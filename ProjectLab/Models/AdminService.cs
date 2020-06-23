@@ -21,6 +21,14 @@ namespace ProjectLab.Models
             var update = new UpdateDefinitionBuilder<User>().Set(x => x.UserStatus,
                         UserStatuses.Find(u => u.Name == UserStatusesNames.Expert).FirstOrDefault());
             Users.FindOneAndUpdate(x => x.Id == UserId, update);
+            var user = GetUser(UserId);
+            Experts.InsertOne(new Expert
+            {
+                Id = user.Id,
+                Direction = user.Direction,
+                EducationalInstitution = user.EducationalInstitution,
+                ReviewIdeas = new List<Idea>()
+            });
         }
 
         public void CancelExpert(string ExpertId)
@@ -28,6 +36,7 @@ namespace ProjectLab.Models
             var update = new UpdateDefinitionBuilder<User>().Set(x => x.UserStatus,
                         UserStatuses.Find(u => u.Name == UserStatusesNames.Participant).FirstOrDefault());
             Users.FindOneAndUpdate(x => x.Id == ExpertId, update);
+            Experts.FindOneAndDelete(x => x.Id == ExpertId);
             // НАДО ЧТО ТО СДЕЛАТЬ С ИДЕЯМИ КОТОРЫЕ БЫЛИ У НЕГО НА ПРОВЕРКЕ
         }
     }

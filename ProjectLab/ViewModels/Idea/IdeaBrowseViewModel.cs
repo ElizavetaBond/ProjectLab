@@ -47,6 +47,7 @@ namespace ProjectLab.ViewModels.Idea
         public string IdeaStatus { get; set; }
 
         public List<SectionBrowseViewModel> Sections { get; set; } // список разделов шаблона проекта
+        public List<ResolutionCardViewModel> ResolutionCards { get; set; }
     }
 
     public class SectionBrowseViewModel
