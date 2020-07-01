@@ -10,7 +10,6 @@ namespace ProjectLab.Models.Statistics
 {
     public class StatisticsSettings
     {
-        private ProjectLabDbService db;
         public string ComparedCategory { get; set; }
         public string MeasuredQuantity { get; set; }
         public DateTime Start { get; set; }
@@ -18,10 +17,10 @@ namespace ProjectLab.Models.Statistics
         public List<Direction> Directions { get; set; }
         public List<EducationalInstitution> EducationalInstitutions { get; set; }
         public List<UserCategory> UserCategories { get; set; }
-        public StatisticsSettings(ProjectLabDbService _db, string categ, string quant, DateTime start, DateTime finish,
-                          List<string> dirsId, List<string> edsId, List<string> categsId)
+        public StatisticsSettings(List<Direction> directions, List<EducationalInstitution> educInsts, List<UserCategory> usCats, 
+                                    string categ, string quant, DateTime start, DateTime finish,
+                                    List<string> dirsId, List<string> edsId, List<string> categsId)
         {
-            db = _db;
             ComparedCategory = categ;
             MeasuredQuantity = quant;
             Start = start;
@@ -30,28 +29,28 @@ namespace ProjectLab.Models.Statistics
             {
                 Directions = new List<Direction>();
                 foreach (var dir in dirsId)
-                    Directions.Add(db.Directions.Find(d => d.Id == dir).FirstOrDefault());
+                    Directions.Add(directions.Find(x => x.Id == dir));
             }
             else
-                Directions = db.Directions.Find(new BsonDocument()).ToList();
+                Directions = directions;
 
             if (edsId != null && edsId.Any())
             {
                 EducationalInstitutions = new List<EducationalInstitution>();
                 foreach (var ed in edsId)
-                    EducationalInstitutions.Add(db.EducationalInstitutions.Find(e => e.Id == ed).FirstOrDefault());
+                    EducationalInstitutions.Add(educInsts.Find(x => x.Id == ed));
             }
             else
-                EducationalInstitutions = db.EducationalInstitutions.Find(new BsonDocument()).ToList();
+                EducationalInstitutions = educInsts;
 
             if (categsId != null && categsId.Any())
             {
                 UserCategories = new List<UserCategory>();
                 foreach (var cat in categsId)
-                    UserCategories.Add(db.UserCategories.Find(u => u.Id == cat).FirstOrDefault());
+                    UserCategories.Add(usCats.Find(x => x.Id == cat));
             }
             else
-                UserCategories = db.UserCategories.Find(new BsonDocument()).ToList();
+                UserCategories = usCats;
         }
     }
 }

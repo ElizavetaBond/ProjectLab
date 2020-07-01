@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectLab.StaticNames;
 
@@ -38,6 +39,21 @@ namespace ProjectLab.Models
             Users.FindOneAndUpdate(x => x.Id == ExpertId, update);
             Experts.FindOneAndDelete(x => x.Id == ExpertId);
             // НАДО ЧТО ТО СДЕЛАТЬ С ИДЕЯМИ КОТОРЫЕ БЫЛИ У НЕГО НА ПРОВЕРКЕ
+        }
+
+        public List<Idea> GetIdeas()
+        {
+            return Ideas.Find(new BsonDocument()).ToList();
+        }
+
+        public List<Project> GetProjects()
+        {
+            return Projects.Find(new BsonDocument()).ToList();
+        }
+
+        public List<User> GetUsers()
+        {
+            return Users.Find(new BsonDocument()).ToList();
         }
     }
 }

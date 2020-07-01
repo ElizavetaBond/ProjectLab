@@ -17,7 +17,7 @@ namespace ProjectLab.Models.Statistics
         public List<KeyValue> KeyValues { get; set; }   // список значений
 
 
-        protected ProjectLabDbService db;
+        protected AdminService db;
 
 
         // фильтры
@@ -28,7 +28,7 @@ namespace ProjectLab.Models.Statistics
         protected List<UserCategory> UserCategories { get; set; }
 
 
-        public Statistics(ProjectLabDbService serv, StatisticsSettings settings)
+        public Statistics(AdminService serv, StatisticsSettings settings)
         {
             db = serv;
             Title = settings.ComparedCategory + " / " + settings.MeasuredQuantity;

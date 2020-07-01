@@ -24,7 +24,7 @@
                     <div class="col-8">
                         @if (Model.Components[i].ComponentType == "Текст")
                         {
-                            <input type="text" asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" value="Текст" readonly />
+                            <input type="text" asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" readonly />
                         }
                         else if (Model.Components[i].ComponentType == "Сообщение")
                         {

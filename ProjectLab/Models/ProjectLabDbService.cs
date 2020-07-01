@@ -20,7 +20,6 @@ namespace ProjectLab.Models
         public IMongoCollection<ProjectStatus> ProjectStatuses { get; set; }
         public IMongoCollection<ProjectType> ProjectTypes { get; set; }
         public IMongoCollection<Municipality> Municipalities { get; set; }
-        public IMongoCollection<Reward> RewardTypes { get; set; }
         public IMongoCollection<UserCategory> UserCategories { get; set; }
         public IMongoCollection<UserStatus> UserStatuses { get; set; }
 
@@ -48,7 +47,6 @@ namespace ProjectLab.Models
             ProjectStatuses = database.GetCollection<ProjectStatus>("ProjectStatuses");
             ProjectTypes = database.GetCollection<ProjectType>("ProjectTypes");
             Municipalities = database.GetCollection<Municipality>("Municipalities");
-            RewardTypes = database.GetCollection<Reward>("RewardTypes");
             UserCategories = database.GetCollection<UserCategory>("UserCategories");
             UserStatuses = database.GetCollection<UserStatus>("UserStatuses");
 
@@ -78,6 +76,16 @@ namespace ProjectLab.Models
         public List<Direction> GetDirections()
         {
             return Directions.Find(new BsonDocument()).ToList();
+        }
+
+        public List<EducationalInstitution> GetEducationalInstitutions()
+        {
+            return EducationalInstitutions.Find(new BsonDocument()).ToList();
+        }
+
+        public List<UserCategory> GetUserCategories()
+        {
+            return UserCategories.Find(new BsonDocument()).ToList();
         }
 
         public Idea GetIdea (string IdeaId)

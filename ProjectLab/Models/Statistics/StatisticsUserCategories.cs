@@ -9,7 +9,7 @@ namespace ProjectLab.Models.Statistics
 {
     public class StatisticsUserCategories : Statistics
     {
-        public StatisticsUserCategories(ProjectLabDbService serv, StatisticsSettings settings) : base(serv, settings)
+        public StatisticsUserCategories(AdminService serv, StatisticsSettings settings) : base(serv, settings)
         {
             foreach (var x in UserCategories)
             {
@@ -19,10 +19,10 @@ namespace ProjectLab.Models.Statistics
 
         protected override void CountApprovedIdeas() // подсчет утвержденных идей для каждого УЗ согласно фильтрам
         {
-            var ideas = db.Ideas.Find(x => x.IdeaStatus.Name == IdeaStatusesNames.Approved && x.Date >= Start && x.Date <= Finish).ToList();
+            var ideas = db.GetIdeas().FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.Approved && x.Date >= Start && x.Date <= Finish);
             foreach (var idea in ideas)
             {
-                var us = db.Users.Find(x => x.Id == idea.AuthorId).FirstOrDefault();
+                var us = db.GetUser(idea.AuthorId);
                 if (Directions.Find(x => x.Id == idea.Direction.Id) != null 
                         && EducationalInstitutions.Find(x => x.Id == us.EducationalInstitution.Id) != null)
                 {
@@ -35,11 +35,11 @@ namespace ProjectLab.Models.Statistics
 
         protected override void CountCreatedProjects()
         {
-            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working
-                             || x.ProjectStatus.Name == ProjectStatusesNames.Completed) && x.Start >= Start && x.Start <= Finish).ToList();
+            var projects = db.GetProjects().FindAll(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working
+                             || x.ProjectStatus.Name == ProjectStatusesNames.Completed) && x.Start >= Start && x.Start <= Finish);
             foreach (var project in projects)
             {
-                var us = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault();
+                var us = db.GetUser(project.ManagerId);
                 if (Directions.Find(x => x.Id == project.Idea.Direction.Id) != null 
                         && EducationalInstitutions.Find(x => x.Id == us.EducationalInstitution.Id) != null)
                 {
@@ -52,15 +52,15 @@ namespace ProjectLab.Models.Statistics
 
         protected override void CountParticipantsInProjects()
         {
-            var projects = db.Projects.Find(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working
-                || x.ProjectStatus.Name == ProjectStatusesNames.Completed) && x.Start >= Start && x.Start <= Finish).ToList();
+            var projects = db.GetProjects().FindAll(x => (x.ProjectStatus.Name == ProjectStatusesNames.Working
+                || x.ProjectStatus.Name == ProjectStatusesNames.Completed) && x.Start >= Start && x.Start <= Finish);
             foreach (var project in projects)
             {
                 if (Directions.Find(x => x.Id == project.Idea.Direction.Id) != null)
                 {
                     foreach (var participant in project.ParticipantsId)
                     {
-                        var us = db.Users.Find(x => x.Id == participant).FirstOrDefault();
+                        var us = db.GetUser(participant);
                         if (EducationalInstitutions.Find(x => x.Id == us.EducationalInstitution.Id)  != null)
                         {
                             var ind = KeyValues.FindIndex(x => x.Id == us.UserCategory.Id);
@@ -74,11 +74,11 @@ namespace ProjectLab.Models.Statistics
 
         protected override void CountArchieveProjects()
         {
-            var projects = db.Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Completed
-                                    && x.Finish >= Start && x.Finish <= Finish).ToList();
+            var projects = db.GetProjects().FindAll(x => x.ProjectStatus.Name == ProjectStatusesNames.Completed
+                                    && x.Finish >= Start && x.Finish <= Finish);
             foreach (var project in projects)
             {
-                var us = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault();
+                var us = db.GetUser(project.ManagerId);
                 if (Directions.Find(x => x.Id == project.Idea.Direction.Id) != null
                             && EducationalInstitutions.Find(x => x.Id == us.EducationalInstitution.Id) != null)
                 {
@@ -93,8 +93,8 @@ namespace ProjectLab.Models.Statistics
         {
             for (int i = 0; i < KeyValues.Count; i++)
             {
-                var users = db.Users.Find(x => x.UserCategory.Id == KeyValues[i].Id
-                                        && x.RegistDate >= Start && x.RegistDate <= Finish).ToList();
+                var users = db.GetUsers().FindAll(x => x.UserCategory.Id == KeyValues[i].Id
+                                        && x.RegistDate >= Start && x.RegistDate <= Finish);
                 foreach (var user in users)
                 {
                     if (Directions.Find(x => x.Id == user.Direction.Id) != null

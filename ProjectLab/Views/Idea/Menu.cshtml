@@ -1,12 +1,10 @@
 ﻿
 @{
     ViewData["Title"] = "IdeaMenu";
+    Layout = "~/Views/Account/AccountLayout.cshtml";
     @model IdeaMenuViewModel
 }
 
-<h1>Мои идеи</h1>
-
-<div class="background">
     <div class=" row">
         <div class="col-10">
             <div class="tab-content">
@@ -140,27 +138,28 @@
             </div>
         </div>
         <div class="col-2">
-            <ul class="nav nav-tabs flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#Drafts">Черновики </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#OnReviews">На модерации</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#Approves">Утвержденные</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#Rejects">Отклоненные</a>
-                </li>
-                @if (User.IsInRole(UserStatusesNames.Expert))
-                {
+            <div class="background">
+                <ul class="nav nav-tabs flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#MyReviews">Проверка Идей</a>
+                        <a class="nav-link active" data-toggle="tab" href="#Drafts">Черновики </a>
                     </li>
-                }
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#OnReviews">На модерации</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Approves">Утвержденные</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Rejects">Отклоненные</a>
+                    </li>
+                    @if (User.IsInRole(UserStatusesNames.Expert))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#MyReviews">Проверка Идей</a>
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 

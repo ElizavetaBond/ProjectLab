@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectLab.Models;
+using ProjectLab.StaticNames;
 using ProjectLab.ViewModels.Project;
 using System;
 using System.Collections.Generic;
@@ -194,7 +195,7 @@ namespace ProjectLab.Controllers
                                     Description = x.Description,
                                     IsNecessary = x.IsNecessary,
                                     Name = x.Name,
-                                    Value = "",
+                                    Value = x.ComponentType == "Текст" ? x.Description : "",
                                     ListSelect = x.ListSelect
                                 }).ToList()
             });
@@ -211,6 +212,8 @@ namespace ProjectLab.Controllers
                 {
                     if (Model.Components[i].ComponentType == "Файл" || Model.Components[i].ComponentType == "Фото")
                         isValid = Model.Components[i].File != null;
+                    else if (Model.Components[i].ComponentType == "Флаг") 
+                        isValid = true;
                     else if (Model.Components[i].ComponentType == "Множественный выбор")
                         isValid = Model.Components[i].ListRes.Contains(true);
                     else
@@ -303,7 +306,7 @@ namespace ProjectLab.Controllers
         private ProjectCardViewModel CreateProjectCard(Project project)
         {
             var managerId = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault().Id;
-            return(new ProjectCardViewModel
+            return new ProjectCardViewModel
             {
                 Id = project.Id,
                 Name = project.Idea.Name,
@@ -313,7 +316,37 @@ namespace ProjectLab.Controllers
                 Image = project.Idea.Image,
                 IsManager = managerId == User.Identity.Name,
                 IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null
-            });
+            };
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Menu()
+        {
+            var vm = new ProjectMenuViewModel
+            {
+                Managment = db.Projects.Find(x => x.ManagerId == User.Identity.Name 
+                                            && x.ProjectStatus.Name == ProjectStatusesNames.Working).ToList()
+                                        .Select(x => CreateProjectCard(x)).ToList(),
+                Canceled = db.Projects.Find(x => x.ManagerId == User.Identity.Name
+                                            && x.ProjectStatus.Name == ProjectStatusesNames.Canceled).ToList()
+                                        .Select(x => CreateProjectCard(x)).ToList(),
+                Participation = new List<ProjectCardViewModel>(),
+                Archive = new List<ProjectCardViewModel>()
+            };
+            var workProjects = db.Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Working).ToList();
+            foreach ( var p in workProjects)
+            {
+                if (p.ParticipantsId.FindIndex(x => x == User.Identity.Name) != -1 && p.ManagerId != User.Identity.Name)
+                    vm.Participation.Add(CreateProjectCard(p));
+            }
+            var completeProjects = db.Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Completed).ToList();
+            foreach (var p in completeProjects)
+            {
+                if (p.ParticipantsId.FindIndex(x => x == User.Identity.Name) != -1)
+                    vm.Archive.Add(CreateProjectCard(p));
+            }
+            return View(vm);
         }
     }
 }

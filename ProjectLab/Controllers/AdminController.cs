@@ -36,9 +36,9 @@ namespace ProjectLab.Controllers
                                                                   MeasuredQuantitiesNames.ParticipantsInProjects,
                                                                   MeasuredQuantitiesNames.ArchieveProjects,
                                                                   MeasuredQuantitiesNames.RegisteredUsers };
-            ViewData["ListEducationalInstitutions"] = db.EducationalInstitutions.Find(new BsonDocument()).ToList();
-            ViewData["ListDirections"] = db.Directions.Find(new BsonDocument()).ToList();
-            ViewData["ListUserCategories"] = db.UserCategories.Find(new BsonDocument()).ToList();
+            ViewData["ListEducationalInstitutions"] = db.GetEducationalInstitutions();
+            ViewData["ListDirections"] = db.GetDirections();
+            ViewData["ListUserCategories"] = db.GetUserCategories();
             return View();
         }
 
@@ -46,7 +46,8 @@ namespace ProjectLab.Controllers
         public IActionResult LoadChart(StatisticsSettingsViewModel vm)
         {
             var chart = new ChartViewModel();
-            var settings = new StatisticsSettings(db, vm.ComparedCategory, vm.MeasuredQuantity, vm.Begin, vm.End,
+            var settings = new StatisticsSettings(db.GetDirections(), db.GetEducationalInstitutions(), db.GetUserCategories(),
+                                                  vm.ComparedCategory, vm.MeasuredQuantity, vm.Begin, vm.End,
                                                   vm.DirectionsId, vm.EducationalInstitutionsId, vm.UserCategoriesId);
 
             if (settings.ComparedCategory == ComparedCategoriesNames.EducationalInstitutions)

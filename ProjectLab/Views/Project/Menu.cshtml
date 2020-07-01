@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewData["Title"] = "Menu";
+    Layout = "~/Views/Account/AccountLayout.cshtml";
+    @model ProjectMenuViewModel
+}
+
+    <div class=" row">
+        <div class="col-10">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="Participation">
+                    <ul class="cards clearfix">
+                        @foreach (var x in Model.Participation)
+                        {
+                            <li class="card-wrapper">
+                                <div class="card">
+                                    @await Component.InvokeAsync("ProjectCard", new { vm = x })
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="Managment">
+                    <ul class="cards clearfix">
+                        @foreach (var x in Model.Managment)
+                        {
+                            <li class="card-wrapper">
+                                <div class="card">
+                                    @await Component.InvokeAsync("ProjectCard", new { vm = x })
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="Archive">
+                    <ul class="cards clearfix">
+                        @foreach (var x in Model.Archive)
+                        {
+                            <li class="card-wrapper">
+                                <div class="card">
+                                    @await Component.InvokeAsync("ProjectCard", new { vm = x })
+                                    <div class="label-danger">
+                                        <h2>Завершен</h2>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="Canceled">
+                    <ul class="cards clearfix">
+                        @foreach (var x in Model.Canceled)
+                        {
+                            <li class="card-wrapper">
+                                <div class="card">
+                                    @await Component.InvokeAsync("ProjectCard", new { vm = x })
+                                    <div class="label-danger">
+                                        <h2>Отменен</h2>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="background">
+                <ul class="nav nav-tabs flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#Participation">Участие</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Managment">Управление</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Archive">Архив</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Canceled">Отмененные</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
