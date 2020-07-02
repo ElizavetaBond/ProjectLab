@@ -11,6 +11,7 @@ using ProjectLab.ViewModels;
 using ProjectLab.ViewModels.Account;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -19,9 +20,9 @@ namespace ProjectLab.Controllers
 {
     public class AccountController: Controller
     {
-        private readonly ProjectLabDbService db;
+        private readonly AccountService db;
 
-        public AccountController(ProjectLabDbService context)
+        public AccountController(AccountService context)
         {
             db = context;
         }
@@ -38,7 +39,7 @@ namespace ProjectLab.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users.Find(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefaultAsync();
+                User user = db.GetUser(model.Email, model.Password);
                 if (user != null)
                 {
                     await Authenticate(user); // аутентификация
@@ -55,10 +56,10 @@ namespace ProjectLab.Controllers
         public IActionResult Register()
         {
             var filter = new BsonDocument();
-            ViewData["ListUserCategories"] = db.UserCategories.Find(filter).ToList();
-            ViewData["ListEducationalInstitutions"] = db.EducationalInstitutions.Find(filter).ToList().OrderBy(x => x.Name);
-            ViewData["ListEducations"] = db.Educations.Find(filter).ToList();
-            ViewData["ListDirections"] = db.Directions.Find(filter).ToList();
+            ViewData["ListUserCategories"] = db.GetUserCategories();
+            ViewData["ListEducationalInstitutions"] = db.GetEducationalInstitutions().OrderBy(x => x.Name);
+            ViewData["ListEducations"] = db.GetEducations();
+            ViewData["ListDirections"] = db.GetDirections();
             return View();
         }
 
@@ -68,36 +69,22 @@ namespace ProjectLab.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await db.Users.Find(u => u.Email == model.Email).FirstOrDefaultAsync();
+                User user = db.GetUserByEmail(model.Email);
+                string photoType = "", photoName = "";
+                Stream photoStream = null;
+                if (model.Photo != null)
+                {
+                    photoStream = model.Photo.OpenReadStream();
+                    photoType = model.Photo.ContentType;
+                    photoName = model.Photo.Name;
+                }
                 if (user == null)
                 {
-                    var newUser = new User
-                    {
-                        Email = model.Email,
-                        Password = model.Password,
-                        Surname = model.Surname,
-                        Name = model.Name,
-                        Patronymic = model.Patronymic,
-                        BirthDate = model.BirthDate,
-                        UserStatus = db.UserStatuses.Find(x => x.Name == "Участник сообщества").FirstOrDefault(),
-                        UserCategory = db.UserCategories.Find(x => x.Id == model.UserCategoryId).FirstOrDefault(),
-                        EducationalInstitution = db.EducationalInstitutions.Find(x => x.Id == model.EducationalInstitutionId).FirstOrDefault(),
-                        Education = db.Educations.Find(x => x.Id == model.EducationId).FirstOrDefault(),
-                        AddInform = model.AddInform,
-                        Contacts = model.Contacts,
-                        Rewards = new List<Reward>(),
-                        Direction = db.Directions.Find(x => x.Id == model.DirectionId).FirstOrDefault(),
-                        RegistDate = DateTime.Now,
-                        Photo = model.Photo == null ? null :
-                            new File
-                            {
-                                Id = db.SaveFile(model.Photo.OpenReadStream(), model.Photo.FileName),
-                                Type = model.Photo.ContentType
-                            }
-                    };
-                    db.Users.InsertOne(newUser);
+                    db.CreateUser(model.Email, model.Password, model.Surname, model.Name, model.Patronymic,
+                        model.BirthDate, model.UserCategoryId, model.EducationalInstitutionId, model.EducationalInstitutionId,
+                        model.AddInform, model.Contacts, model.DirectionId, photoStream, photoType, photoName);
 
-                    await Authenticate(db.Users.Find(x=>x.Email==newUser.Email).FirstOrDefault()); // аутентификация
+                    await Authenticate(db.GetUserByEmail(model.Email)); // аутентификация
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -130,12 +117,6 @@ namespace ProjectLab.Controllers
         public IActionResult Account()
         {
             return View();
-        }
-
-        public void SetAdmin()
-        {
-            var update = new UpdateDefinitionBuilder<User>().Set(us => us.UserStatus, db.UserStatuses.Find(x => x.Name == "Админ").FirstOrDefault());
-            db.Users.FindOneAndUpdate(us => us.Email == "admin@mail.ru", update);
         }
 
         public ActionResult GetFile(string id, string type)

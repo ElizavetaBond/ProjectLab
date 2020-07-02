@@ -13,9 +13,9 @@ namespace ProjectLab.Controllers
 {
     public class ProjectController: Controller
     {
-        private readonly ProjectLabDbService db;
+        private readonly ProjectService db;
 
-        public ProjectController(ProjectLabDbService context)
+        public ProjectController(ProjectService context)
         {
             db = context;
         }
@@ -23,26 +23,20 @@ namespace ProjectLab.Controllers
         [HttpGet]
         public IActionResult Catalog()
         {
-            var projects = db.Projects.Find( x => x.ProjectType.Name != "Приватный" && x.ProjectStatus.Name == "Рабочий").ToList();
+            var projects = db.GetWorkAvailableProjects();
             var vm = new List<ProjectCardViewModel>();
             foreach (var p in projects)
-            {
-                var managerId = db.Users.Find(x => x.Id == p.ManagerId).FirstOrDefault().Id;
                 vm.Add (CreateProjectCard(p));
-            }
             return View(vm);
         }
 
         [HttpGet]
         public IActionResult Archive()
         {
-            var projects = db.Projects.Find(x => x.ProjectType.Name != "Приватный" && x.ProjectStatus.Name == "Завершенный").ToList();
+            var projects = db.GetCompetedkAvailableProjects();
             var vm = new List<ProjectCardViewModel>();
             foreach (var p in projects)
-            {
-                var managerId = db.Users.Find(x => x.Id == p.ManagerId).FirstOrDefault().Id;
                 vm.Add(CreateProjectCard(p));
-            }
             return View(vm);
         }
 
@@ -50,7 +44,7 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Create(string IdeaId)
         {
-            var idea = db.Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
+            var idea = db.GetIdea(IdeaId);
             var vm = new ProjectCreateViewModel { IdeaId = IdeaId, IdeaName = idea.Name };
             loadReferences(idea.IdeaType);
             return View(vm);
@@ -64,22 +58,10 @@ namespace ProjectLab.Controllers
                 ModelState.AddModelError("Finish", "Некорректная дата");
             if (ModelState.IsValid)
             {
-                var idea = db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault();
-                db.Projects.InsertOne(new Project
-                {
-                    Idea = idea,
-                    ManagerId = User.Identity.Name,
-                    ProjectType = db.ProjectTypes.Find(x => x.Id == vm.ProjectTypeId).FirstOrDefault(),
-                    ProjectStatus = db.ProjectStatuses.Find(x => x.Name == "Рабочий").FirstOrDefault(),
-                    Start = DateTime.Now,
-                    Finish = vm.Finish,
-                    Comments = new List<Comment>(),
-                    ParticipantsId = new List<string> { User.Identity.Name },
-                    Sections = idea.ProjectTemplate.Sections
-                }) ;
+                db.CreateProject(vm.IdeaId, User.Identity.Name, vm.ProjectTypeId, vm.Finish);
                 return RedirectToAction("Catalog");
             }
-            loadReferences(db.Ideas.Find(x => x.Id == vm.IdeaId).FirstOrDefault().IdeaType);
+            loadReferences(db.GetIdea(vm.IdeaId).IdeaType);
             return View(vm);
         }
 
@@ -95,32 +77,23 @@ namespace ProjectLab.Controllers
 
         private void loadReferences (string IdeaType)
         {
-            ViewData["ListProjectTypes"] = (IdeaType == "Открытая") ? db.ProjectTypes.Find(new BsonDocument()).ToList() :
-                                           db.ProjectTypes.Find(x => x.Name == "Приватный").ToList();
+            ViewData["ListProjectTypes"] = (IdeaType == IdeaTypesNames.Open) ? db.GetProjectTypes() :
+                                           db.GetProjectTypes().FindAll(x => x.Name == ProjectTypesNames.Private);
         }
 
         [Authorize]
         [HttpPost]
         public ActionResult AddParticipant(string ProjectId, string UserId) // стать участником проекта
         {
-            var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsId, UserId);
-            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
+            db.AddParticipant(ProjectId, UserId);
             return RedirectToAction("Browse", "Project", new { ProjectId = ProjectId });
         }
 
-        [Authorize]
-        [HttpPost]
-        public ActionResult Join(string ProjectId) // стать участником проекта
-        {
-            var update = new UpdateDefinitionBuilder<Project>().Push(x => x.ParticipantsId, User.Identity.Name);
-            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
-            return RedirectToAction("Browse", "Project", new { ProjectId = ProjectId });
-        }
 
         [HttpGet]
         public IActionResult Browse(string ProjectId)
         {
-            var project = db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault();
+            var project = db.GetProject(ProjectId);
             var vm =  new ProjectBrowseViewModel 
             { 
                 Id = project.Id,
@@ -142,33 +115,61 @@ namespace ProjectLab.Controllers
                 Sections = new List<SectionBrowseProjectViewModel>(),
                 IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null,
                 IsManager = project.ManagerId == User.Identity.Name,
-                IsWork = project.ProjectStatus.Name == "Рабочий"
+                IsWork = project.ProjectStatus.Name == ProjectStatusesNames.Working,
+                IsFinish = true
             };
             var i = 0;
             foreach (var s in project.Sections)
             {
-                vm.Sections.Add(new SectionBrowseProjectViewModel
+                var sectionVm = new SectionBrowseProjectViewModel
                 {
                     SectionId = "areaSection" + i,
-                    Name=s.Name,
-                    SectionType=s.SectionType,
+                    Name = s.Name,
+                    SectionType = s.SectionType,
+                    Description = SectionTypesNames.GetDescription(s.SectionType),
+                    isFill = false,
                     Answears = s.Answears.Select(x => new AnswearBrowseProjectViewModel
                     {
                         AuthorId = x.AuthorId,
                         Date = x.Date
                     }).ToList()
-                });
+                } ;
+                if (vm.IsParticipant)
+                {
+                    if (s.SectionType == SectionTypesNames.FinalResults)
+                    {
+                        if (vm.IsManager && !s.Answears.Any()) sectionVm.isFill = true;
+                        else sectionVm.isFill = false;
+                    }
+                    else if (s.SectionType == SectionTypesNames.Survey)
+                    {
+                        if (s.Answears.FindIndex(x => x.AuthorId == User.Identity.Name) == -1) sectionVm.isFill = true;
+                        else sectionVm.isFill = false;
+                    }
+                    else sectionVm.isFill = true;
+                }
                 i++;
+                vm.Sections.Add(sectionVm);
             }
             if (vm.IsManager)
             {
                 var listUsers = new List<ParticipantViewModel>();
-                foreach (var x in db.Users.Find(new BsonDocument()).ToList())
+                foreach (var x in db.GetUsers())
                 {
                     if (!project.ParticipantsId.Exists(p => p == x.Id))
                         listUsers.Add(new ParticipantViewModel { Name = x.Surname + " " + x.Name, UserId = x.Id });
                 }
                 ViewData["ListUsers"] = listUsers;
+                ViewData["ListProjectTypes"] = db.GetProjectTypes();
+            }
+            var finalresult = project.Sections.FindAll(x => x.SectionType == SectionTypesNames.FinalResults);
+            foreach (var f in finalresult)
+            {
+                if (!f.Answears.Any())
+                {
+                    vm.IsFinish = false;
+                    break;
+                }
             }
             return View(vm);
         }
@@ -177,18 +178,12 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Fill(string ProjectId, int SectionNum) // получить форму для заполнения результатов
         {
-            /*var update = new UpdateDefinitionBuilder<Project>().Push(x => x.Sections[0].Components, new Component 
-            { 
-                ComponentType = "Выбор", Name = "Множ. выбор", IsNecessary = false,
-                ListSelect = new List<string> { "Значение1", "Значение2", "Значение3", "Значение4", "Значение5", "Значение6" }
-            });
-            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);*/
-            return View(new AnswearBrowseProjectViewModel
+            var vm =new AnswearBrowseProjectViewModel
             {
                 ProjectId = ProjectId,
                 SectionNum = SectionNum,
                 Components =
-                db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault()
+                db.GetProject(ProjectId)
                                 .Sections[SectionNum].Components.Select(x => new ComponentBrowseProjectViewModel
                                 {
                                     ComponentType = x.ComponentType,
@@ -198,7 +193,8 @@ namespace ProjectLab.Controllers
                                     Value = x.ComponentType == "Текст" ? x.Description : "",
                                     ListSelect = x.ListSelect
                                 }).ToList()
-            });
+            };
+            return PartialView("Fill", vm);
         }
 
         [HttpPost]
@@ -210,11 +206,11 @@ namespace ProjectLab.Controllers
                 var isValid = true;
                 if (Model.Components[i].IsNecessary)
                 {
-                    if (Model.Components[i].ComponentType == "Файл" || Model.Components[i].ComponentType == "Фото")
+                    if (Model.Components[i].ComponentType == ComponentsNames.File || Model.Components[i].ComponentType == ComponentsNames.Photo)
                         isValid = Model.Components[i].File != null;
-                    else if (Model.Components[i].ComponentType == "Флаг") 
+                    else if (Model.Components[i].ComponentType == ComponentsNames.Flag) 
                         isValid = true;
-                    else if (Model.Components[i].ComponentType == "Множественный выбор")
+                    else if (Model.Components[i].ComponentType == ComponentsNames.MultipleChoice)
                         isValid = Model.Components[i].ListRes.Contains(true);
                     else
                         isValid = !(Model.Components[i].Value == null || Model.Components[i].Value.Trim().Length == 0);
@@ -225,52 +221,7 @@ namespace ProjectLab.Controllers
 
             if (ModelState.IsValid)
             {
-                var answear = new Answear
-                {
-                    AuthorId = User.Identity.Name,
-                    Date = DateTime.Now,
-                    Components = new List<Component>()
-                }; 
-                foreach (var x in Model.Components)
-                {
-                    var value = "";
-                    File file = null;
-                    if (x.ComponentType == "Флаг")
-                    {
-                        value = x.Flag.ToString();
-                    }
-                    else if (x.ComponentType == "Файл" || x.ComponentType == "Фото")
-                    {
-                        file = x.File == null ? null :
-                            new File
-                            {
-                                Id = db.SaveFile(x.File.OpenReadStream(), x.File.FileName),
-                                Type = x.File.ContentType
-                            };
-                    }
-                    else if (x.ComponentType == "Множественный выбор")
-                    {
-                        for (int i=0;  i<x.ListSelect.Count; i++)
-                            if (x.ListRes[i]) 
-                                value += x.ListSelect[i] + "; ";
-                    }
-                    else
-                    {
-                        value = x.Value;
-                    }
-                    answear.Components.Add(new Component
-                    {
-                        Name = x.Name,
-                        ComponentType = x.ComponentType,
-                        Description = x.Description,
-                        IsNecessary = x.IsNecessary,
-                        ListSelect = x.ListSelect,
-                        Value = value,
-                        File = file
-                    });
-                }
-                var update = new UpdateDefinitionBuilder<Project>().Push(x => x.Sections[Model.SectionNum].Answears, answear);
-                db.Projects.FindOneAndUpdate(x => x.Id == Model.ProjectId, update);
+                db.AddAnswear(User.Identity.Name, Model.Components, Model.ProjectId, Model.SectionNum);
                 return RedirectToAction("Browse", "Project", new { ProjectId = Model.ProjectId });
             }
             return View(Model);
@@ -279,7 +230,7 @@ namespace ProjectLab.Controllers
         [HttpGet]
         public IActionResult BrowseAnswear (string ProjectId, int SectionNum, int AnswearNum)
         {
-            var answear = db.Projects.Find(x => x.Id == ProjectId).FirstOrDefault().Sections[SectionNum].Answears[AnswearNum];
+            var answear = db.GetProject(ProjectId).Sections[SectionNum].Answears[AnswearNum];
             return View(new BrowseAnswearViewModel
             {
                 AuthorId = answear.AuthorId,
@@ -296,16 +247,54 @@ namespace ProjectLab.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Finish (string ProjectId)
         {
-            var update = new UpdateDefinitionBuilder<Project>().Set(x => x.ProjectStatus, db.ProjectStatuses.Find(s => s.Name == "Завершенный").FirstOrDefault());
-            db.Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
-            return RedirectToAction("Archive");
+            var project = db.GetProject(ProjectId);
+            if (project.ManagerId == User.Identity.Name)
+            {
+                db.CompleteProject(ProjectId);
+                return RedirectToAction("Archive");
+            }
+            return RedirectToAction("Browse", new { ProjectId = ProjectId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Cancel (string ProjectId)
+        {
+            var project = db.GetProject(ProjectId);
+            if (project.ManagerId == User.Identity.Name)
+            {
+                db.CancelProject(ProjectId);
+                return RedirectToAction("Menu", "Project");
+            }
+            return RedirectToAction("Browse", new { ProjectId = ProjectId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult ChangeType(string ProjectId, string ProjectTypeId)
+        {
+            var project = db.GetProject(ProjectId);
+            if (project.ManagerId == User.Identity.Name)
+                db.ChangeProjectType(ProjectId, ProjectTypeId);
+            return RedirectToAction("Browse", new { ProjectId = ProjectId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult ChangeDateFinish(string ProjectId, DateTime Finish)
+        {
+            var project = db.GetProject(ProjectId);
+            if (project.ManagerId == User.Identity.Name)
+                db.ChangeDateFinish(ProjectId, Finish);
+            return RedirectToAction("Browse", new { ProjectId = ProjectId });
         }
 
         private ProjectCardViewModel CreateProjectCard(Project project)
         {
-            var managerId = db.Users.Find(x => x.Id == project.ManagerId).FirstOrDefault().Id;
+            var managerId = db.GetUser(project.ManagerId).Id;
             return new ProjectCardViewModel
             {
                 Id = project.Id,
@@ -323,29 +312,19 @@ namespace ProjectLab.Controllers
         [Authorize]
         public IActionResult Menu()
         {
+            var managmentProjects = db.GetManagmentProjects(User.Identity.Name);
+            var participantProjects = db.GetParticipantProjects(User.Identity.Name);
             var vm = new ProjectMenuViewModel
             {
-                Managment = db.Projects.Find(x => x.ManagerId == User.Identity.Name 
-                                            && x.ProjectStatus.Name == ProjectStatusesNames.Working).ToList()
+                Managment = managmentProjects.FindAll(x => x.ProjectStatus.Name == ProjectStatusesNames.Working)
                                         .Select(x => CreateProjectCard(x)).ToList(),
-                Canceled = db.Projects.Find(x => x.ManagerId == User.Identity.Name
-                                            && x.ProjectStatus.Name == ProjectStatusesNames.Canceled).ToList()
+                Canceled = participantProjects.FindAll(x => x.ProjectStatus.Name == ProjectStatusesNames.Canceled)
                                         .Select(x => CreateProjectCard(x)).ToList(),
-                Participation = new List<ProjectCardViewModel>(),
-                Archive = new List<ProjectCardViewModel>()
+                Participation = participantProjects.FindAll(x => x.ProjectStatus.Name == ProjectStatusesNames.Working)
+                                        .Select(x => CreateProjectCard(x)).ToList(),
+                Archive = participantProjects.FindAll(x => x.ProjectStatus.Name == ProjectStatusesNames.Completed)
+                                        .Select(x => CreateProjectCard(x)).ToList(),
             };
-            var workProjects = db.Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Working).ToList();
-            foreach ( var p in workProjects)
-            {
-                if (p.ParticipantsId.FindIndex(x => x == User.Identity.Name) != -1 && p.ManagerId != User.Identity.Name)
-                    vm.Participation.Add(CreateProjectCard(p));
-            }
-            var completeProjects = db.Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Completed).ToList();
-            foreach (var p in completeProjects)
-            {
-                if (p.ParticipantsId.FindIndex(x => x == User.Identity.Name) != -1)
-                    vm.Archive.Add(CreateProjectCard(p));
-            }
             return View(vm);
         }
     }

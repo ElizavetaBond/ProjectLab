@@ -1,10 +1,7 @@
-﻿
-@{
-    ViewData["Title"] = "Fill";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@{
     @model AnswearBrowseProjectViewModel
 }
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKnnWoLjXlIQJdIoSJasoMLr0FalKwCtw"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKnnWoLjXlIQJdIoSJasoMLr0FalKwCtw"></script>
 
 <div class="background">
     <form asp-action="Fill" asp-controller="Project" method="post" enctype="multipart/form-data">
@@ -130,7 +127,7 @@
         function placeMarker(position, i) {
             Markers[i].setMap(null);
             Markers[i] = new google.maps.Marker({
-                position: position, 
+                position: position,
                 map: Maps[i]
             });
             Maps[i].panTo(position);
@@ -149,5 +146,5 @@
 
     </script>
 
-    
+
 }

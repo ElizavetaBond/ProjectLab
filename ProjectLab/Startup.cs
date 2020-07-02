@@ -30,6 +30,8 @@ namespace ProjectLab
             services.AddTransient<IdeaService>();
             services.AddTransient<ProjectLabDbService>();
             services.AddTransient<AdminService>();
+            services.AddTransient<ProjectService>();
+            services.AddTransient<AccountService>();
             services.AddControllersWithViews();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -9,6 +9,12 @@
     <div class="row">
         <div class="col-2">
             <ul class="nav nav-tabs flex-column">
+                @if (Model.IsManager && Model.IsWork)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#managment">Управление проектом</a>
+                    </li>
+                }
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#generalinform">Общая информация</a>
                 </li>
@@ -24,28 +30,61 @@
                         <a class="nav-link" data-toggle="tab" href="#@x.SectionId" title="@x.SectionType">@x.Name</a>
                     </li>
                 }
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#comments">Комментарии</a>
-                </li>
             </ul>
         </div>
         <div class="col-10">
             <div class="tab-content">
+                @if (Model.IsManager && Model.IsWork)
+                {
+                <div class="tab-pane fade" id="managment">
+                    @using (Html.BeginForm("Finish", "Project", FormMethod.Post))
+                    {
+                        <input type="hidden" name="ProjectId" value="@Model.Id" />
+                        <div class="row">
+                            <div class="col">
+                                <label style="background-color:lightgray;">Для того чтобы завершить проект, Вам необходимо заполнить все разделы типа "Раздел итоговых результатов". Завершенный проект открытого и закрытого типа будет доступен в разделе "Архив проектов" основного меню.</label>
+                            </div>
+                            <div class="col">
+                                @if (Model.IsFinish)
+                                {
+                                    <button type="submit" class="btn btn-primary">Завершить проект</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary" disabled>Завершить проект</button>
+                                }
+                            </div>
+                        </div>
+                    }
+                    @using (Html.BeginForm("Cancel", "Project", FormMethod.Post))
+                    {
+                        <input type="hidden" name="ProjectId" value="@Model.Id" />
+                        <div class="row">
+                            <div class="col">
+                                <label style="background-color:lightgray;">Вы можете в любой момент отменить проект. Он будет доступен только участникам проекта в разделе "Отмененные"</label>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary">Отменить проект</button>
+                            </div>
+                        </div>
+                    }
+                    @using (Html.BeginForm("ChangeType", "Project", FormMethod.Post))
+                    {
+                        <input type="hidden" name="ProjectId" value="@Model.Id" />
+                        <div class="row">
+                            <div class="col">
+                                <select name="ProjectTypeId" id="selectProjectTypes" class="form-control"></select>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary">Установить тип проекта</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+                }
+
                 <div class="tab-pane fade show active" id="generalinform">
                     <div class="container">
-                        @if (Model.IsManager && Model.IsWork)
-                        {
-                            <div class="row">
-                                <div class="col-9"></div>
-                                <div class="col-3">
-                                    @using (Html.BeginForm("Finish", "Project", FormMethod.Post))
-                                    {
-                                        <input type="hidden" name="ProjectId" value="@Model.Id" />
-                                        <button type="submit" class="btn btn-danger">Завершить проект</button>
-                                    }
-                                </div>
-                            </div>
-                        }
                         <div class="row">
                             <div class="col">
                                 <input asp-for="Id" />
@@ -204,37 +243,34 @@
 
                 @for (int i = 0; i < Model.Sections.Count; i++)
                 {
-                    <div class="tab-pane fade" id="@Model.Sections[i].SectionId">
-                        @if (Model.IsParticipant && Model.IsWork)
+            <div class="tab-pane fade" id="@Model.Sections[i].SectionId">
+                    <label style="background-color:lightgray;">@Model.Sections[i].Description</label>
+                    @if (Model.IsWork && Model.Sections[i].isFill)
+                    {
+                        <form asp-controller="Project" asp-action="Fill"  method="get">
+                            <input type="hidden" name="ProjectId" value="@Model.Id" />
+                            <input type="hidden" name="SectionNum" value="@i" />
+                            <button type="submit" class="btn btn-primary">Загрузить данные</button>
+                        </form>
+                    }
+                    <div class="container">
+                        @for (var j = 0; j < Model.Sections[i].Answears.Count; j++)
                         {
-                            <form asp-controller="Project" asp-action="Fill" method="get">
-                                <input type="hidden" name="ProjectId" value="@Model.Id" />
-                                <input type="hidden" name="SectionNum" value="@i" />
-                                <button type="submit" class="btn btn-primary">Загрузить данные</button>
-                            </form>
-                        }
-                        <div class="container">
-                            @for (var j = 0; j < Model.Sections[i].Answears.Count; j++)
-                            {
-                                <div class="row">
-                                    <div class="col-4">
-                                        @await Component.InvokeAsync("AccountLink", new { UserId = Model.Sections[i].Answears[j].AuthorId })
-                                    </div>
-                                    <div class="col-4">
-                                        @Html.ActionLink("Просмотреть ответ", "BrowseAnswear", "Project", new { ProjectId = Model.Id, SectionNum = i, AnswearNum = j }, null)
-                                    </div>
-                                    <div class="col-4">
-                                        @Model.Sections[i].Answears[j].Date
-                                    </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    @await Component.InvokeAsync("AccountLink", new { UserId = Model.Sections[i].Answears[j].AuthorId })
                                 </div>
-                            }
-                        </div>
+                                <div class="col-4">
+                                    @Html.ActionLink("Просмотреть ответ", "BrowseAnswear", "Project", new { ProjectId = Model.Id, SectionNum = i, AnswearNum = j }, null)
+                                </div>
+                                <div class="col-4">
+                                    @Model.Sections[i].Answears[j].Date
+                                </div>
+                            </div>
+                        }
                     </div>
+            </div>
                 }
-
-                <div class="tab-pane fade" id="comments">
-
-                </div>
             </div>
         </div>
     </div>
@@ -256,6 +292,7 @@
     <script type="text/javascript">
         
         var ListUsers = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListUsers"]));
+        var ListProjectTypes = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListProjectTypes"]));
         
         function loadListUsers() { 
             var str = '';
@@ -265,9 +302,18 @@
             return str;
         }
 
+        function loadListProjectTypes() { 
+            var str = '';
+            ListProjectTypes.forEach(function (item) {
+                str += '<option value="' + item.Id + '">' + item.Name + '</option > ';
+            });
+            return str;
+        }
+
         (function () {
             $('#selectAddParts').append(loadListUsers());
             $('#selectAddParts').chosen();
+            $('#selectProjectTypes').append(loadListProjectTypes());
         })();
     </script>
 }

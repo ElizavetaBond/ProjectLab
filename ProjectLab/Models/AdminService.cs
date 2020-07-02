@@ -40,20 +40,5 @@ namespace ProjectLab.Models
             Experts.FindOneAndDelete(x => x.Id == ExpertId);
             // НАДО ЧТО ТО СДЕЛАТЬ С ИДЕЯМИ КОТОРЫЕ БЫЛИ У НЕГО НА ПРОВЕРКЕ
         }
-
-        public List<Idea> GetIdeas()
-        {
-            return Ideas.Find(new BsonDocument()).ToList();
-        }
-
-        public List<Project> GetProjects()
-        {
-            return Projects.Find(new BsonDocument()).ToList();
-        }
-
-        public List<User> GetUsers()
-        {
-            return Users.Find(new BsonDocument()).ToList();
-        }
     }
 }

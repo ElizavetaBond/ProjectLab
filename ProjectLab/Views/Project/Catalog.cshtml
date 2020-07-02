@@ -9,41 +9,15 @@
             <li class="card-wrapper">
                 <div class="card">
                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
-
-                    @if (User.Identity.IsAuthenticated)
+                    @if (!x.IsParticipant && x.ProjectType == "Открытый")
                     {
-                        if (x.IsManager)
+                        @using (Html.BeginForm("AddParticipant", "Project", FormMethod.Post))
                         {
-                            <div class="label-info">
-                                <h2>Вы являетесь руководителем</h2>
-                            </div>
-                        }
-                        else if (x.IsParticipant)
-                        {
-                            <div class="label-info">
-                                <h2>Вы являетесь участником</h2>
-                            </div>
-                        }
-                        else
-                        {
-                            @if (x.ProjectType == "Открытый")
-                            {
-                                @using (Html.BeginForm("Join", "Project", FormMethod.Post))
-                                {
-                                    <input type="hidden" name="ProjectId" value="@x.Id" />
-                                    <button class="btn btn-primary card-btn-public" type="submit">
-                                        Принять участие
-                                    </button>
-                                }
-                            }
-                            else
-                            {
-                                <div class="label-info">
-                                    <h2>
-                                        Проект закрытый. Участие по приглашению руководителя
-                                    </h2>
-                                </div>
-                            }
+                            <input type="hidden" name="ProjectId" value="@x.Id" />
+                            <input type="hidden" name="UserId" value="@User.Identity.Name" />
+                            <button class="btn btn-primary card-btn-public" type="submit">
+                                Принять участие
+                            </button>
                         }
                     }
                 </div>

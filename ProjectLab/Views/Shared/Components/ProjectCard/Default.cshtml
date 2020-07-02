@@ -4,27 +4,59 @@
     @model ProjectCardViewModel
 }
 
-<div>
-    <h2>@Model.Name</h2>
-    <div class="label-info">
-        <h2>@Model.ProjectType</h2>
-    </div>
-    <div class="card-photo">
-        @if (Model.Image == null)
+    <div>
+        @if (Model.ProjectType == ProjectTypesNames.Opened)
         {
-            <img src="~/imgs/project.jpg" alt="" />
+            <img src="~/imgs/openProject.png" class="img-type" alt="" />
+        }
+        else if (Model.ProjectType == ProjectTypesNames.Closed)
+        {
+            <img src="~/imgs/closeProject.png" class="img-type" alt="" />
         }
         else
         {
-            <img src="@Url.Action("GetFile", "Project", new { id = Model.Image.Id, type = Model.Image.Type })" alt="" />
+            <img src="~/imgs/privateProject.png" class="img-type" alt="" />
         }
-        <form method="get" asp-action="Browse" asp-controller="Project">
-            <input type="hidden" name="ProjectId" value="@Model.Id" />
-            <button class="btn btn-primary card-btn-preview" type="submit">
-                Просмотр проекта
-            </button>
-        </form>
+        <h2>@Model.Name</h2>
+        <div class="card-photo">
+            @if (Model.Image == null)
+            {
+                <img src="~/imgs/project.jpg" alt="" />
+            }
+            else
+            {
+                <img src="@Url.Action("GetFile", "Project", new { id = Model.Image.Id, type = Model.Image.Type })" alt="" />
+            }
+            <form method="get" asp-action="Browse" asp-controller="Project">
+                <input type="hidden" name="ProjectId" value="@Model.Id" />
+                <button class="btn btn-primary card-btn-preview" type="submit">
+                    Просмотр проекта
+                </button>
+            </form>
+        </div>
+        <h3>Направленность - @Model.Direction</h3>
+        <h3>Руководитель</h3> @await Component.InvokeAsync("AccountLink", new { UserId = Model.ManagerId })
+        @if (Model.IsManager)
+        {
+            <div class="label-info">
+                <h2>Вы являетесь руководителем</h2>
+            </div>
+        }
+        else if (Model.IsParticipant)
+        {
+            <div class="label-info">
+                <h2>Вы являетесь участником</h2>
+            </div>
+        }
     </div>
-    <h3>Направленность - @Model.Direction</h3>
-    <h3>Руководитель</h3> @await Component.InvokeAsync("AccountLink", new { UserId = Model.ManagerId })
-</div>
+
+<style>
+    .img-type{
+        width: 100px;
+        height: 50px;
+        position: relative;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        vertical-align: middle;
+    }
+</style>

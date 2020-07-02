@@ -27,9 +27,8 @@ namespace ProjectLab.Models
         public EducationalInstitution EducationalInstitution { get; set; }
         public Education Education { get; set; }
         public Direction Direction { get; set; }
-        public List<Reward> Rewards { get; set; }
         public DateTime RegistDate { get; set; }
-
+        public List<Reward> Rewards { get; set; }
 
         public string Contacts { get; set; }
         public File Photo { get; set; }

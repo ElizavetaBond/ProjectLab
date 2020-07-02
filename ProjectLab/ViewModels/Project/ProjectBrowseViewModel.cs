@@ -60,6 +60,7 @@ namespace ProjectLab.ViewModels.Project
         public bool IsParticipant { get; set; }
         public bool IsManager { get; set; }
         public bool IsWork { get; set; }
+        public bool IsFinish { get; set; }
     }
 
     public class SectionBrowseProjectViewModel
@@ -67,6 +68,8 @@ namespace ProjectLab.ViewModels.Project
         public string SectionId { get; set; }
         public string Name { get; set; }                // название раздела
         public string SectionType { get; set; }         // тип раздела
+        public string Description { get; set; }
+        public bool isFill { get; set; }
         public List<ComponentBrowseProjectViewModel> Components { get; set; } // компоненты в разделе
         public List<AnswearBrowseProjectViewModel> Answears { get; set; }
     }

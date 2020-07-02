@@ -11,16 +11,16 @@ namespace ProjectLab.Controllers.ViewComponents
 {
     public class AccountLinkViewComponent: ViewComponent
     {
-        private readonly ProjectLabDbService db;
+        private readonly AccountService db;
 
-        public AccountLinkViewComponent(ProjectLabDbService context)
+        public AccountLinkViewComponent(AccountService context)
         {
             db = context;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(string UserId)
         {
-            var user = db.Users.Find(x => x.Id == UserId).FirstOrDefault();
+            var user = db.GetUser(UserId);
             return View(new AccountLinkViewModel
             {
                 UserId = user.Id,

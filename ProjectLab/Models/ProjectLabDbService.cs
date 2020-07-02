@@ -12,23 +12,23 @@ namespace ProjectLab.Models
         private IGridFSBucket gridFS;   // файловое хранилище
         
         // справочники
-        public IMongoCollection<Subject> Subjects { get; set; }
-        public IMongoCollection<Direction> Directions { get; set; }
-        public IMongoCollection<Education> Educations { get; set; }
-        public IMongoCollection<EducationalInstitution> EducationalInstitutions { get; set; }
-        public IMongoCollection<IdeaStatus> IdeaStatuses { get; set; }
-        public IMongoCollection<ProjectStatus> ProjectStatuses { get; set; }
-        public IMongoCollection<ProjectType> ProjectTypes { get; set; }
-        public IMongoCollection<Municipality> Municipalities { get; set; }
-        public IMongoCollection<UserCategory> UserCategories { get; set; }
-        public IMongoCollection<UserStatus> UserStatuses { get; set; }
+        protected IMongoCollection<Subject> Subjects { get; set; }
+        protected IMongoCollection<Direction> Directions { get; set; }
+        protected IMongoCollection<Education> Educations { get; set; }
+        protected IMongoCollection<EducationalInstitution> EducationalInstitutions { get; set; }
+        protected IMongoCollection<IdeaStatus> IdeaStatuses { get; set; }
+        protected IMongoCollection<ProjectStatus> ProjectStatuses { get; set; }
+        protected IMongoCollection<ProjectType> ProjectTypes { get; set; }
+        protected IMongoCollection<Municipality> Municipalities { get; set; }
+        protected IMongoCollection<UserCategory> UserCategories { get; set; }
+        protected IMongoCollection<UserStatus> UserStatuses { get; set; }
 
         // коллекции
-        public IMongoCollection<Idea> Ideas { get; set; } // идеи
-        public IMongoCollection<Project> Projects { get; set; }
-        public IMongoCollection<User> Users { get; set; }
-        public IMongoCollection<Expert> Experts { get; set; }
-        public IMongoCollection<Review> Reviews { get; set; }
+        protected IMongoCollection<Idea> Ideas { get; set; } // идеи
+        protected IMongoCollection<Project> Projects { get; set; }
+        protected IMongoCollection<User> Users { get; set; }
+        protected IMongoCollection<Expert> Experts { get; set; }
+        protected IMongoCollection<Review> Reviews { get; set; }
 
         public ProjectLabDbService()
         {
@@ -88,6 +88,25 @@ namespace ProjectLab.Models
             return UserCategories.Find(new BsonDocument()).ToList();
         }
 
+        public List<Education> GetEducations()
+        {
+            return Educations.Find(new BsonDocument()).ToList();
+        }
+
+        public List<User> GetUsers()
+        {
+            return Users.Find(new BsonDocument()).ToList();
+        }
+        public List<Idea> GetIdeas()
+        {
+            return Ideas.Find(new BsonDocument()).ToList();
+        }
+
+        public List<Project> GetProjects()
+        {
+            return Projects.Find(new BsonDocument()).ToList();
+        }
+
         public Idea GetIdea (string IdeaId)
         {
             return Ideas.Find(x => x.Id == IdeaId).FirstOrDefault();
@@ -96,6 +115,11 @@ namespace ProjectLab.Models
         public User GetUser (string UserId)
         {
             return Users.Find(x => x.Id == UserId).FirstOrDefault();
+        }
+
+        public Project GetProject (string ProjectId)
+        {
+            return Projects.Find(x => x.Id == ProjectId).FirstOrDefault();
         }
     }
 }

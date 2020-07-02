@@ -9,22 +9,6 @@
         <li class="card-wrapper">
             <div class="card">
                 @await Component.InvokeAsync("ProjectCard", new { vm = x })
-
-                @if (User.Identity.IsAuthenticated)
-                {
-                    if (x.IsManager)
-                    {
-                        <div class="label-info">
-                            <h2>Вы были руководителем</h2>
-                        </div>
-                    }
-                    else if (x.IsParticipant)
-                    {
-                        <div class="label-info">
-                            <h2>Вы были участником</h2>
-                        </div>
-                    }
-                }
                 <div class="label-danger">
                     <h2>Завершен</h2>
                 </div>
