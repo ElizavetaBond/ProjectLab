@@ -62,17 +62,35 @@ namespace ProjectLab.Models
             Ideas.DeleteOne(x => x.Id == idea.Id);
         }
 
+        public void SendIdeaToAdminOnReview(string IdeaId)
+        {
+            var idea = GetIdea(IdeaId);
+            var review = new Review
+            {
+                Id = ObjectId.GenerateNewId().ToString(),
+                Idea = idea,
+                DateSending = DateTime.Now,
+                Resolutions = new List<Resolution>(),
+                ExpertsId = new List<string>()
+            };
+            Reviews.InsertOne(review);
+            var updateIdea = new UpdateDefinitionBuilder<Idea>().Set(i => i.IdeaStatus,
+                IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.OnReview).FirstOrDefault())
+                .Set(i => i.ReviewId, review.Id);
+            Ideas.FindOneAndUpdate(i => i.Id == IdeaId, updateIdea);
+        }
+
         public void SendIdeaToReview(string IdeaId)
         {
             var idea = GetIdea(IdeaId);
             var author = GetUser(idea.AuthorId);
-            if (idea.IdeaType == IdeaTypesNames.Private) ; // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
+            if (idea.IdeaType == IdeaTypesNames.Private) SendIdeaToAdminOnReview(IdeaId); // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
             else
             {
                 var experts = Experts.Find(x => x.Direction.Id == idea.Direction.Id
                                               && x.EducationalInstitution.Id != author.EducationalInstitution.Id).ToList()
                                               .OrderBy(x => x.ReviewIdeas.Count).ToList();
-                if (experts.Count < 3) ;  // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
+                if (experts.Count < 3) SendIdeaToAdminOnReview(IdeaId);  // ОТПРАВЛЯЕМ АДМИНУ НА ПРОВЕРКУ!!!!
                 else
                 {
                     var review = new Review
@@ -146,6 +164,36 @@ namespace ProjectLab.Models
             }
         }
 
+        public void RegistAdminResolution(string userId, string ideaId, int decision, string comment, int valueDegree)
+        {
+            var idea = GetIdea(ideaId);
+            var resol = new Resolution // резолюция эксперта
+            {
+                ExpertId = userId,
+                Decision = decision,
+                ValueDegree = decision > 0 ? valueDegree : 0,
+                Comment = comment,
+                DateReview = DateTime.Now
+            };
+
+            // сохраняем резолюцию в коллекции Reviews
+            var updateReview = new UpdateDefinitionBuilder<Review>().Push(x => x.Resolutions, resol);
+            Reviews.FindOneAndUpdate(x => x.Id == idea.ReviewId, updateReview);
+
+                var status = new IdeaStatus();
+                if (decision == 1)  // утвердить
+                    status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Approved).FirstOrDefault();
+                else if (decision == -1) // отклонить
+                    status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Rejected).FirstOrDefault();
+                else // отправить на доработку
+                    status = IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.Draft).FirstOrDefault();
+                // изменить статус идеи, установить степень ценности
+                var updateIdea = new UpdateDefinitionBuilder<Idea>().Set(idea => idea.ValueDegree, valueDegree)
+                                                                .Set(idea => idea.IdeaStatus, status)
+                                                                .Set(idea => idea.Date, DateTime.Now);
+                Ideas.FindOneAndUpdate(idea => idea.Id == ideaId, updateIdea);
+        }
+
         public Expert GetExpert (string ExpertId)
         {
             return Experts.Find(x => x.Id == ExpertId).FirstOrDefault();
@@ -154,8 +202,13 @@ namespace ProjectLab.Models
         public List<Resolution> GetResolutions(string IdeaId)
         {
             var idea = GetIdea(IdeaId);
-            return Reviews.Find(x => x.Id == idea.ReviewId).FirstOrDefault().Resolutions;
+            var review = Reviews.Find(x => x.Id == idea.ReviewId).FirstOrDefault();
+            return review == null ? new List<Resolution>() : review.Resolutions;
         }
         
+        public List<Idea> GetPrivateIdeasOnReview()
+        {
+            return Ideas.Find(x => x.IdeaType == IdeaTypesNames.Private && x.IdeaStatus.Name == IdeaStatusesNames.OnReview).ToList();
+        }
     }
 }

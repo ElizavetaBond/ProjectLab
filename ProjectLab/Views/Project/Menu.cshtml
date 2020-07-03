@@ -13,7 +13,7 @@
                         @foreach (var x in Model.Participation)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 540px;">
                                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
                                 </div>
                             </li>
@@ -25,7 +25,7 @@
                         @foreach (var x in Model.Managment)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 540px;">
                                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
                                 </div>
                             </li>
@@ -37,7 +37,7 @@
                         @foreach (var x in Model.Archive)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 540px;">
                                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
                                     <div class="label-danger">
                                         <h2>Завершен</h2>
@@ -52,7 +52,7 @@
                         @foreach (var x in Model.Canceled)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 540px;">
                                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
                                     <div class="label-danger">
                                         <h2>Отменен</h2>

@@ -7,9 +7,9 @@
         @foreach (var x in Model)
         {
             <li class="card-wrapper">
-                <div class="card">
+                <div class="card" style="height: 500px;">
                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
-                    @if (!x.IsParticipant && x.ProjectType == "Открытый")
+                    @if (User.Identity.IsAuthenticated && !x.IsParticipant && x.ProjectType == "Открытый")
                     {
                         @using (Html.BeginForm("AddParticipant", "Project", FormMethod.Post))
                         {

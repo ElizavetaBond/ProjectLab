@@ -21,16 +21,6 @@ namespace ProjectLab.Controllers
         public IdeaController(IdeaService context)
         {
             db = context;
-            /*var update1 = new UpdateDefinitionBuilder<Idea>().Set(x => x.ProjectTemplate.Sections[0].Components[9].ListSelect, new List<string>
-            {
-                "Значение1", "Значение2", "Значение3"
-            });
-            db.Ideas.FindOneAndUpdate(x => x.Name == "Идея 1", update1);
-            var update2 = new UpdateDefinitionBuilder<Idea>().Set(x => x.ProjectTemplate.Sections[0].Components[10].ListSelect, new List<string>
-            {
-                "Значение1", "Значение2", "Значение3", "Значение4", "Значение5", "Значение6"
-            });
-            db.Ideas.FindOneAndUpdate(x => x.Name == "Идея 1", update2);*/
         }
 
         [HttpGet]
@@ -140,12 +130,15 @@ namespace ProjectLab.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Эксперт")]
+        [Authorize(Roles = "Эксперт, Админ")]
         public IActionResult Review(ResolutionViewModel vm) // зафиксировть резолюцию эксперта
         {
             if (ModelState.IsValid)
             {
-                db.RegistExpertResolution(User.Identity.Name, vm.IdeaId, vm.Decision, vm.Comment, vm.ValueDegree);
+                if (User.IsInRole(UserStatusesNames.Admin))
+                    db.RegistAdminResolution(User.Identity.Name, vm.IdeaId, vm.Decision, vm.Comment, vm.ValueDegree);
+                else 
+                    db.RegistExpertResolution(User.Identity.Name, vm.IdeaId, vm.Decision, vm.Comment, vm.ValueDegree);
                 return RedirectToAction("Menu");
             }
             else
@@ -203,7 +196,7 @@ namespace ProjectLab.Controllers
                     ValueDegree = x.ValueDegree
                 }).ToList();
             }
-            if (authorId == User.Identity.Name || (User.IsInRole(UserStatusesNames.Expert) 
+            if (authorId == User.Identity.Name || User.IsInRole(UserStatusesNames.Admin) || (User.IsInRole(UserStatusesNames.Expert) 
                         && idea.IdeaStatus.Name == IdeaStatusesNames.OnReview))
             {
                 vm.Sections = idea.ProjectTemplate.Sections.Select(i => new SectionBrowseViewModel
@@ -251,8 +244,17 @@ namespace ProjectLab.Controllers
                 Direction = idea.Direction.Name,
                 AuthorId = idea.AuthorId,
                 Image = idea.Image,
-                ValueDegree = idea.ValueDegree
+                ValueDegree = idea.ValueDegree,
+                IdeaType = idea.IdeaType
             };
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Админ")]
+        public IActionResult AdminReviews()
+        {
+            var vm = db.GetPrivateIdeasOnReview().Select(x => GetIdeaCardVM(x)).ToList();
+            return View(vm);
         }
     }
 }

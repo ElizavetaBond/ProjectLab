@@ -5,6 +5,14 @@
 }
 
     <div>
+        @if (Model.IdeaType == IdeaTypesNames.Open)
+        {
+            <img src="~/imgs/openIdea.png" class="img-type" alt="" />
+        }
+        else 
+        {
+            <img src="~/imgs/privateIdea.png" class="img-type" alt="" />
+        }
         <h2>@Model.Name</h2>
         <div class="card-photo">
             @if (Model.Image == null)
@@ -31,3 +39,13 @@
             </div>
         }
     </div>
+    <style>
+        .img-type {
+            width: 100px;
+            height: 50px;
+            position: relative;
+            left: 50%;
+            transform: translate(-50%, 0%);
+            vertical-align: middle;
+        }
+    </style>

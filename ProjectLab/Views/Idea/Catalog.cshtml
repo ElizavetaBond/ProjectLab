@@ -7,7 +7,7 @@
 {
     @using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
     {
-        <button class="btn btn-primary" type="submit">
+        <button class="btn btn-primary" type="submit" style="margin-bottom: 4px;">
             <i class="fas fa-plus"></i>
             Новая идея
         </button>
@@ -18,7 +18,7 @@
     @foreach (var x in Model)
     {
         <li class="card-wrapper">
-            <div class="card">
+            <div class="card" style="height: 540px;">
                 @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                 @if (User.Identity.IsAuthenticated)
