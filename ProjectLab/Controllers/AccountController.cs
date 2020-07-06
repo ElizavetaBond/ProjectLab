@@ -55,7 +55,6 @@ namespace ProjectLab.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            var filter = new BsonDocument();
             ViewData["ListUserCategories"] = db.GetUserCategories();
             ViewData["ListEducationalInstitutions"] = db.GetEducationalInstitutions().OrderBy(x => x.Name);
             ViewData["ListEducations"] = db.GetEducations();
@@ -70,16 +69,16 @@ namespace ProjectLab.Controllers
             if (ModelState.IsValid)
             {
                 User user = db.GetUserByEmail(model.Email);
-                string photoType = "", photoName = "";
-                Stream photoStream = null;
-                if (model.Photo != null)
-                {
-                    photoStream = model.Photo.OpenReadStream();
-                    photoType = model.Photo.ContentType;
-                    photoName = model.Photo.Name;
-                }
                 if (user == null)
                 {
+                    string photoType = "", photoName = "";
+                    Stream photoStream = null;
+                    if (model.Photo != null)
+                    {
+                        photoStream = model.Photo.OpenReadStream();
+                        photoType = model.Photo.ContentType;
+                        photoName = model.Photo.Name;
+                    }
                     db.CreateUser(model.Email, model.Password, model.Surname, model.Name, model.Patronymic,
                         model.BirthDate, model.UserCategoryId, model.EducationalInstitutionId, model.EducationalInstitutionId,
                         model.AddInform, model.Contacts, model.DirectionId, photoStream, photoType, photoName);

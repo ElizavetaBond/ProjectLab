@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using ProjectLab.Models;
 using Microsoft.Owin.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectLab
 {
