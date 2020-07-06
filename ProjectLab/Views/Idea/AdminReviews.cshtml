@@ -9,7 +9,7 @@
         @foreach (var x in Model)
         {
             <li class="card-wrapper">
-                <div class="card">
+                <div class="card" style="height: 540px;">
                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                     @using (Html.BeginForm("Review", "Idea", FormMethod.Get))

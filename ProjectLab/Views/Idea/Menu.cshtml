@@ -13,7 +13,7 @@
                         @foreach (var x in Model.Drafts)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 640px;">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                     @using (Html.BeginForm("Edit", "Idea", FormMethod.Get))
@@ -49,7 +49,7 @@
                         @foreach (var x in Model.OnReviews)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 480px;">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
                                 </div>
                             </li>
@@ -61,7 +61,7 @@
                         @foreach (var x in Model.Approves)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 640px;">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                     @using (Html.BeginForm("Create", "Project", FormMethod.Get))
@@ -89,7 +89,7 @@
                         @foreach (var x in Model.Rejects)
                         {
                             <li class="card-wrapper">
-                                <div class="card">
+                                <div class="card" style="height: 640px;">
                                     @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                     @using (Html.BeginForm("Delete", "Idea", FormMethod.Post))
@@ -111,7 +111,7 @@
                             @foreach (var x in Model.MyReviews)
                             {
                                 <li class="card-wrapper">
-                                    <div class="card">
+                                    <div class="card" style="height: 540px;">
                                         @await Component.InvokeAsync("IdeaCard", new { vm = x })
 
                                         @using (Html.BeginForm("Review", "Idea", FormMethod.Get))
