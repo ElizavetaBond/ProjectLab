@@ -9,16 +9,29 @@
             <li class="card-wrapper">
                 <div class="card" style="height: 500px;">
                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
-                    @if (User.Identity.IsAuthenticated && !x.IsParticipant && x.ProjectType == "Открытый")
+                    @if (User.Identity.IsAuthenticated)
                     {
-                        @using (Html.BeginForm("AddParticipant", "Project", FormMethod.Post))
+                        @if (x.IsParticipant && !x.IsManager)
                         {
-                            <input type="hidden" name="ProjectId" value="@x.Id" />
-                            <input type="hidden" name="UserId" value="@User.Identity.Name" />
-                            <button class="btn btn-primary card-btn-public" type="submit">
-                                Принять участие
-                            </button>
+                             @using (Html.BeginForm("LeaveProject", "Project", FormMethod.Post))
+                             {
+                                <input type="hidden" name="ProjectId" value="@x.Id" />
+                                <button class="btn btn-primary card-btn-public" type="submit">
+                                    Покинуть проект
+                                </button>
+                             }
                         }
+                        else if (!x.IsParticipant && x.ProjectType == "Открытый")
+                        {
+                            @using (Html.BeginForm("AddParticipant", "Project", FormMethod.Post))
+                            {
+                                <input type="hidden" name="ProjectId" value="@x.Id" />
+                                <input type="hidden" name="UserId" value="@User.Identity.Name" />
+                                <button class="btn btn-primary card-btn-public" type="submit">
+                                    Принять участие
+                                </button>
+                            }
+                        } 
                     }
                 </div>
             </li>

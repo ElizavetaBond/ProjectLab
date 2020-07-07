@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "Browse";
+    ViewData["Title"] = "Просмотр проекта";
     Layout = "~/Views/Shared/_Layout.cshtml";
     @model ProjectBrowseViewModel
 }
@@ -68,17 +68,20 @@
                             </div>
                         </div>
                     }
-                    @using (Html.BeginForm("ChangeType", "Project", FormMethod.Post))
+                    @if (Model.IdeaType == IdeaTypesNames.Open)
                     {
-                        <input type="hidden" name="ProjectId" value="@Model.Id" />
-                        <div class="row">
-                            <div class="col">
-                                <select name="ProjectTypeId" id="selectProjectTypes" class="form-control"></select>
+                        @using (Html.BeginForm("ChangeType", "Project", FormMethod.Post))
+                        {
+                            <input type="hidden" name="ProjectId" value="@Model.Id" />
+                            <div class="row">
+                                <div class="col">
+                                    <select name="ProjectTypeId" id="selectProjectTypes" class="form-control"></select>
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Установить тип проекта</button>
+                                </div>
                             </div>
-                            <div class="col">
-                                <button type="submit" class="btn btn-primary">Установить тип проекта</button>
-                            </div>
-                        </div>
+                        }
                     }
                 </div>
                 }

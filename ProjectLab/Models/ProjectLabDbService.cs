@@ -60,7 +60,14 @@ namespace ProjectLab.Models
         
         public byte[] GetFile(string id) // получение изображения
         {
-            return gridFS.DownloadAsBytes(new ObjectId(id));
+            try
+            {
+                return gridFS.DownloadAsBytes(new ObjectId(id));
+            }
+            catch 
+            {
+                return null;
+            }
         }
         
         public string SaveFile(Stream fileStream, string fileName) // сохранение изображения

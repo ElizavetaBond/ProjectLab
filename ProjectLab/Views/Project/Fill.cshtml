@@ -25,11 +25,11 @@
                     <div class="col-8">
                         @if (Model.Components[i].ComponentType == "Текст")
                         {
-                            <input type="text" asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" readonly />
+                            <textarea asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" readonly></textarea>
                         }
                         else if (Model.Components[i].ComponentType == "Сообщение")
                         {
-                            <input type="text" asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control" />
+                            <textarea asp-for="Components[i].Value" title="@Model.Components[i].Description" class="form-control"></textarea>
                         }
                         else if (Model.Components[i].ComponentType == "Дата")
                         {

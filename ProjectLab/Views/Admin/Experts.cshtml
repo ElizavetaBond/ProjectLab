@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "Experts";
+    ViewData["Title"] = "Назначение Экспертов";
     Layout = "~/Views/Admin/AdminLayout.cshtml";
     @model List<ExpertsViewModel>
 }
@@ -41,16 +41,20 @@
                     <ul>
                         @foreach (var x in Model[i].ExpertsId)
                         {
-                            <li class="form-inline">
-                                @await Component.InvokeAsync("AccountLink", new { UserId = x })
-                                @using (Html.BeginForm("CancelExpert", "Admin", FormMethod.Post))
-                                {
-                                    <input type="hidden" name="ExpertId" value="@x" />
-                                    <button type="submit" class="btn btm-small" title="Убрать из Экспертов">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                }
-                            </li>
+                            <div class="row">
+                                <div class="col">
+                                    @await Component.InvokeAsync("AccountLink", new { UserId = x })
+                                </div>
+                                <div class="col">
+                                    @using (Html.BeginForm("CancelExpert", "Admin", FormMethod.Post))
+                                    {
+                                        <input type="hidden" name="ExpertId" value="@x" />
+                                        <button type="submit" class="btn btm-small" title="Убрать из Экспертов">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
                         }
                     </ul>
                 </div>

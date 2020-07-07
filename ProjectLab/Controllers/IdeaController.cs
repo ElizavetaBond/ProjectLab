@@ -159,9 +159,7 @@ namespace ProjectLab.Controllers
         {
             var image = db.GetFile(id);
             if (image == null)
-            {
                 return NotFound();
-            }
             return File(image, type);
         }
 

@@ -102,6 +102,7 @@ namespace ProjectLab.Controllers
                 Description = project.Idea.Description,
                 Direction = project.Idea.Direction.Name,
                 Equipment = project.Idea.Equipment,
+                IdeaType = project.Idea.IdeaType,
                 Finish = project.Finish,
                 Image = project.Idea.Image,
                 ManagerId = project.ManagerId,
@@ -270,6 +271,14 @@ namespace ProjectLab.Controllers
                 return RedirectToAction("Menu", "Project");
             }
             return RedirectToAction("Browse", new { ProjectId = ProjectId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult LeaveProject (string ProjectId)
+        {
+            db.LeaveProject(ProjectId, User.Identity.Name);
+            return RedirectToAction("Catalog");
         }
 
         [HttpPost]

@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "AdminLayout";
+    ViewData["Title"] = "Личный кабинет";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -27,6 +27,12 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-dark" asp-controller="Idea" asp-action="AdminReviews">Проверка идей</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-controller="Idea" asp-action="Menu">Мои идеи</a>
+                </li>
+                <li class="nav-item text-dark">
+                    <a class="nav-link text-dark" asp-controller="Project" asp-action="Menu">Мои проекты</a>
                 </li>
             </ul>
         </div>

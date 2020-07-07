@@ -107,6 +107,12 @@ namespace ProjectLab.Models
             Projects.FindOneAndUpdate(x => x.Id == projectId, update);
         }
 
+        public void LeaveProject(string projectId, string participantId)
+        {
+            var update = new UpdateDefinitionBuilder<Project>().Pull(x => x.ParticipantsId, participantId);
+            Projects.FindOneAndUpdate(x => x.Id == projectId, update);
+        }
+
         public List<Project> GetManagmentProjects(string userId)
         {
             return Projects.Find(x => x.ManagerId == userId).ToList();

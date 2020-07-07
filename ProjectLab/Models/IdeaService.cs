@@ -12,7 +12,7 @@ namespace ProjectLab.Models
 {
     public class IdeaService : ProjectLabDbService
     {
-        public IdeaService(): base() { }
+        public IdeaService(): base() {}
 
         public void CreateIdea(string name, string type, string target, string purpose, string description,
                                string equipment, string safety, string authorId, string directionId, string video,
@@ -56,10 +56,7 @@ namespace ProjectLab.Models
 
         public void DeleteIdea(string IdeaId)
         {
-            var idea = GetIdea(IdeaId);
-            if (idea.IdeaStatus.Name != IdeaStatusesNames.Approved && idea.Image != null)
-                DeleteFile(idea.Image.Id); // если утверждена, изображение привязано к проекту
-            Ideas.DeleteOne(x => x.Id == idea.Id);
+            Ideas.DeleteOne(x => x.Id == IdeaId);
         }
 
         public void SendIdeaToAdminOnReview(string IdeaId)

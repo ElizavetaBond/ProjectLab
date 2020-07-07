@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "BrowseAnswear";
+    ViewData["Title"] = "Исследовательские данные";
     Layout = "~/Views/Shared/_Layout.cshtml";
     @model BrowseAnswearViewModel
 }
@@ -61,7 +61,7 @@
                     }
                     else
                     {
-                        <input type="text" value="@Model.Components[i].Value" title="@Model.Components[i].Description" class="form-control" readonly />
+                        <textarea value="@Model.Components[i].Value" title="@Model.Components[i].Description" class="form-control" readonly></textarea>
                     }
                 </div>
             </div>

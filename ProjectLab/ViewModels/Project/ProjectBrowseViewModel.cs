@@ -20,6 +20,8 @@ namespace ProjectLab.ViewModels.Project
         [Display(Name = "Руководитель")]
         public string ManagerId { get; set; }
 
+        public string IdeaType { get; set; }
+
         [Display(Name = "Уровень доступа")]
         public string ProjectType { get; set; }
 

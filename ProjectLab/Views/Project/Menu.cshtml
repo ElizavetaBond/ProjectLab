@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "Menu";
+    ViewData["Title"] = "Мои проекты";
     Layout = "~/Views/Account/AccountLayout.cshtml";
     @model ProjectMenuViewModel
 }
@@ -15,6 +15,16 @@
                             <li class="card-wrapper">
                                 <div class="card" style="height: 540px;">
                                     @await Component.InvokeAsync("ProjectCard", new { vm = x })
+                                    @if (!x.IsManager)
+                                    {
+                                        @using (Html.BeginForm("LeaveProject", "Project", FormMethod.Post))
+                                        {
+                                            <input type="hidden" name="ProjectId" value="@x.Id" />
+                                            <button class="btn btn-primary card-btn-public" type="submit">
+                                                Покинуть проект
+                                            </button>
+                                        }
+                                    }
                                 </div>
                             </li>
                         }
