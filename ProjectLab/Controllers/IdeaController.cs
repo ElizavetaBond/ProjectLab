@@ -152,6 +152,7 @@ namespace ProjectLab.Controllers
         [Authorize(Roles = "Эксперт")]
         public IActionResult CancelReview(string IdeaId) // эксперт отказался от выдачи рецензии
         {
+            db.ExpertCanceledReview(IdeaId, User.Identity.Name);
             return RedirectToAction("Menu");
         }
 
@@ -221,7 +222,8 @@ namespace ProjectLab.Controllers
             {
                 Drafts      = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.Draft).ToList()
                                       .Select(x => GetIdeaCardVM(x)).ToList(),
-                OnReviews   = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.OnReview).ToList()
+                OnReviews   = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.OnReview || 
+                                               x.IdeaStatus.Name == IdeaStatusesNames.OnReviewAdmin).ToList()
                                       .Select(x => GetIdeaCardVM(x)).ToList(),
                 Approves    = ownideas.FindAll(x => x.IdeaStatus.Name == IdeaStatusesNames.Approved).ToList()
                                       .Select(x => GetIdeaCardVM(x)).ToList(),
@@ -251,7 +253,7 @@ namespace ProjectLab.Controllers
         [Authorize(Roles = "Админ")]
         public IActionResult AdminReviews()
         {
-            var vm = db.GetPrivateIdeasOnReview().Select(x => GetIdeaCardVM(x)).ToList();
+            var vm = db.GetAdminReviews().Select(x => GetIdeaCardVM(x)).ToList();
             return View(vm);
         }
     }

@@ -22,7 +22,6 @@ namespace ProjectLab.Controllers
         public AdminController(AdminService context)
         {
             db = context;
-            //LoadReferences();
         }
 
         [HttpGet]
@@ -132,9 +131,10 @@ namespace ProjectLab.Controllers
         }
 
         [HttpPost]
-        public IActionResult CancelExpert(string ExpertId)
+        public IActionResult CancelExpert(string ExpertId, string SectionId)
         {
-            db.CancelExpert(ExpertId);
+            if (!db.CancelExpert(ExpertId)) 
+                ViewData["Error"] = "Нельзя удалить Экспертов, у которых на проверке есть идеи.";
             return RedirectToAction("Experts");
         }
 

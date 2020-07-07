@@ -32,13 +32,15 @@ namespace ProjectLab.Models
             });
         }
 
-        public void CancelExpert(string ExpertId)
+        public bool CancelExpert(string ExpertId)
         {
+            var expert = Experts.Find(x => x.Id == ExpertId).FirstOrDefault();
+            if (expert.ReviewIdeas.Count > 0) return false;
             var update = new UpdateDefinitionBuilder<User>().Set(x => x.UserStatus,
                         UserStatuses.Find(u => u.Name == UserStatusesNames.Participant).FirstOrDefault());
             Users.FindOneAndUpdate(x => x.Id == ExpertId, update);
             Experts.FindOneAndDelete(x => x.Id == ExpertId);
-            // НАДО ЧТО ТО СДЕЛАТЬ С ИДЕЯМИ КОТОРЫЕ БЫЛИ У НЕГО НА ПРОВЕРКЕ
+            return true;
         }
     }
 }

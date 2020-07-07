@@ -72,7 +72,7 @@ namespace ProjectLab.Models
             };
             Reviews.InsertOne(review);
             var updateIdea = new UpdateDefinitionBuilder<Idea>().Set(i => i.IdeaStatus,
-                IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.OnReview).FirstOrDefault())
+                IdeaStatuses.Find(x => x.Name == IdeaStatusesNames.OnReviewAdmin).FirstOrDefault())
                 .Set(i => i.ReviewId, review.Id);
             Ideas.FindOneAndUpdate(i => i.Id == IdeaId, updateIdea);
         }
@@ -191,6 +191,47 @@ namespace ProjectLab.Models
                 Ideas.FindOneAndUpdate(idea => idea.Id == ideaId, updateIdea);
         }
 
+        public void ExpertCanceledReview(string IdeaId, string ExpertId) // эксперт отказался от оценки
+        {
+            var idea = GetIdea(IdeaId);
+            var author = GetUser(idea.AuthorId);
+            var review = Reviews.Find(x => x.Id == idea.ReviewId).FirstOrDefault();
+
+            var experts = Experts.Find(x => x.Direction.Id == idea.Direction.Id
+                                              && x.EducationalInstitution.Id != author.EducationalInstitution.Id).ToList()
+                                              .OrderBy(x => x.ReviewIdeas.Count).ToList();
+            foreach (var expert in experts)
+            {
+                // если данный эксперт еще не был назначен
+                if (review.ExpertsId.FindIndex(x => x == expert.Id) == -1) 
+                {
+                    // удаляем идею у Эксперта
+                    var updateOldExpert = new UpdateDefinitionBuilder<Expert>().PullFilter(exp => exp.ReviewIdeas, x => x.Id == IdeaId);
+                    Experts.FindOneAndUpdate(x => x.Id == ExpertId, updateOldExpert);
+
+                    // обновить оценочный лист, удалить старого и добавить нового эксперта
+                    var updateReview = new UpdateDefinitionBuilder<Review>().Push(x => x.ExpertsId, expert.Id);
+                    Reviews.FindOneAndUpdate(x => x.Id == review.Id, updateReview);
+                    updateReview = new UpdateDefinitionBuilder<Review>().Pull(x => x.ExpertsId, ExpertId);
+                    Reviews.FindOneAndUpdate(x => x.Id == review.Id, updateReview);
+
+                    // добавить идею новому эксперту
+                    var updateNewExpert = new UpdateDefinitionBuilder<Expert>().Push(x => x.ReviewIdeas, idea);
+                    Experts.FindOneAndUpdate(x => x.Id == expert.Id, updateNewExpert);
+                    return;
+                }
+            }
+            // если другой не был найден, то отправить админу
+            foreach(var exp in review.ExpertsId)
+            {
+                // удалить у всех экспертов данную идею
+                var updateAllExpert = new UpdateDefinitionBuilder<Expert>().PullFilter(x => x.ReviewIdeas, i => i.Id == IdeaId);
+                Experts.FindOneAndUpdate(x => x.Id == exp, updateAllExpert);
+            }
+            // отправить на проверку админу
+            SendIdeaToAdminOnReview(IdeaId);
+        }
+
         public Expert GetExpert (string ExpertId)
         {
             return Experts.Find(x => x.Id == ExpertId).FirstOrDefault();
@@ -203,9 +244,9 @@ namespace ProjectLab.Models
             return review == null ? new List<Resolution>() : review.Resolutions;
         }
         
-        public List<Idea> GetPrivateIdeasOnReview()
+        public List<Idea> GetAdminReviews()
         {
-            return Ideas.Find(x => x.IdeaType == IdeaTypesNames.Private && x.IdeaStatus.Name == IdeaStatusesNames.OnReview).ToList();
+            return Ideas.Find(x => x.IdeaStatus.Name == IdeaStatusesNames.OnReviewAdmin).ToList();
         }
     }
 }

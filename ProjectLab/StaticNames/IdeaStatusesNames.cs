@@ -11,6 +11,8 @@ namespace ProjectLab.StaticNames
 
         public static readonly string OnReview;
 
+        public static readonly string OnReviewAdmin;
+
         public static readonly string Approved;
 
         public static readonly string Rejected;
@@ -19,6 +21,7 @@ namespace ProjectLab.StaticNames
         {
             Draft = "Черновик";
             OnReview = "На модерации";
+            OnReviewAdmin = "На модерации Админом";
             Approved = "Утверждена";
             Rejected = "Отклонена";
         }
