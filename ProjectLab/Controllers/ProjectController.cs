@@ -149,6 +149,8 @@ namespace ProjectLab.Controllers
                     }
                     else sectionVm.isFill = true;
                 }
+                if (User.IsInRole(UserStatusesNames.Admin) && s.SectionType == SectionTypesNames.FinalResults && !s.Answears.Any())
+                    sectionVm.isFill = true;
                 i++;
                 vm.Sections.Add(sectionVm);
             }
@@ -252,7 +254,7 @@ namespace ProjectLab.Controllers
         public IActionResult Finish (string ProjectId)
         {
             var project = db.GetProject(ProjectId);
-            if (project.ManagerId == User.Identity.Name)
+            if (project.ManagerId == User.Identity.Name || User.IsInRole(UserStatusesNames.Admin))
             {
                 db.CompleteProject(ProjectId);
                 return RedirectToAction("Archive");
@@ -265,10 +267,10 @@ namespace ProjectLab.Controllers
         public IActionResult Cancel (string ProjectId)
         {
             var project = db.GetProject(ProjectId);
-            if (project.ManagerId == User.Identity.Name)
+            if (project.ManagerId == User.Identity.Name || User.IsInRole(UserStatusesNames.Admin))
             {
                 db.CancelProject(ProjectId);
-                return RedirectToAction("Menu", "Project");
+                return RedirectToAction("Catalog", "Project");
             }
             return RedirectToAction("Browse", new { ProjectId = ProjectId });
         }
@@ -304,7 +306,7 @@ namespace ProjectLab.Controllers
         private ProjectCardViewModel CreateProjectCard(Project project)
         {
             var managerId = db.GetUser(project.ManagerId).Id;
-            return new ProjectCardViewModel
+            var vm = new ProjectCardViewModel
             {
                 Id = project.Id,
                 Name = project.Idea.Name,
@@ -313,8 +315,19 @@ namespace ProjectLab.Controllers
                 ProjectType = project.ProjectType.Name,
                 Image = project.Idea.Image,
                 IsManager = managerId == User.Identity.Name,
-                IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null
+                IsParticipant = project.ParticipantsId.Find(x => x == User.Identity.Name) != null,
+                IsFinish = true
             };
+            var finalresult = project.Sections.FindAll(x => x.SectionType == SectionTypesNames.FinalResults);
+            foreach (var f in finalresult)
+            {
+                if (!f.Answears.Any())
+                {
+                    vm.IsFinish = false;
+                    break;
+                }
+            }
+            return vm;
         }
 
         [HttpGet]
@@ -335,6 +348,13 @@ namespace ProjectLab.Controllers
                                         .Select(x => CreateProjectCard(x)).ToList(),
             };
             return View(vm);
+        }
+
+        [HttpGet]
+        [Authorize(Roles="Админ")]
+        public IActionResult FrozenProjects()
+        {
+            return View(db.GetFrozenProjects().Select(x => CreateProjectCard(x)));
         }
     }
 }

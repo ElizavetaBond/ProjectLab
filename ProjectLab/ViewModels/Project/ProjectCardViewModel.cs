@@ -16,5 +16,6 @@ namespace ProjectLab.ViewModels.Project
         public File Image { get; set; }
         public bool IsManager { get; set; }
         public bool IsParticipant { get; set; }
+        public bool IsFinish { get; set; }
     }
 }

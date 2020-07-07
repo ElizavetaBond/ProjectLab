@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewData["Title"] = "Зависшие проекты";
+    Layout = "~/Views/Admin/AdminLayout.cshtml";
+    @model IEnumerable<ProjectCardViewModel>
+}
+
+<ul class="cards clearfix">
+    @foreach (var x in Model)
+    {
+        <li class="card-wrapper">
+            <div class="card" style="height: 600px;">
+                @await Component.InvokeAsync("ProjectCard", new { vm = x })
+                @if (User.IsInRole(UserStatusesNames.Admin))
+                {
+                    @if (x.IsFinish)
+                    {
+                        @using (Html.BeginForm("Finish", "Project", FormMethod.Post))
+                        {
+                            <input type="hidden" name="ProjectId" value="@x.Id" />
+                            <button class="btn btn-primary card-btn-public" type="submit">
+                                Завершить проект
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <div class="label-info">
+                            <h2>Заполните раздел итоговых результатов, чтобы завершить проект</h2>
+                        </div>
+                    }
+                    @using (Html.BeginForm("Cancel", "Project", FormMethod.Post))
+                    {
+                        <input type="hidden" name="ProjectId" value="@x.Id" />
+                        <button class="btn btn-primary card-btn-public" type="submit">
+                            Отменить проект
+                        </button>
+                    }
+                }
+            </div>
+        </li>
+    }
+</ul>
+
+

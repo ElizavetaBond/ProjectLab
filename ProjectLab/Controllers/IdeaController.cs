@@ -70,7 +70,8 @@ namespace ProjectLab.Controllers
                                                       ComponentType = x.Type,
                                                       Description = x.Description,
                                                       IsNecessary = x.IsNecessary,
-                                                      ListSelect = x.ListSelect
+                                                      ListSelect = (x.Type == ComponentsNames.Choice || x.Type == ComponentsNames.MultipleChoice) ?
+                                                                        x.Description.Trim().Split(',').ToList() : new List<string>()
                                                   }).ToList()
                         };
                         sections.Add(section);

@@ -146,7 +146,8 @@
                 <div class="tab-pane fade" id="projecttemplate">
                     <div class="row">
                         <div class="col-sm-4">
-                            <ul class="nav nav-tabs flex-column" id="navSections"></ul>
+                            <ul class="nav nav-tabs flex-column" id="navSections">
+                            </ul>
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="btnAddSection" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-plus"></i>
@@ -233,15 +234,24 @@
             var idBtnDel = 'btnDeleteComp' + indComp;   // идентификатор кнопки удаления
             var str = '<div class="row component align-items-center justify-content-between" id="' + idComp + '">' +
                 '<div class="col-sm-4">' +
-                    '<input type="hidden" id="' + idComp + 'IsDelete" name="Components[' + indComp + '].IsDelete" value="false" />' +
-                    '<input type="hidden" name="Components[' + indComp + '].Section" value="' + currentSection + '" />' +
-                    '<input class="form-control" type="text" name="Components[' + indComp + '].Type" readonly value="' + typeComp + '"/>' +
-                    '<input class="form-control" type="text" name="Components[' + indComp + '].Name" placeholder="Название компоненты" />' +
-                '</div>' +
-                '<div class="col-sm-4">' +
+                '<input type="hidden" id="' + idComp + 'IsDelete" name="Components[' + indComp + '].IsDelete" value="false" />' +
+                '<input type="hidden" name="Components[' + indComp + '].Section" value="' + currentSection + '" />' +
+                '<input class="form-control" type="text" name="Components[' + indComp + '].Type" readonly value="' + typeComp + '"/>' +
+                '<input class="form-control" type="text" name="Components[' + indComp + '].Name" placeholder="Название компоненты" />' +
+                '</div>';
+            if (typeComp == 'Текст')
+                str += '<div class="col-sm-4">' +
+                    '<textarea class="form-control" type="text" name="Components[' + indComp + '].Description" placeholder="Введите текст, который будет отображен в проекте" />' +
+                    '</div>';
+            else if (typeComp == 'Выбор' || typeComp == 'Множественный выбор')
+                str += '<div class="col-sm-4">' +
+                    '<textarea class="form-control" type="text" name="Components[' + indComp + '].Description" placeholder="Укажите значения для выбора через запятую" />' +
+                    '</div>';
+            else
+                str += '<div class="col-sm-4">' +
                     '<textarea class="form-control" type="text" name="Components[' + indComp + '].Description" placeholder="Назначение" />' +
-                '</div>' +
-                '<div class="col-sm-3">' +
+                    '</div>';
+            str += '<div class="col-sm-3">' +
                     '<input class="form-check-input" type="checkbox" id="' + idComp + 'IsNecessary" name="Components[' + indComp + '].IsNecessary" value="false"/>' +
                     '<label class="form-check-label" for="checkboxIsNecessary">Обязательно к заполнению</label>' +
                 '</div>' +

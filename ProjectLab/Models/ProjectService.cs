@@ -153,5 +153,10 @@ namespace ProjectLab.Models
             var update = new UpdateDefinitionBuilder<Project>().Set(x => x.Finish, finish);
             Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
         }
+
+        public List<Project> GetFrozenProjects()
+        {
+            return Projects.Find(x => x.ProjectStatus.Name == ProjectStatusesNames.Working && x.Finish <= DateTime.Now).ToList();
+        }
     }
 }
