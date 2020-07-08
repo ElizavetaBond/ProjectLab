@@ -96,7 +96,13 @@ namespace ProjectLab.Controllers
                 return RedirectToAction("Menu");
             }
             else
+            {
+                ViewData["ListDirections"] = db.GetDirections();
+                ViewData["ListComponents"] = ComponentsNames.Get();
+                ViewData["ListIdeaTypes"] = IdeaTypesNames.Get();
+                ViewData["ListSectionTypes"] = SectionTypesNames.Get();
                 return View(vm);
+            }
         }
 
         [HttpGet]

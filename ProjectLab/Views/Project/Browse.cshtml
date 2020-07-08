@@ -68,6 +68,18 @@
                             </div>
                         </div>
                     }
+                    @using (Html.BeginForm("ChangeDateFinish", "Project", FormMethod.Post))
+                    {
+                        <input type="hidden" name="ProjectId" value="@Model.Id" />
+                        <div class="row" style="padding: 4px;">
+                            <div class="col">
+                                <input type="date" class="form-control" name="Finish" value="@Model.Finish"/>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary">Изменить срок</button>
+                            </div>
+                        </div>
+                    }
                     @if (Model.IdeaType == IdeaTypesNames.Open)
                     {
                         @using (Html.BeginForm("ChangeType", "Project", FormMethod.Post))

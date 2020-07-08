@@ -150,8 +150,11 @@ namespace ProjectLab.Models
 
         public void ChangeDateFinish(string ProjectId, DateTime finish)
         {
-            var update = new UpdateDefinitionBuilder<Project>().Set(x => x.Finish, finish);
-            Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
+            if (finish >= DateTime.Now)
+            {
+                var update = new UpdateDefinitionBuilder<Project>().Set(x => x.Finish, finish);
+                Projects.FindOneAndUpdate(x => x.Id == ProjectId, update);
+            }
         }
 
         public List<Project> GetFrozenProjects()
